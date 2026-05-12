@@ -1,0 +1,124 @@
+{
+  "skill": "claude-code-sub-agent",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-12",
+  "notes": "Positive: prompts that should activate this meta-skill. Positives use design/walk-through verbs over Validate/Audit/Refactor (which trigger verify-before-act in Claude). See shared/references/skills/testing-guide.md.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Create a sub-agent for database migrations",
+      "should_trigger": true,
+      "category": "positive-direct"
+    },
+    {
+      "id": "pos-02",
+      "query": "Scaffold a .claude/agents/code-reviewer.md",
+      "should_trigger": true,
+      "category": "positive-scaffold"
+    },
+    {
+      "id": "pos-03",
+      "query": "Design a sub-agent for database-migration review \u2014 its description, tools list, and system-prompt structure",
+      "should_trigger": true,
+      "category": "positive-design-full"
+    },
+    {
+      "id": "pos-04",
+      "query": "Validate this agent's tools list against least privilege",
+      "should_trigger": true,
+      "category": "positive-validate"
+    },
+    {
+      "id": "pos-05",
+      "query": "Design the full frontmatter (tools, model, permissionMode) and system-prompt for a pii-scrubber sub-agent with least-privilege",
+      "should_trigger": true,
+      "category": "positive-design-frontmatter"
+    },
+    {
+      "id": "pos-06",
+      "query": "Design a sub-agent specialised in Python testing",
+      "should_trigger": true,
+      "category": "positive-design"
+    },
+    {
+      "id": "pos-07",
+      "query": "Help me build a debugger sub-agent",
+      "should_trigger": true,
+      "category": "positive-help"
+    },
+    {
+      "id": "pos-08",
+      "query": "Walk me through the canonical structure of a sub-agent system prompt: role line, rules with rationale, anti-patterns, scope boundaries",
+      "should_trigger": true,
+      "category": "positive-knowledge-structure"
+    },
+    {
+      "id": "neg-01",
+      "query": "Create a new skill",
+      "should_trigger": false,
+      "category": "negative-sibling-skill"
+    },
+    {
+      "id": "neg-02",
+      "query": "Build a slash command",
+      "should_trigger": false,
+      "category": "negative-sibling-command"
+    },
+    {
+      "id": "neg-03",
+      "query": "Configure a hook",
+      "should_trigger": false,
+      "category": "negative-sibling-hook"
+    },
+    {
+      "id": "neg-04",
+      "query": "Set up the plugin manifest",
+      "should_trigger": false,
+      "category": "negative-sibling-plugin"
+    },
+    {
+      "id": "neg-05",
+      "query": "Edit my application code",
+      "should_trigger": false,
+      "category": "negative-app-code"
+    },
+    {
+      "id": "neg-06",
+      "query": "Implement this function",
+      "should_trigger": false,
+      "category": "negative-implementation"
+    },
+    {
+      "id": "neg-07",
+      "query": "Run the test suite",
+      "should_trigger": false,
+      "category": "negative-ops"
+    },
+    {
+      "id": "neg-08",
+      "query": "Generate a Conventional Commits message",
+      "should_trigger": false,
+      "category": "negative-commit"
+    },
+    {
+      "id": "edge-01",
+      "query": "Design a sub-agent that monitors plugin installs and runs post-install hooks \u2014 what frontmatter and system prompt does it need?",
+      "should_trigger": true,
+      "category": "edge-cross-domain",
+      "notes": "Sub-agent owns the agent shape; hook content goes through the hook meta-skill but the agent shape is owned here."
+    },
+    {
+      "id": "edge-02",
+      "query": "I want to ship a sub-agent in a Claude Code plugin \u2014 what goes in agents/*.md vs in plugin.json?",
+      "should_trigger": true,
+      "category": "edge-multi-target",
+      "notes": "Authoring the agent body is owned here; packaging is owned by the plugin meta-skill."
+    },
+    {
+      "id": "edge-03",
+      "query": "Design a sub-agent with the memory frontmatter field enabled \u2014 what's the syntax and how does persistent memory work across sessions?",
+      "should_trigger": true,
+      "category": "edge-feature"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+# macOS
+.DS_Store
+._*
+
+# Claude Code local files
+.claude/settings.local.json
+
+# Activation eval run artifacts (timestamped reports + live logs).
+# The corpora (plugins/*/skills/*/tests/activation-evals.json) and the runner
+# stay in git; results are transient and reproduced by re-running the harness.
+.eval-runs/
+
+# Future baseline lives at .eval-baseline.json (committed when promoted).
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+
+# IDE / editor noise
+.vscode/
+.idea/
+*.swp

@@ -1,0 +1,124 @@
+{
+  "skill": "claude-code-slash-command",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-12",
+  "notes": "Positive: prompts that should activate this meta-skill. Positives use design/walk-through verbs over Validate/Audit/Refactor (which trigger verify-before-act in Claude). See shared/references/skills/testing-guide.md.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Create a new slash command for opening GitHub issues",
+      "should_trigger": true,
+      "category": "positive-direct"
+    },
+    {
+      "id": "pos-02",
+      "query": "Scaffold /deploy as a slash command",
+      "should_trigger": true,
+      "category": "positive-scaffold"
+    },
+    {
+      "id": "pos-03",
+      "query": "Design a /commit slash command from scratch: frontmatter, argument-hint, and body following Conventional Commits",
+      "should_trigger": true,
+      "category": "positive-design-full"
+    },
+    {
+      "id": "pos-04",
+      "query": "What allowed-tools should a /deploy slash command declare, and why?",
+      "should_trigger": true,
+      "category": "positive-knowledge-frontmatter"
+    },
+    {
+      "id": "pos-05",
+      "query": "Walk me through the shell-injection risks in slash commands that use $ARGUMENTS in backtick shell blocks, and how to mitigate them",
+      "should_trigger": true,
+      "category": "positive-knowledge-security"
+    },
+    {
+      "id": "pos-06",
+      "query": "Should this be a slash command or a skill?",
+      "should_trigger": true,
+      "category": "positive-decide"
+    },
+    {
+      "id": "pos-07",
+      "query": "Walk me through migrating a /generate-tests slash command to a skill \u2014 what's the decision criteria and what carries over from the command frontmatter?",
+      "should_trigger": true,
+      "category": "positive-migrate"
+    },
+    {
+      "id": "pos-08",
+      "query": "Help me build a .claude/commands/foo.md file",
+      "should_trigger": true,
+      "category": "positive-path"
+    },
+    {
+      "id": "neg-01",
+      "query": "Create a new skill",
+      "should_trigger": false,
+      "category": "negative-sibling-skill"
+    },
+    {
+      "id": "neg-02",
+      "query": "Build a sub-agent for code review",
+      "should_trigger": false,
+      "category": "negative-sibling-agent"
+    },
+    {
+      "id": "neg-03",
+      "query": "Configure a hook on PreToolUse",
+      "should_trigger": false,
+      "category": "negative-sibling-hook"
+    },
+    {
+      "id": "neg-04",
+      "query": "Set up the plugin manifest",
+      "should_trigger": false,
+      "category": "negative-sibling-plugin"
+    },
+    {
+      "id": "neg-05",
+      "query": "Edit my application code",
+      "should_trigger": false,
+      "category": "negative-app-code"
+    },
+    {
+      "id": "neg-06",
+      "query": "Write a function in TypeScript",
+      "should_trigger": false,
+      "category": "negative-implementation"
+    },
+    {
+      "id": "neg-07",
+      "query": "Run the linter",
+      "should_trigger": false,
+      "category": "negative-ops"
+    },
+    {
+      "id": "neg-08",
+      "query": "Build a CI/CD pipeline",
+      "should_trigger": false,
+      "category": "negative-cicd"
+    },
+    {
+      "id": "edge-01",
+      "query": "Make a /build thing",
+      "should_trigger": true,
+      "category": "edge-ambiguous",
+      "notes": "The skill should clarify and possibly recommend a skill over a command per command-vs-skill."
+    },
+    {
+      "id": "edge-02",
+      "query": "My /deploy command is invoked 5 times per day with the same workflow \u2014 help me decide whether it should become a skill",
+      "should_trigger": true,
+      "category": "edge-decide",
+      "notes": "Decide \u2192 Migrate mode of this skill."
+    },
+    {
+      "id": "edge-03",
+      "query": "Design the argument-hint and frontmatter for a /scan-deps slash command that takes an optional --severity flag",
+      "should_trigger": true,
+      "category": "edge-detail"
+    }
+  ]
+}

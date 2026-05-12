@@ -1,0 +1,123 @@
+{
+  "skill": "claude-code-skill",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-12",
+  "notes": "Positive: prompts that should activate this meta-skill. Negative: prompts that should activate a sibling meta-skill (or none). Edge: ambiguous prompts where the routing decision is non-obvious. Positives use design/build/walk-through verbs \u2014 see shared/references/skills/testing-guide.md for the corpus-authoring rule.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Create a new skill that lints Markdown",
+      "should_trigger": true,
+      "category": "positive-direct"
+    },
+    {
+      "id": "pos-02",
+      "query": "Scaffold a SKILL.md for a deployment checklist skill",
+      "should_trigger": true,
+      "category": "positive-scaffold"
+    },
+    {
+      "id": "pos-03",
+      "query": "Refactor my existing skill \u2014 its description is too vague",
+      "should_trigger": true,
+      "category": "positive-refactor"
+    },
+    {
+      "id": "pos-04",
+      "query": "Generate a SKILL.md description that's a strong classifier for Markdown-lint requests",
+      "should_trigger": true,
+      "category": "positive-design-description"
+    },
+    {
+      "id": "pos-05",
+      "query": "Design a SKILL.md for a pii-redactor skill with progressive disclosure, paths discipline, and disable-model-invocation set correctly",
+      "should_trigger": true,
+      "category": "positive-design-full"
+    },
+    {
+      "id": "pos-06",
+      "query": "Help me build a Claude Code skill",
+      "should_trigger": true,
+      "category": "positive-help"
+    },
+    {
+      "id": "pos-07",
+      "query": "Design a skill for code review with progressive disclosure",
+      "should_trigger": true,
+      "category": "positive-design"
+    },
+    {
+      "id": "pos-08",
+      "query": "Improve the trigger description for ~/.claude/skills/my-skill/SKILL.md",
+      "should_trigger": true,
+      "category": "positive-path"
+    },
+    {
+      "id": "neg-01",
+      "query": "Create a new sub-agent for database migrations",
+      "should_trigger": false,
+      "category": "negative-sibling-agent"
+    },
+    {
+      "id": "neg-02",
+      "query": "Build a slash command that opens issues",
+      "should_trigger": false,
+      "category": "negative-sibling-command"
+    },
+    {
+      "id": "neg-03",
+      "query": "Configure a PreToolUse hook for my project",
+      "should_trigger": false,
+      "category": "negative-sibling-hook"
+    },
+    {
+      "id": "neg-04",
+      "query": "Set up a new plugin manifest",
+      "should_trigger": false,
+      "category": "negative-sibling-plugin"
+    },
+    {
+      "id": "neg-05",
+      "query": "Review the application code in src/",
+      "should_trigger": false,
+      "category": "negative-app-code"
+    },
+    {
+      "id": "neg-06",
+      "query": "Write a Python function to dedupe a list",
+      "should_trigger": false,
+      "category": "negative-implementation"
+    },
+    {
+      "id": "neg-07",
+      "query": "Run the test suite",
+      "should_trigger": false,
+      "category": "negative-ops"
+    },
+    {
+      "id": "neg-08",
+      "query": "Update the marketplace.json $schema URL",
+      "should_trigger": false,
+      "category": "negative-marketplace"
+    },
+    {
+      "id": "edge-01",
+      "query": "Build me a Claude Code skill that summarises git diffs at commit time",
+      "should_trigger": true,
+      "category": "edge-explicit-skill"
+    },
+    {
+      "id": "edge-02",
+      "query": "Convert this slash command to a skill",
+      "should_trigger": false,
+      "category": "edge-cross-domain",
+      "notes": "Owned by the slash-command meta-skill (command-vs-skill decision lives there)."
+    },
+    {
+      "id": "edge-03",
+      "query": "Walk me through how to refactor a SKILL.md whose description has weak trigger verbs",
+      "should_trigger": true,
+      "category": "edge-workflow"
+    }
+  ]
+}

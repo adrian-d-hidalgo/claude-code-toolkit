@@ -1,0 +1,14 @@
+{
+  "PreToolUse": [
+    {
+      "matcher": "[ToolName or pattern like 'Edit|Write']",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "[shell command - use $(...) for JSON parsing]",
+          "timeout": 60
+        }
+      ]
+    }
+  ]
+}

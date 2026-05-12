@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "claude-code-toolkit",
+  "description": "Personal toolkit for Claude Code. Bundles a core meta-toolkit for authoring skills, sub-agents, slash commands, plugins, hooks, and CLAUDE.md memory files, plus a development plugin shipping an opinionated senior software-developer sub-agent.",
+  "owner": {
+    "name": "Adrián Darío Hidalgo Flores",
+    "url": "https://github.com/adrian-d-hidalgo/claude-code-toolkit"
+  },
+  "plugins": [
+    {
+      "name": "claude-code-core",
+      "source": "./plugins/claude-code-core",
+      "description": "Meta-skills for authoring Claude Code extensions: scaffold, validate, and audit skills, sub-agents, slash commands, plugins, hooks, and CLAUDE.md memory files against current official conventions.",
+      "category": "development",
+      "tags": ["meta", "skills", "agents", "commands", "plugins", "hooks", "claude-md", "scaffolding", "validation"]
+    },
+    {
+      "name": "claude-code-development",
+      "source": "./plugins/claude-code-development",
+      "description": "Opinionated senior software-developer sub-agent that enforces Think-Before-Coding, Simplicity-First, Surgical-Changes, and Goal-Driven Execution rules for any coding task.",
+      "category": "development",
+      "tags": ["coding", "implementation", "engineering", "senior-developer", "agent"]
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "kind": "subagent",
+  "agent": "software-developer",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-12",
+  "notes": "Positive: prompts where delegation is unambiguously preferable \u2014 multi-file deliverables, sustained refactors, or tasks where rule/style enforcement matters more than a one-shot answer. Negative: prompts that should route to a meta-skill or to no agent. Edge: ambiguous between application code and Claude Code component editing.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Build a TypeScript library for time-zone math from scratch: API surface (parse, convert, format), implementation, 95%+ unit test coverage, README with usage examples, and a CHANGELOG entry \u2014 every public function \u226420 lines and every comment justifies WHY",
+      "should_trigger": true,
+      "category": "positive-multifile-library"
+    },
+    {
+      "id": "pos-02",
+      "query": "Build a Python CLI tool that backs up Postgres databases: argparse interface, async psycopg, retry with exponential backoff, structured logging, full pytest suite covering happy path + failure modes, README, and a release-checklist doc",
+      "should_trigger": true,
+      "category": "positive-multifile-cli"
+    },
+    {
+      "id": "pos-03",
+      "query": "Build a Rust crate for a thread-safe LRU cache with TTL eviction: lib.rs implementation, benches/ comparing against std HashMap, integration tests, doc comments on every public item, plus a README walking through the design tradeoffs",
+      "should_trigger": true,
+      "category": "positive-multifile-rust"
+    },
+    {
+      "id": "pos-04",
+      "query": "Implement a REST API service with 3 endpoints (create-order, get-order, cancel-order): handlers, request/response schemas, validation, idempotency keys on mutations, full integration test suite, OpenAPI spec, and a runbook for ops",
+      "should_trigger": true,
+      "category": "positive-multifile-api"
+    },
+    {
+      "id": "pos-05",
+      "query": "Write a complete test suite for a money-transfer service (you author the service too): happy path, insufficient funds, idempotency under retry, concurrent transfers on the same account, rollback on partial failure \u2014 every test isolates side effects",
+      "should_trigger": true,
+      "category": "positive-test-suite"
+    },
+    {
+      "id": "pos-06",
+      "query": "Refactor an Express middleware chain into three composable middlewares (auth, logging, tenant-scoping) \u2014 produce the full middleware/ directory, type definitions, unit tests per middleware, and a migration note explaining what changed in the request pipeline",
+      "should_trigger": true,
+      "category": "positive-multifile-refactor"
+    },
+    {
+      "id": "pos-07",
+      "query": "Build a React infinite-scroll feed component end-to-end: virtualized list, custom pagination hook, error boundary, skeleton loading state, accessibility labels, Storybook stories, and Jest tests covering keyboard navigation",
+      "should_trigger": true,
+      "category": "positive-multifile-frontend"
+    },
+    {
+      "id": "pos-08",
+      "query": "Build a Go service for OAuth2 device-flow login: handler, token-refresh strategy, secure storage, mock IdP for tests, integration tests covering the full flow, and a SECURITY.md documenting the threat model",
+      "should_trigger": true,
+      "category": "positive-multifile-auth"
+    },
+    {
+      "id": "pos-09",
+      "query": "Implement schema-validated signup-form handling end-to-end: zod schema in shared/, server-side validator, client-side debounced field validation, async username-uniqueness check, full test coverage, and an a11y audit checklist",
+      "should_trigger": true,
+      "category": "positive-multifile-form"
+    },
+    {
+      "id": "pos-10",
+      "query": "Investigate why a Go integration test for checkout is flaky: root-cause the goroutine leak / race condition / test ordering, fix the production code (multiple files), add a regression test, and document the fix in the team's reliability log",
+      "should_trigger": true,
+      "category": "positive-debug-multifile"
+    },
+    {
+      "id": "neg-01",
+      "query": "Create a new Claude Code skill that lints Markdown",
+      "should_trigger": false,
+      "category": "negative-meta-skill"
+    },
+    {
+      "id": "neg-02",
+      "query": "Build a slash command for opening GitHub issues",
+      "should_trigger": false,
+      "category": "negative-meta-command"
+    },
+    {
+      "id": "neg-03",
+      "query": "Configure a PreToolUse hook in hooks/hooks.json",
+      "should_trigger": false,
+      "category": "negative-meta-hook"
+    },
+    {
+      "id": "neg-04",
+      "query": "Set up a new Claude Code plugin manifest at .claude-plugin/plugin.json",
+      "should_trigger": false,
+      "category": "negative-meta-plugin"
+    },
+    {
+      "id": "neg-05",
+      "query": "Edit ~/.claude/agents/code-reviewer.md frontmatter to add a new tool",
+      "should_trigger": false,
+      "category": "negative-meta-subagent"
+    },
+    {
+      "id": "neg-06",
+      "query": "Should I use a monolith or microservices for this product?",
+      "should_trigger": false,
+      "category": "negative-architecture",
+      "notes": "Pure architecture decision; no implementation step requested."
+    },
+    {
+      "id": "neg-07",
+      "query": "Review my colleague's PR #1234 and tell me if it looks safe",
+      "should_trigger": false,
+      "category": "negative-pr-review"
+    },
+    {
+      "id": "neg-08",
+      "query": "Design the test pyramid for our payments service",
+      "should_trigger": false,
+      "category": "negative-test-strategy"
+    },
+    {
+      "id": "neg-09",
+      "query": "Run the deployment pipeline",
+      "should_trigger": false,
+      "category": "negative-ops"
+    },
+    {
+      "id": "neg-10",
+      "query": "What's the latest version of Node available?",
+      "should_trigger": false,
+      "category": "negative-research"
+    },
+    {
+      "id": "edge-01",
+      "query": "Implement a full lossless image-compression pipeline in TypeScript end-to-end: scan a directory, deduplicate by content hash, emit a JSON manifest with original/compressed sizes, parallelize via worker_threads, full integration tests, README with benchmarks",
+      "should_trigger": true,
+      "category": "edge-multi-step"
+    },
+    {
+      "id": "edge-02",
+      "query": "Implement validate_skill.py \u2014 it should check the frontmatter is well-formed",
+      "should_trigger": false,
+      "category": "edge-meta-cross",
+      "notes": "Tooling for Claude Code components; should route to claude-code-skill meta-skill.",
+      "ambiguous": true
+    },
+    {
+      "id": "edge-03",
+      "query": "Build a Python data-validation library from scratch: declarative schema syntax, full type-stub support, 100% test coverage, README, and a docs/ directory with 5 tutorial pages \u2014 every public function gets a doc-block with Errors and Examples sections",
+      "should_trigger": true,
+      "category": "edge-large-scope"
+    }
+  ]
+}

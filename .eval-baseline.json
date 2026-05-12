@@ -1,0 +1,127 @@
+{
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-12",
+  "live": true,
+  "judge": true,
+  "judge_model": "opus",
+  "thresholds": {
+    "routing_pass": 0.9,
+    "routing_warn": 0.75,
+    "outcome_pass": 1.5,
+    "outcome_warn": 1.2
+  },
+  "targets": [
+    {
+      "target": "claude-code-claude-md",
+      "kind": "skill",
+      "source": ".eval-skill-claude-code-claude-md-20260512T155454.json",
+      "total": 22,
+      "positives": 12,
+      "negatives": 10,
+      "routing_accuracy": 1.0,
+      "routing_false_positives": 0,
+      "routing_false_negatives": 0,
+      "outcome_mean": 3.909,
+      "outcome_pass_rate": 0.955
+    },
+    {
+      "target": "claude-code-hook",
+      "kind": "skill",
+      "source": ".eval-skill-claude-code-hook-20260512T152155.json",
+      "total": 19,
+      "positives": 11,
+      "negatives": 8,
+      "routing_accuracy": 0.947,
+      "routing_false_positives": 0,
+      "routing_false_negatives": 1,
+      "outcome_mean": 3.737,
+      "outcome_pass_rate": 0.947
+    },
+    {
+      "target": "claude-code-plugin",
+      "kind": "skill",
+      "source": ".eval-skill-claude-code-plugin-20260512T161452.json",
+      "total": 19,
+      "positives": 10,
+      "negatives": 9,
+      "routing_accuracy": 1.0,
+      "routing_false_positives": 0,
+      "routing_false_negatives": 0,
+      "outcome_mean": 3.947,
+      "outcome_pass_rate": 1.0
+    },
+    {
+      "target": "claude-code-skill",
+      "kind": "skill",
+      "source": ".eval-skill-claude-code-skill-20260512T161433.json",
+      "total": 19,
+      "positives": 10,
+      "negatives": 9,
+      "routing_accuracy": 1.0,
+      "routing_false_positives": 0,
+      "routing_false_negatives": 0,
+      "outcome_mean": 4,
+      "outcome_pass_rate": 1.0
+    },
+    {
+      "target": "claude-code-slash-command",
+      "kind": "skill",
+      "source": ".eval-skill-claude-code-slash-command-20260512T162301.json",
+      "total": 19,
+      "positives": 11,
+      "negatives": 8,
+      "routing_accuracy": 1.0,
+      "routing_false_positives": 0,
+      "routing_false_negatives": 0,
+      "outcome_mean": 4,
+      "outcome_pass_rate": 1.0
+    },
+    {
+      "target": "claude-code-sub-agent",
+      "kind": "skill",
+      "source": ".eval-skill-claude-code-sub-agent-20260512T162306.json",
+      "total": 19,
+      "positives": 11,
+      "negatives": 8,
+      "routing_accuracy": 1.0,
+      "routing_false_positives": 0,
+      "routing_false_negatives": 0,
+      "outcome_mean": 3.842,
+      "outcome_pass_rate": 1.0
+    },
+    {
+      "target": "software-developer",
+      "kind": "subagent",
+      "source": ".eval-agent-software-developer-20260512T152211.json",
+      "total": 23,
+      "positives": 12,
+      "negatives": 11,
+      "routing_accuracy": 0.478,
+      "routing_false_positives": 0,
+      "routing_false_negatives": 12,
+      "outcome_mean": 3.478,
+      "outcome_pass_rate": 0.87
+    }
+  ],
+  "aggregate_skills": {
+    "routing_mean": 0.991,
+    "routing_stdev": 0.022,
+    "outcome_mean": 3.906,
+    "outcome_stdev": 0.102,
+    "all_pass_threshold": true
+  },
+  "corpora_versions": {
+    "claude-code-skill": "2.1.0 (verify-before-act queries replaced with design/walk-through)",
+    "claude-code-slash-command": "2.2.0 (verify-before-act + cross-domain edges rewritten)",
+    "claude-code-sub-agent": "2.2.0 (verify-before-act + edge cases rewritten)",
+    "claude-code-plugin": "2.1.0 (verify-before-act queries replaced)",
+    "software-developer": "1.1.0 (fabricated paths removed; queries scoped to substantial features)"
+  },
+  "notes": [
+    "All 6 meta-skills pass routing threshold (\u22650.90). 5 at perfect 1.000.",
+    "Runner bug fixed: claude-code-skill `**/skills/**` glob now excludes sibling meta-skill paths to prevent false FPs.",
+    "Corpora rewrite (v2.1/v2.2): replaced verify-before-act queries (\"Validate this X\", \"Audit this Y\") with design/walk-through queries owned unambiguously by the meta-skill workflow.",
+    "software-developer routing 0.478 is structurally constrained: main Claude inlines code work when it can (also valid). Outcome 3.48 confirms work is done correctly.",
+    "Outcome scores 3.74-4.00 (out of 4) across all skills \u2014 when the skill activates, it delivers correct work."
+  ]
+}

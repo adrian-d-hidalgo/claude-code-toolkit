@@ -1,0 +1,14 @@
+{
+  "PostToolUse": [
+    {
+      "matcher": "[ToolName or pattern like 'Edit|Write']",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "[shell command to run after tool succeeds]",
+          "timeout": 60
+        }
+      ]
+    }
+  ]
+}

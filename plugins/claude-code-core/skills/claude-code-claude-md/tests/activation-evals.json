@@ -1,0 +1,31 @@
+{
+  "kind": "skill",
+  "skill": "claude-code-claude-md",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-12",
+  "notes": "Positive: prompts asking to create / refactor / validate / optimize a CLAUDE.md at any scope. Negative: prompts that should route to a sibling meta-skill (skills/agents/commands/plugins/hooks) or to nothing (writing code, writing README). Edge: ambiguous between CLAUDE.md and another component file.",
+  "cases": [
+    {"id": "pos-01", "query": "Create a CLAUDE.md for this project",                                                       "should_trigger": true,  "category": "positive-create-project"},
+    {"id": "pos-02", "query": "Scaffold a global ~/.claude/CLAUDE.md with my commit conventions",                            "should_trigger": true,  "category": "positive-create-global"},
+    {"id": "pos-03", "query": "Set up a directory-level CLAUDE.md for packages/api/",                                        "should_trigger": true,  "category": "positive-create-directory"},
+    {"id": "pos-04", "query": "My CLAUDE.md is way too long, help me trim it",                                              "should_trigger": true,  "category": "positive-optimize-length"},
+    {"id": "pos-05", "query": "Validate the CLAUDE.md in this repo against best practices",                                  "should_trigger": true,  "category": "positive-validate"},
+    {"id": "pos-06", "query": "Audit my CLAUDE.md — I think there's README content mixed in",                                "should_trigger": true,  "category": "positive-audit"},
+    {"id": "pos-07", "query": "Refactor CLAUDE.md to split style rules into an @import file",                                "should_trigger": true,  "category": "positive-refactor-import"},
+    {"id": "pos-08", "query": "What should I put in CLAUDE.md vs README.md?",                                                "should_trigger": true,  "category": "positive-clarify-scope"},
+    {"id": "pos-09", "query": "Lint my CLAUDE.md",                                                                            "should_trigger": true,  "category": "positive-lint"},
+    {"id": "pos-10", "query": "Optimize my CLAUDE.md for tokens — it's burning context every session",                       "should_trigger": true,  "category": "positive-optimize-tokens"},
+    {"id": "neg-01", "query": "Create a new Claude Code skill",                                                              "should_trigger": false, "category": "negative-sibling-skill"},
+    {"id": "neg-02", "query": "Build a sub-agent for code review",                                                            "should_trigger": false, "category": "negative-sibling-subagent"},
+    {"id": "neg-03", "query": "Set up a slash command",                                                                       "should_trigger": false, "category": "negative-sibling-command"},
+    {"id": "neg-04", "query": "Configure a PreToolUse hook",                                                                  "should_trigger": false, "category": "negative-sibling-hook"},
+    {"id": "neg-05", "query": "Author the plugin.json manifest",                                                              "should_trigger": false, "category": "negative-sibling-plugin"},
+    {"id": "neg-06", "query": "Write the README.md for this repo",                                                            "should_trigger": false, "category": "negative-readme", "notes": "README is human-facing; not this skill's domain."},
+    {"id": "neg-07", "query": "Implement a Python function to dedupe a list",                                                 "should_trigger": false, "category": "negative-app-code"},
+    {"id": "neg-08", "query": "Write an ADR documenting why we picked PostgreSQL",                                            "should_trigger": false, "category": "negative-adr"},
+    {"id": "neg-09", "query": "Update CONTRIBUTING.md with the new branch policy",                                            "should_trigger": false, "category": "negative-contributing"},
+    {"id": "edge-01", "query": "How do I make Claude follow our coding conventions?",                                         "should_trigger": true,  "category": "edge-implicit", "notes": "User wants behavioral configuration; the natural answer is 'put it in CLAUDE.md'."},
+    {"id": "edge-02", "query": "Claude keeps forgetting our build commands between sessions",                                 "should_trigger": true,  "category": "edge-symptom", "notes": "Classic CLAUDE.md gap symptom — commands belong there."},
+    {"id": "edge-03", "query": "Document our project's architecture decisions for future agents",                             "should_trigger": false, "category": "edge-misroute", "notes": "Architecture rationale belongs in ADRs, not CLAUDE.md. The right answer is to redirect."}
+  ]
+}

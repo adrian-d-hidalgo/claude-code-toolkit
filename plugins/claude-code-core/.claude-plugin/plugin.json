@@ -1,0 +1,22 @@
+{
+  "name": "claude-code-core",
+  "version": "1.0.0",
+  "description": "Meta-skills for authoring Claude Code extensions: scaffold, validate, and audit skills, sub-agents, slash commands, plugins, hooks, and CLAUDE.md memory files against the latest official conventions.",
+  "author": {
+    "name": "Adrián Darío Hidalgo Flores"
+  },
+  "homepage": "https://github.com/adrian-d-hidalgo/claude-code-toolkit",
+  "repository": "https://github.com/adrian-d-hidalgo/claude-code-toolkit",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "meta",
+    "skills",
+    "agents",
+    "commands",
+    "plugins",
+    "hooks",
+    "scaffolding",
+    "validation"
+  ]
+}

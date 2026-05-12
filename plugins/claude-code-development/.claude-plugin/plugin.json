@@ -1,0 +1,19 @@
+{
+  "name": "claude-code-development",
+  "version": "1.0.0",
+  "description": "Opinionated senior software-developer sub-agent that enforces Think-Before-Coding, Simplicity-First, Surgical-Changes, and Goal-Driven Execution rules for any coding task.",
+  "author": {
+    "name": "Adrián Darío Hidalgo Flores"
+  },
+  "homepage": "https://github.com/adrian-d-hidalgo/claude-code-toolkit",
+  "repository": "https://github.com/adrian-d-hidalgo/claude-code-toolkit",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "agent",
+    "software-developer",
+    "senior-engineer",
+    "implementation",
+    "coding"
+  ]
+}

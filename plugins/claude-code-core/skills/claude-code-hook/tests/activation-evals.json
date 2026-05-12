@@ -1,0 +1,26 @@
+{
+  "skill": "claude-code-hook",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-12",
+  "cases": [
+    {"id": "pos-01", "query": "Configure a PreToolUse hook that blocks destructive bash commands",          "should_trigger": true,  "category": "positive-direct"},
+    {"id": "pos-02", "query": "Set up a PostToolUse hook to run my linter after edits",                     "should_trigger": true,  "category": "positive-posttool"},
+    {"id": "pos-03", "query": "Create a UserPromptSubmit hook that injects current branch into prompts",    "should_trigger": true,  "category": "positive-prompt"},
+    {"id": "pos-04", "query": "Validate this hooks.json",                                                   "should_trigger": true,  "category": "positive-validate"},
+    {"id": "pos-05", "query": "Audit my hook scripts for security",                                          "should_trigger": true,  "category": "positive-audit"},
+    {"id": "pos-06", "query": "Add a SubagentStop hook to clean up DB connections",                          "should_trigger": true,  "category": "positive-subagent"},
+    {"id": "pos-07", "query": "Refactor my hook — it has hardcoded paths",                                  "should_trigger": true,  "category": "positive-refactor"},
+    {"id": "pos-08", "query": "Why isn't my hook firing?",                                                  "should_trigger": true,  "category": "positive-troubleshoot"},
+    {"id": "neg-01", "query": "Create a new skill",                                                         "should_trigger": false, "category": "negative-sibling-skill"},
+    {"id": "neg-02", "query": "Build a sub-agent",                                                          "should_trigger": false, "category": "negative-sibling-agent"},
+    {"id": "neg-03", "query": "Write a slash command",                                                      "should_trigger": false, "category": "negative-sibling-command"},
+    {"id": "neg-04", "query": "Set up the plugin manifest",                                                 "should_trigger": false, "category": "negative-sibling-plugin"},
+    {"id": "neg-05", "query": "Edit my application code",                                                   "should_trigger": false, "category": "negative-app-code"},
+    {"id": "neg-06", "query": "Write the shell script that processes inputs",                                "should_trigger": false, "category": "negative-implementation", "notes": "Plain script authoring is the software-developer agent's domain; this skill only owns hook entries + their companion scripts when authoring AS a hook."},
+    {"id": "neg-07", "query": "Run the test suite",                                                         "should_trigger": false, "category": "negative-ops"},
+    {"id": "neg-08", "query": "Set up CI/CD workflow",                                                      "should_trigger": false, "category": "negative-cicd"},
+    {"id": "edge-01", "query": "Add hooks to my plugin",                                                    "should_trigger": true,  "category": "edge-cross-domain", "notes": "Hook entries owned here; plugin packaging owned by plugin meta-skill."},
+    {"id": "edge-02", "query": "Why does Claude Code error 'duplicate hooks' when my plugin loads?",         "should_trigger": true,  "category": "edge-troubleshoot"},
+    {"id": "edge-03", "query": "I want a notification sound when Claude finishes",                          "should_trigger": true,  "category": "edge-stop-or-notification"}
+  ]
+}

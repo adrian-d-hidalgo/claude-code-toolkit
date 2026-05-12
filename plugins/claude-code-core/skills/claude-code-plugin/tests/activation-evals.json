@@ -1,0 +1,123 @@
+{
+  "skill": "claude-code-plugin",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-12",
+  "notes": "Positive: prompts that should activate this meta-skill. Positives use design/walk-through verbs over Validate/Audit/Refactor (which trigger verify-before-act in Claude). See shared/references/skills/testing-guide.md.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Create a new Claude Code plugin",
+      "should_trigger": true,
+      "category": "positive-direct"
+    },
+    {
+      "id": "pos-02",
+      "query": "Scaffold .claude-plugin/plugin.json for a new plugin",
+      "should_trigger": true,
+      "category": "positive-scaffold"
+    },
+    {
+      "id": "pos-03",
+      "query": "Design a marketplace.json that lists two plugins under one repo \u2014 what's the structure?",
+      "should_trigger": true,
+      "category": "positive-design-marketplace"
+    },
+    {
+      "id": "pos-04",
+      "query": "Walk me through the required fields in .claude-plugin/plugin.json and what each one controls",
+      "should_trigger": true,
+      "category": "positive-knowledge-manifest"
+    },
+    {
+      "id": "pos-05",
+      "query": "Audit my plugin for production readiness",
+      "should_trigger": true,
+      "category": "positive-audit"
+    },
+    {
+      "id": "pos-06",
+      "query": "Design the directory layout for a new Claude Code plugin that ships 3 skills and 1 sub-agent",
+      "should_trigger": true,
+      "category": "positive-design-layout"
+    },
+    {
+      "id": "pos-07",
+      "query": "What sections should a Claude Code plugin README have, and what's the convention for documenting skills inside it?",
+      "should_trigger": true,
+      "category": "positive-knowledge-readme"
+    },
+    {
+      "id": "pos-08",
+      "query": "Bump the plugin version after I added two new skills",
+      "should_trigger": true,
+      "category": "positive-version"
+    },
+    {
+      "id": "neg-01",
+      "query": "Create a new skill",
+      "should_trigger": false,
+      "category": "negative-sibling-skill"
+    },
+    {
+      "id": "neg-02",
+      "query": "Build a sub-agent",
+      "should_trigger": false,
+      "category": "negative-sibling-agent"
+    },
+    {
+      "id": "neg-03",
+      "query": "Configure a hook",
+      "should_trigger": false,
+      "category": "negative-sibling-hook"
+    },
+    {
+      "id": "neg-04",
+      "query": "Write a slash command",
+      "should_trigger": false,
+      "category": "negative-sibling-command"
+    },
+    {
+      "id": "neg-05",
+      "query": "Edit my application code",
+      "should_trigger": false,
+      "category": "negative-app-code"
+    },
+    {
+      "id": "neg-06",
+      "query": "Install npm dependencies",
+      "should_trigger": false,
+      "category": "negative-deps"
+    },
+    {
+      "id": "neg-07",
+      "query": "Run unit tests",
+      "should_trigger": false,
+      "category": "negative-tests"
+    },
+    {
+      "id": "neg-08",
+      "query": "Write a Dockerfile",
+      "should_trigger": false,
+      "category": "negative-infra"
+    },
+    {
+      "id": "edge-01",
+      "query": "Create a hook for my plugin",
+      "should_trigger": false,
+      "category": "edge-cross-domain",
+      "notes": "Hook meta-skill should activate, not the plugin meta-skill."
+    },
+    {
+      "id": "edge-02",
+      "query": "Distribute my skills as a plugin",
+      "should_trigger": true,
+      "category": "edge-packaging"
+    },
+    {
+      "id": "edge-03",
+      "query": "Why won't my plugin install?",
+      "should_trigger": true,
+      "category": "edge-troubleshoot"
+    }
+  ]
+}

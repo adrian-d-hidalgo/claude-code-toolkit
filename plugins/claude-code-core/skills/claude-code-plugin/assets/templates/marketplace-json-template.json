@@ -1,18 +1,25 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "name": "my-marketplace",
+  "description": "One-line description of what this marketplace ships.",
   "owner": {
-    "name": "Your Name"
+    "name": "Your Name",
+    "url": "https://github.com/your-handle/your-marketplace"
   },
   "plugins": [
     {
       "name": "plugin-1",
-      "source": "./plugin-1",
-      "description": "First plugin description"
+      "source": "./plugins/plugin-1",
+      "description": "First plugin description.",
+      "category": "development",
+      "tags": ["category-tag", "feature-tag"]
     },
     {
       "name": "plugin-2",
-      "source": "./plugin-2",
-      "description": "Second plugin description"
+      "source": "./plugins/plugin-2",
+      "description": "Second plugin description.",
+      "category": "productivity",
+      "tags": ["category-tag", "feature-tag"]
     }
   ]
 }

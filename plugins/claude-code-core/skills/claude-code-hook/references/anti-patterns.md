@@ -3,6 +3,7 @@
 ## Adding a `description` or `comment` field to a hook entry
 
 **Pattern**:
+
 ```json
 { "matcher": "Bash", "description": "Block destructive bash", "hooks": [ … ] }
 ```

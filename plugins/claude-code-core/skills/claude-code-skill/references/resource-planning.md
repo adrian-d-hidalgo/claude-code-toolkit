@@ -15,6 +15,7 @@ For each functionality example, analyze:
 ### When to Create Scripts
 
 Create script when:
+
 - Same code rewritten for each task
 - Deterministic operation needed (not AI generation)
 - Complex logic better executed than described
@@ -23,6 +24,7 @@ Create script when:
 ### When NOT to Create Scripts
 
 Avoid scripts when:
+
 - Operation varies significantly each time
 - AI generation adds value (flexibility needed)
 - Simple operation described in 1-2 lines
@@ -34,25 +36,29 @@ Avoid scripts when:
 
 ```markdown
 # PDF rotation
+
 - Always same algorithm
 - Deterministic output
 - Complex image processing
-→ Create: scripts/rotate_pdf.py
+  → Create: scripts/rotate_pdf.py
 
 # SQL query generation
+
 - Varies by schema and requirements
 - AI adds context understanding
-→ Don't create script, use AI generation
+  → Don't create script, use AI generation
 
 # File validation
+
 - Standard validation rules
 - Deterministic checks
-→ Create: scripts/validate_file.py
+  → Create: scripts/validate_file.py
 
 # Data analysis interpretation
+
 - Requires contextual understanding
 - AI provides insights
-→ Don't create script, use AI analysis
+  → Don't create script, use AI analysis
 ```
 
 ### Script Structure
@@ -120,6 +126,7 @@ if __name__ == "__main__":
 ### Script Best Practices
 
 **Must have**:
+
 - Error handling (don't punt to Claude)
 - Input validation
 - Clear error messages
@@ -127,6 +134,7 @@ if __name__ == "__main__":
 - Dependency documentation
 
 **Avoid**:
+
 - Hardcoded paths (use arguments)
 - Assuming packages installed (document requirements)
 - "Voodoo constants" (explain magic numbers)
@@ -138,6 +146,7 @@ if __name__ == "__main__":
 ### When to Create References
 
 Create reference file when:
+
 - Information repeatedly looked up
 - Extensive documentation needed (>100 lines)
 - Domain knowledge required
@@ -147,6 +156,7 @@ Create reference file when:
 ### When NOT to Create References
 
 Avoid references when:
+
 - Information fits in SKILL.md (<50 lines)
 - Rarely accessed
 - Duplicates SKILL.md content
@@ -158,34 +168,40 @@ Avoid references when:
 
 ```markdown
 # Database schema documentation
+
 - Complex relationships
 - Referenced for every query
-→ Create: references/schema.md
+  → Create: references/schema.md
 
 # API endpoint descriptions
+
 - Dozens of endpoints
 - Parameters and responses
-→ Create: references/api-docs.md
+  → Create: references/api-docs.md
 
 # Code style guide (2 pages)
+
 - Fits in SKILL.md
 - Core to every task
-→ Don't create reference, include in SKILL.md
+  → Don't create reference, include in SKILL.md
 
 # Company NDA template
+
 - Legal document
 - Referenced for contracts
-→ Create: references/nda-template.md
+  → Create: references/nda-template.md
 
 # Single example
+
 - Fits in SKILL.md
 - Only one instance
-→ Don't create reference, include in SKILL.md
+  → Don't create reference, include in SKILL.md
 ```
 
 ### Reference Organization
 
 **Domain-based**:
+
 ```
 references/
 ├── api-endpoints.md       # All API endpoint docs
@@ -195,6 +211,7 @@ references/
 ```
 
 **Feature-based**:
+
 ```
 references/
 ├── rotation-guide.md      # PDF rotation specifics
@@ -204,6 +221,7 @@ references/
 ```
 
 **Complexity-based**:
+
 ```
 references/
 ├── quick-reference.md     # Common operations
@@ -224,14 +242,17 @@ Brief description of what this reference covers.
 ## Section 1
 
 ### Subsection 1.1
+
 Content...
 
 ### Subsection 1.2
+
 Content...
 
 ## Section 2
 
 ### Subsection 2.1
+
 Content...
 
 ## Quick Reference
@@ -239,24 +260,27 @@ Content...
 Summary table or list for rapid lookup:
 | Item | Description |
 |------|-------------|
-| X    | Details     |
-| Y    | Details     |
+| X | Details |
+| Y | Details |
 ```
 
 ### Reference Best Practices
 
 **Structure**:
+
 - Keep 1 level deep from SKILL.md (not nested)
 - Use descriptive names (`validation-rules.md` not `doc1.md`)
 - Forward slashes in paths (`references/guide.md`)
 
 **Content**:
+
 - Focus on reference material (not procedures)
 - Organized for quick lookup
 - Complete but concise
 - No duplication with SKILL.md
 
 **Size**:
+
 - For files >10k words, include grep patterns in SKILL.md
 - Split very large references into multiple files
 
@@ -265,6 +289,7 @@ Summary table or list for rapid lookup:
 ### When to Create Assets
 
 Create asset when:
+
 - Template used in output (not loaded to context)
 - Boilerplate code repeatedly copied
 - Images/icons needed in output
@@ -273,6 +298,7 @@ Create asset when:
 ### When NOT to Create Assets
 
 Avoid assets when:
+
 - Generated from scratch each time (AI adds value)
 - Varies significantly per use
 - Simple enough to inline in SKILL.md
@@ -284,33 +310,39 @@ Avoid assets when:
 
 ```markdown
 # HTML boilerplate template
+
 - Same structure every project
 - Copied to start development
-→ Create: assets/template.html
+  → Create: assets/template.html
 
 # Company logo
+
 - Used in generated reports
-→ Create: assets/logo.png
+  → Create: assets/logo.png
 
 # Tailored implementation
+
 - Varies by requirements
 - AI customizes each time
-→ Don't create asset, generate fresh
+  → Don't create asset, generate fresh
 
 # Frontend project structure
+
 - Standard file organization
 - Copied for new projects
-→ Create: assets/frontend-template/
+  → Create: assets/frontend-template/
 
 # Custom analysis report
+
 - Unique findings each time
 - AI generates based on data
-→ Don't create asset, generate fresh
+  → Don't create asset, generate fresh
 ```
 
 ### Asset Organization
 
 **By type**:
+
 ```
 assets/
 ├── templates/
@@ -326,6 +358,7 @@ assets/
 ```
 
 **By feature**:
+
 ```
 assets/
 ├── web-app/
@@ -342,11 +375,13 @@ assets/
 ### Asset Best Practices
 
 **Organization**:
+
 - Group related assets together
 - Use descriptive names
 - Include README if structure complex
 
 **Usage**:
+
 - Assets never loaded to context (unlimited size)
 - Referenced in SKILL.md for copying/modification
 - Document how to use each asset
@@ -358,23 +393,28 @@ For each skill, complete this worksheet:
 ### Skill: [Name]
 
 **Functionality examples**:
+
 1. [Example 1]
 2. [Example 2]
 3. [Example 3]
 
 **Scripts needed** (code repeatedly rewritten):
+
 - [ ] Script 1: [Description] → scripts/[name].py
 - [ ] Script 2: [Description] → scripts/[name].sh
 
 **References needed** (docs repeatedly referenced):
+
 - [ ] Reference 1: [Description] → references/[name].md
 - [ ] Reference 2: [Description] → references/[name].md
 
 **Assets needed** (templates repeatedly used):
+
 - [ ] Asset 1: [Description] → assets/[name].ext
 - [ ] Asset 2: [Description] → assets/[name]/
 
 **Keep in SKILL.md** (core, concise):
+
 - Overview
 - Common workflow
 - 3-5 key examples
@@ -385,6 +425,7 @@ For each skill, complete this worksheet:
 ### Example 1: PDF Processing Skill
 
 **Functionality**:
+
 1. "Rotate document.pdf 90 degrees"
 2. "Merge file1.pdf and file2.pdf"
 3. "Extract text from invoice.pdf"
@@ -392,21 +433,25 @@ For each skill, complete this worksheet:
 **Analysis**:
 
 **Rotation**:
+
 - Same code each time? Yes → scripts/rotate_pdf.py
 - Docs needed? No (simple operation)
 - Template needed? No (operates on existing files)
 
 **Merging**:
+
 - Same code each time? Yes → scripts/merge_pdf.py
 - Docs needed? Maybe (if complex) → references/merging-guide.md
 - Template needed? No
 
 **Extraction**:
+
 - Same code each time? Yes → scripts/extract_text.py
 - Docs needed? Yes (multiple extraction methods) → references/extraction-guide.md
 - Template needed? No
 
 **Resources**:
+
 - scripts/rotate_pdf.py
 - scripts/merge_pdf.py
 - scripts/extract_text.py
@@ -417,6 +462,7 @@ For each skill, complete this worksheet:
 ### Example 2: Frontend Web App Builder
 
 **Functionality**:
+
 1. "Build a todo app"
 2. "Create dashboard to track metrics"
 3. "Build landing page for product"
@@ -424,11 +470,13 @@ For each skill, complete this worksheet:
 **Analysis**:
 
 All need boilerplate HTML/React structure:
+
 - Same code each time? Partially (boilerplate yes, logic no)
 - Docs needed? Yes (component patterns) → references/component-patterns.md
 - Template needed? Yes (boilerplate) → assets/app-template/
 
 **Resources**:
+
 - assets/app-template/ (HTML/React boilerplate)
 - references/component-patterns.md (reusable patterns)
 - references/styling-guide.md (CSS/Tailwind patterns)
@@ -436,6 +484,7 @@ All need boilerplate HTML/React structure:
 ### Example 3: BigQuery Analysis Skill
 
 **Functionality**:
+
 1. "How many users logged in today?"
 2. "Show revenue by product category"
 3. "Find top 10 customers by spend"
@@ -443,11 +492,13 @@ All need boilerplate HTML/React structure:
 **Analysis**:
 
 All need schema knowledge:
+
 - Same code each time? No (queries vary by question)
 - Docs needed? Yes (schema reference) → references/schema.md
 - Template needed? Maybe (query templates) → references/query-patterns.md
 
 **Resources**:
+
 - references/schema.md (table schemas and relationships)
 - references/query-patterns.md (common query templates)
 - references/optimization-guide.md (query optimization tips)

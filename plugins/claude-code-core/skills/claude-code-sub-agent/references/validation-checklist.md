@@ -52,6 +52,7 @@ Complete validation criteria for agent quality and compliance.
 ### Example Structure
 
 Each example must have:
+
 - [ ] `<example>` opening tag
 - [ ] `Context:` field describing situation
 - [ ] `request:` field with user request (in quotes)
@@ -63,6 +64,7 @@ Each example must have:
 ### Example Diversity
 
 Examples should cover:
+
 - [ ] Direct activation (user explicitly requests)
 - [ ] Context-triggered (situation matches domain)
 - [ ] Delegation scenario (handed off from other agent)
@@ -209,9 +211,10 @@ Examples should cover:
 - [ ] 5pts: Specific actionable guidance
 - [ ] 5pts: Good examples
 
-### Total Score: ____ / 100
+### Total Score: \_\_\_\_ / 100
 
 **Grading**:
+
 - 90-100: Excellent
 - 75-89: Good (minor improvements needed)
 - 60-74: Acceptable (several improvements needed)
@@ -222,11 +225,13 @@ Examples should cover:
 ### Issue: Missing Activation Clause
 
 **Problem**:
+
 ```yaml
 description: Angular developer for Angular projects.
 ```
 
 **Fix**:
+
 ```yaml
 description: Angular developer for component development, state management. Use immediately when working with Angular projects or implementing features.
 ```
@@ -234,11 +239,13 @@ description: Angular developer for component development, state management. Use 
 ### Issue: Incomplete Examples
 
 **Problem**:
+
 ```xml
 <example>request: "Build feature"</example>
 ```
 
 **Fix**:
+
 ```xml
 <example>Context: New feature needed. request: "Build user profile component" assistant: "I'll create Angular component with form and validation" <commentary>Direct Angular development activates this agent</commentary></example>
 ```
@@ -246,11 +253,13 @@ description: Angular developer for component development, state management. Use 
 ### Issue: Overly Permissive Tools
 
 **Problem**:
+
 ```yaml
 tools: Read, Write, Edit, Bash, WebSearch, TodoWrite
 ```
 
 **Fix**:
+
 ```yaml
 tools: Read, Edit, Bash(npm *), Grep, Glob
 ```
@@ -261,10 +270,12 @@ tools: Read, Edit, Bash(npm *), Grep, Glob
 No mention of when/how to delegate
 
 **Fix**:
+
 ```markdown
 ## Delegation Strategy
 
 **To research-specialist**:
+
 - When: Current information needed
 - Provide: Technology stack, error details
 - Fallback: Use known best practices
@@ -273,21 +284,26 @@ No mention of when/how to delegate
 ### Issue: Vague Scope
 
 **Problem**:
+
 ```markdown
 ## Scope
+
 Handles all development tasks
 ```
 
 **Fix**:
+
 ```markdown
 ## Scope & Boundaries
 
 **Within Scope**:
+
 - Angular component development
 - State management with NgRx
 - Performance optimization
 
 **Out of Scope**:
+
 - Backend API development → NestJS developer
 - Infrastructure → DevOps engineer
 ```
@@ -297,6 +313,7 @@ Handles all development tasks
 ### Step 1: Automated Checks
 
 Run validation script:
+
 ```bash
 python scripts/validate_agent.py agent-file.md --verbose
 ```

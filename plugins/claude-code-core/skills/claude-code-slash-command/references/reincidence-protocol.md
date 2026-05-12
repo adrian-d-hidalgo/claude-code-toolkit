@@ -13,6 +13,7 @@ Handling repeated research attempts when initial searches fail to find satisfact
 **Never repeat the same search that already failed.**
 
 Instead:
+
 - Use different search terms
 - Try alternative methodologies
 - Add environmental context
@@ -25,16 +26,19 @@ Instead:
 Research commands should accept these optional parameters:
 
 **`--previous-terms="[term1, term2, term3]"`**
+
 - Terms already searched unsuccessfully
 - Command should avoid these exact searches
 - Jump to alternative formulations
 
 **`--failed-approaches="[approach1, approach2]"`**
+
 - Solution types that didn't work
 - Methodologies that didn't apply
 - Command should exclude these approaches
 
 **`--context-refinement="[additional-context]"`**
+
 - More specific environmental details
 - Version numbers, OS, configuration
 - Command should incorporate into searches
@@ -47,11 +51,13 @@ Research commands should accept these optional parameters:
 **Check for reincidence parameters at start**:
 
 Parse arguments for:
+
 - `--previous-terms=` → Extract failed search terms
 - `--failed-approaches=` → Extract solution types to avoid
 - `--context-refinement=` → Extract additional context
 
 **If reincidence parameters present**:
+
 1. Skip Level 1 searches (already failed)
 2. Jump to Level 3 (broader patterns)
 3. Incorporate additional context into all searches
@@ -68,6 +74,7 @@ Parse arguments for:
 **With reincidence**: Skip failed levels
 
 **Example**:
+
 - First attempt: Level 1 searches failed
 - Reincidence: Start at Level 3, skip 1 and 2
 
@@ -78,6 +85,7 @@ Parse arguments for:
 **Failed term**: `"error connecting to database"`
 
 **Variations**:
+
 - `"database connection failure"`
 - `"cannot connect to database"`
 - `"database connection refused"`
@@ -90,6 +98,7 @@ Parse arguments for:
 **Failed**: `"Angular 17 SSR hydration error"`
 
 **Broader**:
+
 - `"Angular SSR hydration issues"`
 - `"Angular server-side rendering problems"`
 - `"hydration errors in SPAs"`
@@ -99,6 +108,7 @@ Parse arguments for:
 **Failed**: `"API best practices"`
 
 **Narrower**:
+
 - `"REST API security best practices 2024"`
 - `"GraphQL API performance optimization"`
 - `"API rate limiting implementation"`
@@ -110,6 +120,7 @@ Parse arguments for:
 **Failed**: `"npm install fails"`
 
 **With context**:
+
 - `"npm install fails Mac M1 node 20"`
 - `"npm ERR! EACCES permission denied"`
 - `"npm install behind corporate proxy"`
@@ -121,6 +132,7 @@ Parse arguments for:
 **Failed**: Searching for exact error message solution
 
 **Alternative**:
+
 - Search for underlying concept/pattern
 - Look for similar error categories
 - Find related technology workarounds
@@ -141,6 +153,7 @@ model: sonnet
 ## Parse Arguments
 
 From "$ARGUMENTS":
+
 - **Search Context**: [primary search topic]
 - **Previous Terms**: Extract from --previous-terms= (optional)
 - **Failed Approaches**: Extract from --failed-approaches= (optional)
@@ -149,11 +162,13 @@ From "$ARGUMENTS":
 ## Reincidence Detection
 
 **Check if this is a reincidence case**:
+
 - If --previous-terms provided → This is reincidence
 - If --failed-approaches provided → This is reincidence
 - If --context-refinement provided → This is enhanced search
 
 **Adjust strategy accordingly**:
+
 - Reincidence detected → Skip to Level 3, use variations
 - Enhanced search → Incorporate refinement into all levels
 - First attempt → Use standard Level 1-4 progression
@@ -161,18 +176,21 @@ From "$ARGUMENTS":
 ## Progressive Search Strategy
 
 ### Level 1 - Highly Specific
+
 [Skip if reincidence with previous-terms]
 
 - "[exact-context]" [technology] [version]
 - Avoid previous-terms if provided
 
 ### Level 2 - Technology Focused
+
 [Skip if reincidence with previous-terms]
 
 - "[core-terms]" [technology] [timeframe]
 - Use term variations, not exact previous-terms
 
 ### Level 3 - Pattern Recognition
+
 [Start here if reincidence]
 
 - "[pattern-keywords]" [technology-family]
@@ -181,6 +199,7 @@ From "$ARGUMENTS":
 - Exclude failed-approaches patterns
 
 ### Level 4 - Conceptual
+
 [Always attempt with fresh perspective]
 
 - "[underlying-concept]" [principles]
@@ -209,16 +228,19 @@ From "$ARGUMENTS":
 ### Invocation Pattern
 
 **First attempt** (no reincidence):
+
 ```markdown
 Call: /research-command "Angular hydration error"
 ```
 
 **Second attempt** (with reincidence):
+
 ```markdown
 Call: /research-command "Angular hydration error" --previous-terms="Angular SSR hydration error,hydration mismatch Angular 17" --failed-approaches="restart dev server,clear cache"
 ```
 
 **Third attempt** (refined):
+
 ```markdown
 Call: /research-command "Angular hydration error" --previous-terms="..." --failed-approaches="..." --context-refinement="Mac M1,Node 20,Angular 17.2,development mode"
 ```
@@ -237,6 +259,7 @@ Research command should communicate what it's doing differently:
 **Avoiding approaches**: restart dev server, clear cache
 
 **Searching with variations**:
+
 - Level 3: "Angular hydration issues SSR"
 - Level 3: "server-side rendering hydration problems"
 - Level 4: "client-server state mismatch patterns"
@@ -247,6 +270,7 @@ Research command should communicate what it's doing differently:
 ### Scenario: API Error Resolution
 
 **First Attempt**:
+
 ```
 Input: "Error: ECONNREFUSED connecting to API"
 Strategy: Level 1 - Exact error message
@@ -255,6 +279,7 @@ Outcome: Didn't solve problem
 ```
 
 **Second Attempt (Reincidence)**:
+
 ```
 Input: "Error: ECONNREFUSED connecting to API"
        --previous-terms="ECONNREFUSED,connection refused"
@@ -270,6 +295,7 @@ Outcome: Problem solved
 ```
 
 **Why it worked**:
+
 - Skipped exact error searches (already failed)
 - Broadened to environmental patterns
 - Excluded failed solution types
@@ -293,26 +319,31 @@ Outcome: Problem solved
 ### Testing Reincidence
 
 **Test Case 1: Parameter Parsing**
+
 - Input: Command with --previous-terms
 - Expected: Parameters extracted correctly
 - Verify: Command acknowledges reincidence
 
 **Test Case 2: Level Skipping**
+
 - Input: Reincidence with previous Level 1 terms
 - Expected: Starts at Level 3
 - Verify: Doesn't repeat Level 1 searches
 
 **Test Case 3: Term Variation**
+
 - Input: previous-terms="exact term"
 - Expected: Uses variations, not exact term
 - Verify: Different search formulations
 
 **Test Case 4: Context Integration**
+
 - Input: context-refinement="Node 20, Mac M1"
 - Expected: All searches include context
 - Verify: Context appears in search queries
 
 **Test Case 5: Approach Exclusion**
+
 - Input: failed-approaches="restart,clear cache"
 - Expected: Results don't suggest these
 - Verify: Alternative solutions provided
@@ -344,7 +375,7 @@ Outcome: Problem solved
 ```markdown
 ❌ Bad:
 Failed: "Angular error"
-Retry: "Angular errors"  # Barely different
+Retry: "Angular errors" # Barely different
 ```
 
 **Problem**: Too similar, likely same results

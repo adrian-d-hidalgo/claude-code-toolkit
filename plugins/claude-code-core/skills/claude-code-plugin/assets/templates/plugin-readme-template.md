@@ -85,6 +85,7 @@ LOG_LEVEL=info
 [Description of what this command does]
 
 **Arguments**:
+
 - `arg1` - Description
 - `arg2` - Description (optional)
 
@@ -95,6 +96,7 @@ LOG_LEVEL=info
 ```
 
 **Output**:
+
 ```
 [Expected output description]
 ```
@@ -106,6 +108,7 @@ LOG_LEVEL=info
 [Description of what this agent does and when it activates]
 
 **Triggers automatically when**:
+
 - [Trigger condition 1]
 - [Trigger condition 2]
 
@@ -123,6 +126,7 @@ Agent: [Example response]
 **Description**: [What this tool does]
 
 **Parameters**:
+
 - `param1` (string, required): Description
 - `param2` (number, optional): Description
 
@@ -152,11 +156,13 @@ Agent: [Example response]
 **Steps**:
 
 1. [Step 1]
+
    ```bash
    [command if applicable]
    ```
 
 2. [Step 2]
+
    ```bash
    [command if applicable]
    ```
@@ -314,12 +320,15 @@ Contributions are welcome! Please follow these guidelines:
 ### [Version] - YYYY-MM-DD
 
 #### Added
+
 - [New feature description]
 
 #### Changed
+
 - [Changed feature description]
 
 #### Fixed
+
 - [Bug fix description]
 
 ### [Previous Version] - YYYY-MM-DD

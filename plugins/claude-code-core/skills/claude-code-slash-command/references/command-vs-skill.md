@@ -4,13 +4,13 @@ In Claude Code 2.x, `.claude/commands/<name>.md` and `.claude/skills/<name>/SKIL
 
 ## Quick decision
 
-| If the work is… | Write a… |
-|---|---|
+| If the work is…                                                                   | Write a…                        |
+| --------------------------------------------------------------------------------- | ------------------------------- |
 | A one-shot deterministic task with explicit arguments, no supporting files needed | **Command** (single `.md` file) |
-| Something Claude should auto-activate based on user intent | **Skill** |
-| Likely to need `references/`, `assets/templates/`, or `scripts/` | **Skill** |
-| A workflow you only ever invoke manually with no supporting material | **Command** |
-| Anything that will grow over time | **Skill** |
+| Something Claude should auto-activate based on user intent                        | **Skill**                       |
+| Likely to need `references/`, `assets/templates/`, or `scripts/`                  | **Skill**                       |
+| A workflow you only ever invoke manually with no supporting material              | **Command**                     |
+| Anything that will grow over time                                                 | **Skill**                       |
 
 If you can answer "yes" to any of the **Skill** rows, write a skill. The skill automatically exposes `/<name>` as a slash command, so you get both invocation styles for free.
 
@@ -31,13 +31,13 @@ A skill is strictly more capable. The only reason to prefer a command is **simpl
 
 ## Examples
 
-| Intent | Choice | Why |
-|---|---|---|
-| "Generate a commit message from staged changes" | Skill | Likely to evolve, may need templates + tests. |
-| "Send a Slack reminder" | Command | Single task, single shell invocation, no growth. |
-| "Audit security of changed files" | Skill | Has procedures, references, validation scripts. |
-| "Open a numbered GitHub issue in browser" | Command | Trivial. |
-| "Scaffold a new microservice" | Skill | Lots of templates, multi-step workflow, evolves. |
+| Intent                                          | Choice  | Why                                              |
+| ----------------------------------------------- | ------- | ------------------------------------------------ |
+| "Generate a commit message from staged changes" | Skill   | Likely to evolve, may need templates + tests.    |
+| "Send a Slack reminder"                         | Command | Single task, single shell invocation, no growth. |
+| "Audit security of changed files"               | Skill   | Has procedures, references, validation scripts.  |
+| "Open a numbered GitHub issue in browser"       | Command | Trivial.                                         |
+| "Scaffold a new microservice"                   | Skill   | Lots of templates, multi-step workflow, evolves. |
 
 ## Migration path
 

@@ -155,15 +155,15 @@ Every field below appears between `---` markers at the top of `SKILL.md`. Only `
 
 These tokens are replaced by Claude Code before the skill body reaches Claude. Document them in your SKILL.md when used so future readers can trace the value.
 
-| Token | Expands to |
-|---|---|
-| `$ARGUMENTS` | All arguments passed to the skill invocation as a single string. |
-| `$ARGUMENTS[N]` | Nth positional argument (0-indexed). Quoted shell-style. |
-| `$N` | Shorthand for `$ARGUMENTS[N]` (`$0`, `$1`, …). |
-| `$name` | Named argument declared in the frontmatter `arguments` list. |
-| `${CLAUDE_SESSION_ID}` | Current session identifier — useful for per-session logs. |
-| `${CLAUDE_EFFORT}` | Current effort level (`low` … `max`). |
-| `${CLAUDE_SKILL_DIR}` | Absolute path to this skill's directory. Use it when invoking bundled scripts so the skill works from any CWD. |
+| Token                   | Expands to                                                                                                             |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `$ARGUMENTS`            | All arguments passed to the skill invocation as a single string.                                                       |
+| `$ARGUMENTS[N]`         | Nth positional argument (0-indexed). Quoted shell-style.                                                               |
+| `$N`                    | Shorthand for `$ARGUMENTS[N]` (`$0`, `$1`, …).                                                                         |
+| `$name`                 | Named argument declared in the frontmatter `arguments` list.                                                           |
+| `${CLAUDE_SESSION_ID}`  | Current session identifier — useful for per-session logs.                                                              |
+| `${CLAUDE_EFFORT}`      | Current effort level (`low` … `max`).                                                                                  |
+| `${CLAUDE_SKILL_DIR}`   | Absolute path to this skill's directory. Use it when invoking bundled scripts so the skill works from any CWD.         |
 | `${CLAUDE_PLUGIN_ROOT}` | Path to the plugin root when the skill ships in a plugin. Use it to reference shared/ resources across sibling skills. |
 
 Dynamic context injection — the syntax `` !`<command>` `` (inline) or ` ```! ` blocks (multi-line) — runs the command **before** Claude sees the skill body, and replaces the marker with stdout. Use for live data (git status, gh pr diff). Disable globally via `disableSkillShellExecution: true` in settings.
@@ -183,11 +183,13 @@ Recommended sections, in order:
 5. **Scope & boundaries — what this skill is NOT for** — generic component-type list ("for skills, not for sub-agents / slash commands / plugins / hooks"). **Never** name specific external skills, agents, or projects.
 
 The body must:
+
 - Speak in imperative or third person ("Author the description", not "I author the description").
 - State invariants rather than narrate the author's intent.
 - Reference files by relative path (`references/section-guide.md`), not by absolute URL.
 
 The body must NOT:
+
 - Repeat the description verbatim.
 - Carry trigger language ("Use when…") — that lives in `description`.
 - Dump long examples inline; link to `references/` or `assets/templates/` instead.
@@ -213,7 +215,8 @@ my-skill/
 │   ├── init_*.py         #   scaffolders
 │   └── validate_*.py     #   validators
 └── tests/                # OPTIONAL — activation evaluations
-    └── activation-tests.md      # positive + negative + edge cases
+    ├── activation-evals.json    # CANONICAL — positive + negative + edge cases; consumed by the repo-level run_activation_evals.py runner
+    └── activation-tests.md      # OPTIONAL — human-readable pointer to the JSON
 ```
 
 **Rules of thumb:**
@@ -221,7 +224,7 @@ my-skill/
 - `references/` — Add when SKILL.md would otherwise exceed 500 lines, or when the same long doc is referenced more than once. Naming: kebab-case, topic-named (`security-checklist.md`, not `notes.md`).
 - `assets/templates/` — Add when the skill regularly produces an artifact (a SKILL.md, an agent .md, a plugin.json). Templates must include commented placeholders documenting each field — purpose, constraints, good/bad examples.
 - `scripts/` — Add only when there is repeated deterministic logic. Avoid scripts for one-off work; embed in the body instead. Naming: snake_case Python by default (`init_skill.py`, `validate_skill.py`).
-- `tests/` — Add when activation reliability matters. Minimum: 5 positive triggers, 5 negative triggers, 3 edge cases. Test against multiple models if the skill is shipped widely.
+- `tests/` — Add when activation reliability matters. Minimum: 5 positive triggers, 5 negative triggers, 3 edge cases. Test against multiple models if the skill is shipped widely. **Canonical corpus is `tests/activation-evals.json`, consumed by the repo-level `run_activation_evals.py` runner (see `shared/references/skills/testing-guide.md`).** A `.md` sibling is optional and only a human-readable pointer — never the source of truth.
 
 ---
 
@@ -272,7 +275,7 @@ Source: <https://alexop.dev/posts/understanding-claude-code-full-stack/>.
 
 If body content exceeds ~500 lines, split into `references/<topic>.md` referenced from the body — the body acts as an index, not an encyclopedia.
 Reason: skill content stays in context across turns, so every line is a recurring token cost.
-Source: <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices>; Anthropic engineering, *Effective context engineering for AI agents*.
+Source: <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices>; Anthropic engineering, _Effective context engineering for AI agents_.
 
 ---
 
@@ -289,6 +292,7 @@ Before signing off a new or refactored skill:
 - [ ] `references/section-guide.md` exists for meta-skills; documents every field.
 - [ ] `references/CURRENT-DOCS-INDEX.md` exists and is dated.
 - [ ] `references/anti-patterns.md` exists.
-- [ ] `tests/activation-tests.md` has ≥5 positive + ≥5 negative + ≥3 edge cases.
+- [ ] `tests/activation-evals.json` has ≥5 positive + ≥5 negative + ≥3 edge cases (canonical corpus consumed by the repo-level `run_activation_evals.py` runner).
+- [ ] If the skill edits files in a specific domain, an entry exists in `scripts/run_activation_evals.py:DOMAIN_PATTERNS` (see `references/routing-detection.md`). Output-only skills do NOT need one.
 - [ ] Validator (`shared/scripts/validate_skill.py`) passes.
 - [ ] No mention of removed sibling skills (skill-optimizer, command-optimizer, mcp-server-manager, output-style-manager).

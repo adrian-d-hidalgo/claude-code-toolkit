@@ -25,6 +25,7 @@ Complete validation criteria for Claude Code commands.
 - [ ] No extra/unknown fields in frontmatter
 
 **Example Valid Frontmatter**:
+
 ```yaml
 ---
 description: Configure Jest and Playwright testing for Angular project
@@ -63,6 +64,7 @@ model: sonnet
 - [ ] Development commands use appropriate Bash restrictions
 
 **Bash Restriction Patterns**:
+
 - ✅ `Bash(npm install *)` - Restricted to npm install
 - ✅ `Bash(git status)` - Specific command only
 - ❌ `Bash` - Unrestricted (NEVER use)
@@ -111,13 +113,14 @@ model: sonnet
 - [ ] Explains directory structure choice
 
 **Example Context Detection Section**:
+
 ```markdown
 ## Context Detection Implementation
 
 **Before creating any files**:
 
-1. Check for .claude/ directory: Use Glob("**/.claude")
-2. Verify commands directory: Check .claude/commands/**
+1. Check for .claude/ directory: Use Glob("\*\*/.claude")
+2. Verify commands directory: Check .claude/commands/\*\*
 3. Create structure if needed: mkdir -p .claude/commands/[category]
 4. Determine category: Based on command type
 5. Create file: .claude/commands/[category]/[name].md
@@ -234,6 +237,7 @@ python scripts/validate_command.py /path/to/command.md
 ```
 
 Script should check:
+
 - YAML syntax validity
 - Required fields present
 - File naming conventions
@@ -248,33 +252,43 @@ Script should check:
 **Overall Status**: [COMPLIANT / PARTIALLY_COMPLIANT / NON_COMPLIANT]
 
 ## Structure Validation
+
 Status: ✅ PASS / ⚠️ WARNINGS / ❌ FAIL
 
 Issues:
+
 - [List any issues found]
 
 ## Security Validation
+
 Status: ✅ PASS / ⚠️ WARNINGS / ❌ FAIL
 
 Issues:
+
 - [List any issues found]
 
 ## Context Detection Validation
+
 Status: ✅ PASS / ⚠️ WARNINGS / ❌ FAIL / N/A
 
 Issues:
+
 - [List any issues found]
 
 ## Independence Validation
+
 Status: ✅ PASS / ⚠️ WARNINGS / ❌ FAIL
 
 Issues:
+
 - [List any issues found]
 
 ## Documentation Validation
+
 Status: ✅ PASS / ⚠️ WARNINGS / ❌ FAIL
 
 Issues:
+
 - [List any issues found]
 
 ## Recommendations
@@ -295,9 +309,11 @@ Issues:
 **Symptom**: Creation command doesn't detect .claude/
 
 **Fix**:
+
 ```markdown
 Add Context Detection Implementation section with:
-1. Glob("**/.claude") check
+
+1. Glob("\*\*/.claude") check
 2. Directory structure validation
 3. Structure creation if needed
 4. Proper file placement
@@ -309,11 +325,12 @@ Add Context Detection Implementation section with:
 **Symptom**: `allowed-tools: Bash` or too many unnecessary tools
 
 **Fix**:
+
 ```yaml
 Review each tool:
-- Is it absolutely necessary?
-- Can Bash be restricted further?
-- Remove unused tools
+  - Is it absolutely necessary?
+  - Can Bash be restricted further?
+  - Remove unused tools
 ```
 
 ### Issue: No Input Validation
@@ -321,8 +338,10 @@ Review each tool:
 **Symptom**: User inputs used directly without checking
 
 **Fix**:
+
 ```markdown
 Add validation checks:
+
 - Path parameters: Check for ../
 - File names: Validate against patterns
 - Arguments: Length and format validation
@@ -334,8 +353,10 @@ Add validation checks:
 **Symptom**: Errors reported but no recovery procedure
 
 **Fix**:
+
 ```markdown
 Add Error Recovery section:
+
 - Capture error context
 - Provide resolution steps
 - Implement rollback if needed
@@ -347,8 +368,10 @@ Add Error Recovery section:
 **Symptom**: Purpose unclear, examples missing
 
 **Fix**:
+
 ```markdown
 Improve documentation:
+
 - Add clear purpose statement
 - Provide 2-3 usage examples
 - Document all parameters
@@ -370,18 +393,21 @@ Improve documentation:
 ## Continuous Improvement
 
 **Track validation results**:
+
 - Common issues across commands
 - Recurring security patterns
 - Documentation gaps
 - Integration problems
 
 **Update standards**:
+
 - Refine validation criteria
 - Add new security patterns
 - Improve documentation templates
 - Enhance automation
 
 **Share learnings**:
+
 - Document best practices
 - Create reference examples
 - Update templates

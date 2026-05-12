@@ -5,21 +5,26 @@ Design patterns and recommendations for building high-quality Claude Code plugin
 ## Plugin Design Principles
 
 ### Single Responsibility
+
 Each plugin should have one clear purpose.
 
 **Good**:
+
 - `git-assistant` - Git workflow automation
 - `database-tools` - Database query and management
 - `api-client` - Specific API integration
 
 **Bad**:
+
 - `everything-plugin` - Git + database + API + testing
 - `utils` - Vague, unclear purpose
 
 ### Minimal Dependencies
+
 Only bundle what's necessary.
 
 **Good**:
+
 ```json
 {
   "mcpServers": {
@@ -32,6 +37,7 @@ Only bundle what's necessary.
 ```
 
 **Questionable**:
+
 ```json
 {
   "commands": ["cmd1.md", "cmd2.md", ...20 more],
@@ -41,14 +47,17 @@ Only bundle what's necessary.
 ```
 
 ### Clear Naming
+
 Names should be descriptive and follow conventions.
 
 **Plugin names**: kebab-case
+
 - `brave-search-wrapper` ✓
 - `BraveSearchWrapper` ✗
 - `bsw` ✗
 
 **Server names**: kebab-case or snake_case
+
 - `git-tools` ✓
 - `file_system` ✓
 - `GitTools` ✗
@@ -123,12 +132,14 @@ credentials.json
 ### Environment Variables
 
 **Always use environment variables for**:
+
 - API keys and tokens
 - Database URLs
 - Service endpoints (that change between environments)
 - Feature flags
 
 **Example plugin.json**:
+
 ```json
 {
   "mcpServers": {
@@ -145,6 +156,7 @@ credentials.json
 ```
 
 **Provide .env.example**:
+
 ```bash
 # Required
 API_KEY=your_api_key_here
@@ -171,9 +183,10 @@ DEBUG=true
 ```
 
 **Not hardcoded paths**:
+
 ```json
 {
-  "command": "/Users/me/.claude/plugins/my-plugin/server.py"  // ✗ BAD
+  "command": "/Users/me/.claude/plugins/my-plugin/server.py" // ✗ BAD
 }
 ```
 
@@ -227,6 +240,7 @@ Brief description of what the plugin does.
 ### Tools
 
 Available MCP tools:
+
 - `tool_name` - Description of what it does
 
 ### Example
@@ -238,10 +252,12 @@ Use the tool_name tool to search for "example"
 ## Troubleshooting
 
 ### Plugin not loading
+
 - Check plugin.json syntax with `python -m json.tool .claude-plugin/plugin.json`
 - Verify all environment variables are set
 
 ### Server not connecting
+
 - Check logs with `claude --debug`
 - Verify command path is correct
 
@@ -278,6 +294,7 @@ Follow [semver](https://semver.org/):
 - **PATCH** (1.0.0 → 1.0.1): Bug fixes, backward compatible
 
 **Examples**:
+
 - Add new tool → MINOR bump
 - Fix tool bug → PATCH bump
 - Change tool parameter (breaking) → MAJOR bump
@@ -293,20 +310,25 @@ Keep CHANGELOG.md updated:
 ## [2.0.0] - 2024-01-15
 
 ### Changed
+
 - BREAKING: `search` tool now requires `limit` parameter
 
 ### Added
+
 - New `batch_search` tool for multiple queries
 
 ### Fixed
+
 - Fixed timeout issue in `api_call` tool
 
 ## [1.1.0] - 2024-01-01
 
 ### Added
+
 - New `analyze` tool
 
 ### Fixed
+
 - Improved error messages
 ```
 
@@ -315,6 +337,7 @@ Keep CHANGELOG.md updated:
 ### Tool Design
 
 **Good tool design**:
+
 ```python
 Tool(
     name="search_documents",  # Clear, action-oriented name
@@ -343,6 +366,7 @@ Tool(
 ### Error Messages
 
 **Good error messages are**:
+
 - **Actionable**: Tell user what to do
 - **Specific**: Explain exactly what went wrong
 - **Safe**: Don't expose secrets or internal details
@@ -398,6 +422,7 @@ logger.info(f"Processing byte {i} of {total}")  # in loop
 ### Test Coverage
 
 Aim for:
+
 - **90%+** for tools
 - **85%+** for resources
 - **80%+** for prompts
@@ -506,6 +531,7 @@ async def call_tool(name: str, arguments: dict):
 ### Plugin Registry (if available)
 
 When submitting to official registry:
+
 - Complete plugin.json metadata
 - Comprehensive README
 - LICENSE file
@@ -515,6 +541,7 @@ When submitting to official registry:
 ### GitHub Distribution
 
 **Release checklist**:
+
 - [ ] Version bumped in plugin.json
 - [ ] CHANGELOG updated
 - [ ] Git tag created (`git tag v1.0.0`)
@@ -522,6 +549,7 @@ When submitting to official registry:
 - [ ] Installation tested from GitHub URL
 
 **Installation via GitHub**:
+
 ```bash
 /plugin install https://github.com/username/plugin-name
 ```
@@ -529,6 +557,7 @@ When submitting to official registry:
 ### Local Distribution
 
 For team/organization:
+
 - Shared network location
 - Internal package registry
 - Git repository (private)
@@ -549,12 +578,14 @@ For team/organization:
 ### Deprecation Policy
 
 When removing features:
+
 1. Mark as deprecated in docs (1+ version before removal)
 2. Log warning when used
 3. Provide migration path
 4. Remove in next MAJOR version
 
 **Example**:
+
 ```python
 @server.call_tool()
 async def call_tool(name: str, arguments: dict):
@@ -573,7 +604,7 @@ async def call_tool(name: str, arguments: dict):
 ```json
 {
   "env": {
-    "API_KEY": "sk_live_abc123"  // ✗ BAD
+    "API_KEY": "sk_live_abc123" // ✗ BAD
   }
 }
 ```
@@ -583,7 +614,7 @@ async def call_tool(name: str, arguments: dict):
 ```json
 {
   "env": {
-    "API_KEY": "${API_KEY}"  // ✓ GOOD
+    "API_KEY": "${API_KEY}" // ✓ GOOD
   }
 }
 ```
@@ -592,7 +623,7 @@ async def call_tool(name: str, arguments: dict):
 
 ```json
 {
-  "command": "/Users/me/plugin/server.py"  // ✗ BAD
+  "command": "/Users/me/plugin/server.py" // ✗ BAD
 }
 ```
 
@@ -600,7 +631,7 @@ async def call_tool(name: str, arguments: dict):
 
 ```json
 {
-  "command": "${CLAUDE_PLUGIN_ROOT}/servers/my-server/server.py"  // ✓ GOOD
+  "command": "${CLAUDE_PLUGIN_ROOT}/servers/my-server/server.py" // ✓ GOOD
 }
 ```
 

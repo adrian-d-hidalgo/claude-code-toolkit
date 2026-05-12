@@ -1,6 +1,6 @@
 # CLAUDE.md Optimization Patterns
 
-Trimming an over-grown CLAUDE.md, in priority order. Patterns derived from the empirical evidence: instruction files improve agent performance *only when content is operative*; descriptive content (architecture, file maps, intent) actively hurts performance and inflates cost.
+Trimming an over-grown CLAUDE.md, in priority order. Patterns derived from the empirical evidence: instruction files improve agent performance _only when content is operative_; descriptive content (architecture, file maps, intent) actively hurts performance and inflates cost.
 
 Sources: arxiv:2601.20404 (Jan 2026, +29% runtime reduction with operative content), arxiv:2602.11988 (Feb 2026, +20% cost / ↓ success with descriptive content), alexop.dev (Jan 2026, 56% passive-pointer ignore rate).
 
@@ -11,8 +11,10 @@ Sources: arxiv:2601.20404 (Jan 2026, +29% runtime reduction with operative conte
 **Signal**: sections describing how the system works, what choices were made, history, business rationale.
 
 **Action**: delete entirely. If genuinely needed for a specific task, move to `docs/adr/` and add an active pointer:
+
 ```markdown
 ## When modifying the event pipeline
+
 Read `docs/adr/0007-event-sourcing.md` first.
 ```
 
@@ -25,6 +27,7 @@ Read `docs/adr/0007-event-sourcing.md` first.
 **Signal**: sections describing repo layout (`src/api/ contains…`, `src/services/ contains…`).
 
 **Action**: delete. The agent discovers structure as it works. Only keep markers for paths that meaningfully change behavior:
+
 ```markdown
 - `dist/` — generated; never edit.
 - `vendor/` — vendored; treat as binary.
@@ -51,12 +54,16 @@ Read `docs/adr/0007-event-sourcing.md` first.
 **Action**: add trigger conditions.
 
 BEFORE:
+
 ```markdown
 See `docs/db-conventions.md` for our DB style.
 ```
+
 AFTER:
+
 ```markdown
 ## When writing migrations or schema changes
+
 Read `docs/db-conventions.md` first.
 ```
 
@@ -69,6 +76,7 @@ Read `docs/db-conventions.md` first.
 **Signal**: rules that match the project's `biome.json`, `.prettierrc`, `eslint.config.js`, `ruff.toml`, `.rubocop.yml`, etc.
 
 **Action**: delete. Replace with one line:
+
 ```markdown
 Style enforced by `<linter-config-path>`.
 ```
@@ -142,8 +150,10 @@ Style enforced by `<linter-config-path>`.
 **Signal**: any single section > 30 lines.
 
 **Action**: move to a sibling file, import via `@`:
+
 ```markdown
 ## Style
+
 @docs/coding-style.md
 ```
 
@@ -174,6 +184,7 @@ Style enforced by `<linter-config-path>`.
 ## Quantitative target
 
 After optimization:
+
 - Total CLAUDE.md hierarchy (global + project + active directory) loads in < 25 KB at session start.
 - Token cost: < 2,000 tokens.
 - Six categories of value (commands / conventions / constraints / pointers / escalation / workflow) — every section maps to one.

@@ -10,6 +10,7 @@ Read: path/to/target/.claude-plugin/plugin.json
 ```
 
 **Decision Logic**:
+
 - IF `marketplace.json` exists → **Workflow H1: Marketplace Analysis**
 - IF only `plugin.json` exists → **Workflow H2: Individual Plugin Analysis**
 - IF neither exists → Report error: "Not a valid plugin or marketplace"
@@ -39,6 +40,7 @@ Load `references/plugin-schema.md` (marketplace.json section) for validation rul
 **3. Inventory Plugins**
 
 For each plugin in `plugins[]`:
+
 - Read plugin name, description from marketplace.json
 - Confirm plugin directory exists
 - Read plugin version from its plugin.json
@@ -89,6 +91,7 @@ Glob: path/to/plugin/**/*
 **2. Inventory Components**
 
 List all commands, agents, skills, hooks, and MCP servers:
+
 - Count each capability type
 - Verify file paths match plugin.json references
 - Check for orphaned files (not referenced in plugin.json)
@@ -105,6 +108,7 @@ Load `references/plugin-schema.md` for validation rules.
 **4. Security Audit**
 
 Check for:
+
 - Hardcoded secrets (API keys, passwords in code)
 - Excessive permissions (file access, network calls)
 - Input validation (user input sanitization)
@@ -148,4 +152,3 @@ Recommendations:
 - Implement rate limiting in MCP server
 - Create tests/ directory with unit tests
 ```
-

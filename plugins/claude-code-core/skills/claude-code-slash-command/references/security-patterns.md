@@ -9,6 +9,7 @@ Security guidelines for Claude Code command `allowed-tools` and safe operations.
 ### Evaluation Process
 
 For each command, ask:
+
 1. What tools does this command **absolutely need**?
 2. Can tool permissions be **further restricted**?
 3. Are there **safer alternatives** to achieve the same goal?
@@ -27,11 +28,13 @@ allowed-tools:
 ```
 
 **Can**:
+
 - Read any files
 - Search file contents
 - Find files by pattern
 
 **Cannot**:
+
 - Modify files
 - Execute commands
 - Access web
@@ -50,12 +53,14 @@ allowed-tools:
 ```
 
 **Can**:
+
 - Read and analyze files
 - Create new files
 - Modify existing files
 - Search and find files
 
 **Cannot**:
+
 - Execute shell commands
 - Access network
 - Modify system settings
@@ -79,12 +84,14 @@ allowed-tools:
 **Key**: Restrict Bash to specific command prefixes
 
 **Can**:
+
 - File operations
 - Run npm commands
 - Execute git commands
 - Run Angular CLI
 
 **Cannot**:
+
 - Execute arbitrary bash commands
 - Modify system files outside project
 - Access network directly (use research integration)
@@ -105,6 +112,7 @@ allowed-tools:
 **Best practice**: List exact commands or prefixes, never `Bash` alone
 
 **Example restrictions**:
+
 - `Bash(npm install *)` - Can install packages, nothing else
 - `Bash(git status)` - Can only check status, not modify
 - `Bash(npm run *)` - Can run any npm script (evaluate if too broad)
@@ -148,6 +156,7 @@ allowed-tools:
 ### Shell Injection
 
 **Vulnerable**:
+
 ```markdown
 Run: `bash -c "npm install ${packageName}"`
 ```
@@ -155,15 +164,18 @@ Run: `bash -c "npm install ${packageName}"`
 **Why**: `packageName` could contain `; rm -rf /`
 
 **Secure**:
+
 ```yaml
 allowed-tools:
   - Bash(npm install *)
 ```
+
 Then: `npm install ${packageName}` (restricted to npm install prefix)
 
 ### Path Traversal
 
 **Vulnerable**:
+
 ```markdown
 Write to: `${userPath}/config.json`
 ```
@@ -171,6 +183,7 @@ Write to: `${userPath}/config.json`
 **Why**: `userPath` could be `../../../../etc/passwd`
 
 **Secure**:
+
 ```markdown
 1. Validate userPath contains no ../
 2. Resolve to absolute path
@@ -181,6 +194,7 @@ Write to: `${userPath}/config.json`
 ### Overwrite Without Backup
 
 **Vulnerable**:
+
 ```markdown
 Write file to ${existingFile}
 ```
@@ -188,6 +202,7 @@ Write file to ${existingFile}
 **Why**: Could destroy important data
 
 **Secure**:
+
 ```markdown
 1. Check if file exists
 2. If exists, ask user confirmation or create backup
@@ -198,6 +213,7 @@ Write file to ${existingFile}
 ### Unrestricted Tool Access
 
 **Vulnerable**:
+
 ```yaml
 allowed-tools:
   - Bash
@@ -207,6 +223,7 @@ allowed-tools:
 **Why**: Can execute any bash command, write anywhere
 
 **Secure**:
+
 ```yaml
 allowed-tools:
   - Bash(npm *)
@@ -215,28 +232,29 @@ allowed-tools:
   - Read
   - Glob
 ```
+
 Plus: Validate write paths
 
 ## Tool Permission Matrix
 
 ### Bash Restrictions
 
-| Pattern | Risk Level | Use Case |
-|---------|-----------|----------|
-| `Bash` | 🔴 Critical | NEVER - unrestricted access |
-| `Bash(npm *)` | 🟡 Medium | Package operations |
-| `Bash(git *)` | 🟡 Medium | Version control |
-| `Bash(npm install)` | 🟢 Low | Specific install only |
-| `Bash(git status)` | 🟢 Low | Read-only git info |
+| Pattern             | Risk Level  | Use Case                    |
+| ------------------- | ----------- | --------------------------- |
+| `Bash`              | 🔴 Critical | NEVER - unrestricted access |
+| `Bash(npm *)`       | 🟡 Medium   | Package operations          |
+| `Bash(git *)`       | 🟡 Medium   | Version control             |
+| `Bash(npm install)` | 🟢 Low      | Specific install only       |
+| `Bash(git status)`  | 🟢 Low      | Read-only git info          |
 
 ### File Operation Risks
 
-| Tool | Risk | Mitigation |
-|------|------|------------|
-| `Write` | Overwrite files | Validate paths, backup, confirm |
-| `Edit` | Modify incorrectly | Validate old_string exists once |
-| `MultiEdit` | Batch errors | Validate all edits before applying |
-| `Bash(rm *)` | Data loss | AVOID - use Edit/Write instead |
+| Tool         | Risk               | Mitigation                         |
+| ------------ | ------------------ | ---------------------------------- |
+| `Write`      | Overwrite files    | Validate paths, backup, confirm    |
+| `Edit`       | Modify incorrectly | Validate old_string exists once    |
+| `MultiEdit`  | Batch errors       | Validate all edits before applying |
+| `Bash(rm *)` | Data loss          | AVOID - use Edit/Write instead     |
 
 ## Domain-Specific Patterns
 
@@ -255,6 +273,7 @@ allowed-tools:
 ```
 
 Rationale:
+
 - `ng *` for Angular CLI operations
 - `npm install *` for dependency management
 - `npm run *` for scripts (validate if too broad for specific use)
@@ -275,6 +294,7 @@ allowed-tools:
 ```
 
 Rationale:
+
 - Specific test commands only
 - File tools for test file generation
 - No arbitrary bash access
@@ -292,6 +312,7 @@ allowed-tools:
 ```
 
 Rationale:
+
 - Build commands only (no Write - builds are reproducible)
 - Analysis tools to inspect results
 - No file modifications
@@ -311,6 +332,7 @@ allowed-tools:
 ```
 
 Rationale:
+
 - Common git operations
 - No push/pull (could be destructive)
 - No reset/rebase (explicitly request if needed)
@@ -334,24 +356,28 @@ Before finalizing allowed-tools:
 ### Test Scenarios
 
 **Path traversal test**:
+
 ```
 Input: ../../../../etc/passwd
 Expected: Validation error, operation blocked
 ```
 
 **Shell injection test**:
+
 ```
 Input: package; rm -rf /
 Expected: Restricted to allowed command prefix
 ```
 
 **Overwrite test**:
+
 ```
 Input: Write to existing critical file
 Expected: Backup created or confirmation requested
 ```
 
 **Privilege escalation test**:
+
 ```
 Input: Bash command outside allowed prefixes
 Expected: Tool permission error

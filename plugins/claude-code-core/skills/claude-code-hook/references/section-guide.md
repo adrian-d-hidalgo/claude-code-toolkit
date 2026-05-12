@@ -27,7 +27,7 @@ Top-level keys under `"hooks": { … }`. Each maps to an array of matcher → co
 - **When it fires** — After Claude executes a tool call.
 - **Matcher** — Tool name or pattern.
 - **Stdin to script** — `{ tool_name, tool_input, tool_response, session_id, transcript_path, cwd }`.
-- **Exit codes** — Same semantics as `PreToolUse` (exit 2 blocks the *next* Claude turn).
+- **Exit codes** — Same semantics as `PreToolUse` (exit 2 blocks the _next_ Claude turn).
 - **Use for** — Linting, formatting, logging, follow-up actions.
 
 ### `UserPromptSubmit`
@@ -83,7 +83,12 @@ Each event maps to an array. Each array entry is:
 {
   "matcher": "<pattern>",
   "hooks": [
-    { "type": "command", "command": "<shell>", "timeout": 5000, "shell": "bash" }
+    {
+      "type": "command",
+      "command": "<shell>",
+      "timeout": 5000,
+      "shell": "bash"
+    }
   ]
 }
 ```
@@ -133,12 +138,14 @@ Hook scripts receive JSON on stdin and respond via exit code + stderr/stdout.
 ### Reading stdin
 
 Bash:
+
 ```bash
 INPUT=$(cat)
 COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
 ```
 
 Python:
+
 ```python
 import json, sys
 data = json.load(sys.stdin)
@@ -147,11 +154,11 @@ command = data.get("tool_input", {}).get("command", "")
 
 ### Exit codes
 
-| Code | Meaning |
-|---|---|
-| 0 | Continue. stdout printed (and for `UserPromptSubmit`, appended to the user prompt). |
-| 2 | **Block.** stderr shown to Claude as the reason for blocking. |
-| Other | Non-blocking error; logged. |
+| Code  | Meaning                                                                             |
+| ----- | ----------------------------------------------------------------------------------- |
+| 0     | Continue. stdout printed (and for `UserPromptSubmit`, appended to the user prompt). |
+| 2     | **Block.** stderr shown to Claude as the reason for blocking.                       |
+| Other | Non-blocking error; logged.                                                         |
 
 ### What to write where
 
@@ -169,14 +176,14 @@ command = data.get("tool_input", {}).get("command", "")
 
 ## Part D — Placement
 
-| Location | Scope |
-|---|---|
-| Plugin: `<plugin-root>/hooks/hooks.json` | Auto-loaded when plugin is active. Do NOT also declare in `plugin.json`. |
-| Project: `.claude/settings.json` under `"hooks"` | Active in this project. |
-| User: `~/.claude/settings.json` under `"hooks"` | Active in all sessions. |
-| Managed: managed-settings location under `"hooks"` | Enterprise-wide. |
-| Sub-agent frontmatter `hooks:` | Scoped to the sub-agent's invocations. |
-| Skill frontmatter `hooks:` | Scoped to the skill's invocations. |
+| Location                                           | Scope                                                                    |
+| -------------------------------------------------- | ------------------------------------------------------------------------ |
+| Plugin: `<plugin-root>/hooks/hooks.json`           | Auto-loaded when plugin is active. Do NOT also declare in `plugin.json`. |
+| Project: `.claude/settings.json` under `"hooks"`   | Active in this project.                                                  |
+| User: `~/.claude/settings.json` under `"hooks"`    | Active in all sessions.                                                  |
+| Managed: managed-settings location under `"hooks"` | Enterprise-wide.                                                         |
+| Sub-agent frontmatter `hooks:`                     | Scoped to the sub-agent's invocations.                                   |
+| Skill frontmatter `hooks:`                         | Scoped to the skill's invocations.                                       |
 
 ---
 

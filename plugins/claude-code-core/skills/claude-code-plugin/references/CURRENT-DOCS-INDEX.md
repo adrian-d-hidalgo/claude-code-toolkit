@@ -5,29 +5,29 @@
 
 ## Primary sources
 
-| Topic | URL |
-|---|---|
-| Plugins reference | <https://code.claude.com/docs/en/plugins-reference> |
-| Plugins reference (Spanish) | <https://code.claude.com/docs/es/plugins-reference> |
-| Plugin marketplaces | <https://code.claude.com/docs/en/plugin-marketplaces> |
-| Discover and install plugins | <https://code.claude.com/docs/en/discover-plugins> |
-| Settings | <https://code.claude.com/docs/en/settings> |
+| Topic                        | URL                                                   |
+| ---------------------------- | ----------------------------------------------------- |
+| Plugins reference            | <https://code.claude.com/docs/en/plugins-reference>   |
+| Plugins reference (Spanish)  | <https://code.claude.com/docs/es/plugins-reference>   |
+| Plugin marketplaces          | <https://code.claude.com/docs/en/plugin-marketplaces> |
+| Discover and install plugins | <https://code.claude.com/docs/en/discover-plugins>    |
+| Settings                     | <https://code.claude.com/docs/en/settings>            |
 
 ## Schema validators
 
-| Source | URL |
-|---|---|
+| Source                  | URL                                                         |
+| ----------------------- | ----------------------------------------------------------- |
 | Marketplace JSON schema | <https://json.schemastore.org/claude-code-marketplace.json> |
-| Unofficial JSON schemas | <https://github.com/hesreallyhim/claude-code-json-schema> |
+| Unofficial JSON schemas | <https://github.com/hesreallyhim/claude-code-json-schema>   |
 
 ## Reference repos consulted
 
-| Repo | Why |
-|---|---|
-| <https://github.com/anthropics/claude-plugins-official> | Canonical plugin + marketplace examples |
-| <https://github.com/anthropics/claude-code> (plugins/ tree) | Plugin layout conventions |
-| <https://github.com/wshobson/agents> | Multi-plugin marketplace at scale |
-| <https://github.com/cathy-kim/skill-semver> | Per-plugin semver automation |
+| Repo                                                        | Why                                     |
+| ----------------------------------------------------------- | --------------------------------------- |
+| <https://github.com/anthropics/claude-plugins-official>     | Canonical plugin + marketplace examples |
+| <https://github.com/anthropics/claude-code> (plugins/ tree) | Plugin layout conventions               |
+| <https://github.com/wshobson/agents>                        | Multi-plugin marketplace at scale       |
+| <https://github.com/cathy-kim/skill-semver>                 | Per-plugin semver automation            |
 
 ## Fields covered in `section-guide.md`
 

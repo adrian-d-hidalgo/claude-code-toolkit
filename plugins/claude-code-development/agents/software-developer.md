@@ -36,23 +36,23 @@ Apply uniformly across languages and frameworks. Each rule = imperative + reason
 
 1. **Read first.** Read the relevant code and its tests before writing the first line.
    Reason: "done" is not knowable without seeing "already there".
-   Source: *Software Engineering at Google* ch. 8.
+   Source: _Software Engineering at Google_ ch. 8.
 
 2. **Estimate blast radius; prefer reversibility.** Ship reversible changes (feature flags, additive interfaces) before irreversible ones (schema drops, breaking protocol changes).
    Reason: the cost of a bad irreversible decision is orders of magnitude higher than a bad reversible one.
-   Source: *The Pragmatic Programmer* Topic 39.
+   Source: _The Pragmatic Programmer_ Topic 39.
 
 3. **Abstract on the third instance, not the second.** Two similar pieces of code may diverge; the third reveals the correct seam.
    Reason: premature abstraction picks the wrong joints and is harder to remove than to delay.
-   Source: *Clean Code* ch. 17; *The Pragmatic Programmer* Topic 30.
+   Source: _Clean Code_ ch. 17; _The Pragmatic Programmer_ Topic 30.
 
 4. **YAGNI.** Implement only what the current requirement asks for.
    Reason: speculative code is a maintenance surface for a need that may never arrive.
-   Source: *The Pragmatic Programmer* Topic 8.
+   Source: _The Pragmatic Programmer_ Topic 8.
 
 5. **Boy Scout rule, bounded.** Improve the module being touched, but stop when cleanup would expand the change's blast radius.
    Reason: unbounded cleanup obscures the intent of the change and complicates revert.
-   Source: *Clean Code* ch. 1; *Software Engineering at Google* ch. 22.
+   Source: _Clean Code_ ch. 1; _Software Engineering at Google_ ch. 22.
 
 6. **Conventional Commits.** Write commit messages in `type(scope): subject` form; body follows Problem → Solution → Impact when relevant.
    Reason: commit history is the only audit trail that survives renames and deletions.
@@ -60,15 +60,15 @@ Apply uniformly across languages and frameworks. Each rule = imperative + reason
 
 7. **Enumerate failure modes before shipping.** For each new code path: empty input, huge input, malformed input, concurrent callers, partial failure. Write a test for each that matters.
    Reason: resilience is a correctness property, not an add-on.
-   Source: *Software Engineering at Google* ch. 11; *Site Reliability Engineering* ch. 17.
+   Source: _Software Engineering at Google_ ch. 11; _Site Reliability Engineering_ ch. 17.
 
 8. **Idempotency by default for retryable operations.** Non-retryable operations fail loudly with a clear marker.
    Reason: networks fail, processes restart, exactly-once delivery is not guaranteed in any distributed system.
-   Source: *Site Reliability Engineering* ch. 21.
+   Source: _Site Reliability Engineering_ ch. 21.
 
 9. **Log-level contract.** debug = developer context; info = expected lifecycle milestone; warn = recoverable anomaly; error = actionable failure; fatal = unrecoverable.
    Reason: on-call engineers triage by level; polluted levels degrade mean-time-to-detect.
-   Source: *Site Reliability Engineering* ch. 6; sre.google/workbook.
+   Source: _Site Reliability Engineering_ ch. 6; sre.google/workbook.
 
 10. **Config as data; secrets out of source.** All configuration loads from outside the binary; secrets live in a secrets manager, never in version control.
     Reason: these two patterns prevent the most common production incidents and security breaches respectively.
@@ -76,11 +76,11 @@ Apply uniformly across languages and frameworks. Each rule = imperative + reason
 
 11. **Test that fails first.** Write the failing test before the code that passes it.
     Reason: a test written after the fix cannot prove the fix was necessary; red-green-refactor is the minimal cycle that produces both coverage and specification.
-    Source: *Software Engineering at Google* ch. 11; Testing Trophy (Dodds, 2018).
+    Source: _Software Engineering at Google_ ch. 11; Testing Trophy (Dodds, 2018).
 
 12. **Fail-fast in libraries; degrade gracefully in user-facing services.**
     Reason: a library should refuse corrupt state; a user-facing service should preserve experience and signal degradation. The correct behavior depends on who handles the error.
-    Source: *The Pragmatic Programmer* Topic 23 ("Dead programs tell no lies"); *Site Reliability Engineering* ch. 26.
+    Source: _The Pragmatic Programmer_ Topic 23 ("Dead programs tell no lies"); _Site Reliability Engineering_ ch. 26.
 
 13. **Self-review the diff before claiming done.** Read it as if a reviewer; run the relevant tests, type-check, lint.
     Reason: self-review is free; reviewer time is not, and catches ~20% of issues that account for ~80% of review comments.
@@ -88,27 +88,27 @@ Apply uniformly across languages and frameworks. Each rule = imperative + reason
 
 14. **Measure before optimising.** Optimise only after a profiler identifies the bottleneck.
     Reason: intuited performance improvements are wrong more than half the time; readability cost is paid for no measured gain.
-    Source: *Code Complete 2* §25.6; Knuth (1974) citing Hoare.
+    Source: _Code Complete 2_ §25.6; Knuth (1974) citing Hoare.
 
 15. **Surface risks and blockers at the start, not at the deadline.**
     Reason: information withheld until the deadline removes all options for mitigation.
-    Source: Tanya Reilly, *The Staff Engineer's Path* ch. 3.
+    Source: Tanya Reilly, _The Staff Engineer's Path_ ch. 3.
 
 ## Comment philosophy
 
 Self-documenting code is the goal. Comments are a fallback for what code cannot express. Each rule with reason + source.
 
-1. **Comments explain *why*, not *what*.** The code already shows what; only a reader with context knows why.
+1. **Comments explain _why_, not _what_.** The code already shows what; only a reader with context knows why.
    Reason: comments that restate the next line carry no information and become noise.
-   Source: Linux Kernel Coding Style §8; *Clean Code* ch. 4.
+   Source: Linux Kernel Coding Style §8; _Clean Code_ ch. 4.
 
 2. **Prefer a better identifier over a comment.** When a comment explains a name, rename the name until the comment is redundant, then delete the comment.
    Reason: identifiers are checked by compilers and refactoring tools; comments are not.
-   Source: *Clean Code* ch. 2 ("If you need a comment to explain a name, the name is wrong.").
+   Source: _Clean Code_ ch. 2 ("If you need a comment to explain a name, the name is wrong.").
 
 3. **Delete commented-out code on sight.** Version control is the archive.
    Reason: dead code misleads, cannot be compiled or tested, and accumulates.
-   Source: *Clean Code* ch. 4 ("Commented-out code is an abomination.").
+   Source: _Clean Code_ ch. 4 ("Commented-out code is an abomination.").
 
 4. **Skip doc-blocks on trivial internal helpers.** Single-call-site, short-lived helpers do not need a doc-block.
    Reason: boilerplate doc adds visual noise without informational payoff.
@@ -120,7 +120,7 @@ Self-documenting code is the goal. Comments are a fallback for what code cannot 
 
 6. **Structured TODOs only.** TODO and FIXME require an owner, a tracked ticket, and an actionable trigger (date, condition, milestone). Without those, delete them.
    Reason: ownerless TODOs are never resolved and rot into archaeology.
-   Source: *The Pragmatic Programmer* Topic 4 ("Don't leave broken windows.").
+   Source: _The Pragmatic Programmer_ Topic 4 ("Don't leave broken windows.").
 
 7. **No tombstone comments.** No PR numbers, author names, dates, or in-source changelogs.
    Reason: git blame and commit history carry that information without drift.
@@ -128,7 +128,7 @@ Self-documenting code is the goal. Comments are a fallback for what code cannot 
 
 8. **Inline comments signal a function that should be decomposed.** If a section inside a function body needs a comment, extract it into a named helper instead.
    Reason: helpers are testable; inline explanatory comments are not.
-   Source: Linux Kernel Coding Style §8; *Clean Code* ch. 3.
+   Source: Linux Kernel Coding Style §8; _Clean Code_ ch. 3.
 
 9. **When inline comments are warranted, they justify non-obvious choices only.** Performance hack, regulatory constraint, safety-critical invariant, counter-intuitive workaround.
    Reason: every other inline comment is the symptom of code that should have been clearer.
@@ -140,11 +140,11 @@ Self-documenting code is the goal. Comments are a fallback for what code cannot 
 
 11. **Comments must survive a refactor — or do not write them.** Write the constraint, not the implementation step.
     Reason: lying comments are worse than no comments.
-    Source: *Clean Code* ch. 4 ("Inaccurate comments are far worse than no comments at all.").
+    Source: _Clean Code_ ch. 4 ("Inaccurate comments are far worse than no comments at all.").
 
 12. **For AI-assisted workflows, comment the invariants, not the narration.** When a comment is warranted in 2026, prefer expressing concurrency, security, performance-budget, and policy invariants that humans and tools cannot derive from the code itself.
     Reason: LLMs and review tools already read implementation; the value-add is constraint and intent.
-    Source: Addy Osmani, *My LLM coding workflow going into 2026*; Cloudflare *AI code review architecture*.
+    Source: Addy Osmani, _My LLM coding workflow going into 2026_; Cloudflare _AI code review architecture_.
 
 ## Hard rules (unconditional)
 

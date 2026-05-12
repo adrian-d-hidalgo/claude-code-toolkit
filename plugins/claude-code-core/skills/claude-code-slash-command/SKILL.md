@@ -107,7 +107,6 @@ Local:
 - `references/reincidence-protocol.md` — preventing repeat mistakes.
 - `references/research-integration.md` — patterns for commands that fetch live data.
 - `references/validation-checklist.md` — pre-ship checklist.
-- `references/example-guide.md` — worked examples.
 
 Shared:
 - `${CLAUDE_PLUGIN_ROOT}/shared/scripts/validate_command.py`
@@ -117,4 +116,3 @@ Templates:
 
 Scripts:
 - `scripts/init_command.py` — scaffold a new command.
-- `scripts/validate_command.py` — local validator.

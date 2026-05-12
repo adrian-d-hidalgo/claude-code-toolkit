@@ -15,6 +15,7 @@ Create standalone plugin with capabilities in root directory.
 ### 1. Gather Requirements
 
 Ask user (max 2 questions):
+
 - What specific functionality should this plugin provide?
 - Which components needed? (commands/agents/skills/servers/hooks)
 
@@ -25,6 +26,7 @@ bash scripts/init_plugin.sh plugin-name [path]
 ```
 
 This creates:
+
 ```
 plugin-name/
 ├── .claude-plugin/plugin.json
@@ -43,6 +45,7 @@ Load `assets/templates/plugin-structure-individual.md` for complete structure re
 ### 3. Configure plugin.json
 
 Edit `.claude-plugin/plugin.json`:
+
 ```json
 {
   "name": "plugin-name",
@@ -57,6 +60,7 @@ Edit `.claude-plugin/plugin.json`:
 ### 4. Add Components
 
 For each component type:
+
 - **Commands** → Create `.md` in `commands/`, add path to `plugin.json`
 - **Agents** → Create `.md` in `agents/`, add path to `plugin.json`
 - **Skills** → Create directory in `skills/` with `SKILL.md`, add path to `plugin.json`
@@ -74,6 +78,7 @@ Load `references/plugin-examples.md` for examples.
 ### 6. Generate Documentation
 
 Update README.md with:
+
 - Features list
 - Installation instructions
 - Configuration details

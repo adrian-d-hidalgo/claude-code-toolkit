@@ -5,20 +5,20 @@
 
 ## Primary sources
 
-| Topic | URL |
-|---|---|
-| Commands reference | <https://code.claude.com/docs/en/commands> |
-| Skills (commands and skills share frontmatter) | <https://code.claude.com/docs/en/skills> |
-| Tools reference | <https://code.claude.com/docs/en/tools-reference> |
-| Permissions | <https://code.claude.com/docs/en/permissions> |
-| Settings (for `disableSkillShellExecution`) | <https://code.claude.com/docs/en/settings> |
+| Topic                                          | URL                                               |
+| ---------------------------------------------- | ------------------------------------------------- |
+| Commands reference                             | <https://code.claude.com/docs/en/commands>        |
+| Skills (commands and skills share frontmatter) | <https://code.claude.com/docs/en/skills>          |
+| Tools reference                                | <https://code.claude.com/docs/en/tools-reference> |
+| Permissions                                    | <https://code.claude.com/docs/en/permissions>     |
+| Settings (for `disableSkillShellExecution`)    | <https://code.claude.com/docs/en/settings>        |
 
 ## Reference repos consulted
 
-| Repo | Why |
-|---|---|
-| <https://github.com/anthropics/claude-plugins-official> | Canonical command examples |
-| <https://github.com/wshobson/agents> | Plugin-scoped command layout |
+| Repo                                                      | Why                           |
+| --------------------------------------------------------- | ----------------------------- |
+| <https://github.com/anthropics/claude-plugins-official>   | Canonical command examples    |
+| <https://github.com/wshobson/agents>                      | Plugin-scoped command layout  |
 | <https://github.com/hesreallyhim/claude-code-json-schema> | Frontmatter schema validators |
 
 ## Fields covered in `section-guide.md`

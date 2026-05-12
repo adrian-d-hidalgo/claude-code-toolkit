@@ -16,13 +16,13 @@ End-to-end authoring toolkit for Claude Code hooks. Covers creating new hooks, v
 
 ## What this skill does
 
-| Intent | Mode |
-|---|---|
-| "create / configure / set up a new hook" | **Create** — scaffold `hooks/hooks.json` or add to `settings.json`. |
-| "refactor / improve a hook" | **Refactor** — tighten matcher, harden the script. |
-| "validate / check this hook" | **Validate** — schema + matcher + exit-code conventions. |
-| "audit / review this hook" | **Audit** — security review; hooks run with full user privilege. |
-| "debug why this hook isn't firing / is firing wrong" | **Troubleshoot** — use `references/troubleshooting.md`. |
+| Intent                                               | Mode                                                                |
+| ---------------------------------------------------- | ------------------------------------------------------------------- |
+| "create / configure / set up a new hook"             | **Create** — scaffold `hooks/hooks.json` or add to `settings.json`. |
+| "refactor / improve a hook"                          | **Refactor** — tighten matcher, harden the script.                  |
+| "validate / check this hook"                         | **Validate** — schema + matcher + exit-code conventions.            |
+| "audit / review this hook"                           | **Audit** — security review; hooks run with full user privilege.    |
+| "debug why this hook isn't firing / is firing wrong" | **Troubleshoot** — use `references/troubleshooting.md`.             |
 
 ## Authoritative field reference
 
@@ -37,6 +37,7 @@ End-to-end authoring toolkit for Claude Code hooks. Covers creating new hooks, v
    - `Stop` / `SubagentStop` — react when Claude or a sub-agent finishes.
 
 2. **Author the entry**. Minimal shape:
+
    ```json
    {
      "hooks": {
@@ -119,6 +120,7 @@ This skill authors hook configurations and the scripts they invoke. It does not 
 ## Reference index
 
 Local:
+
 - `references/section-guide.md` — every hook event + every field, exhaustively.
 - `references/CURRENT-DOCS-INDEX.md` — upstream doc snapshot.
 - `references/anti-patterns.md` — authoring mistakes.
@@ -126,12 +128,18 @@ Local:
 - `references/security-checklist.md` — security review.
 - `references/troubleshooting.md` — common failure modes.
 - `references/validation-checklist.md` — pre-ship checklist.
-- `references/examples/` — worked examples by use case (validation, formatting, logging).
 
 Templates:
+
 - `assets/templates/hooks-json-template.json` — annotated `hooks.json` skeleton.
 - `assets/templates/hook-script-template.sh` — annotated bash script skeleton.
 - `assets/templates/hook-script-template.py` — annotated Python script skeleton.
 
+Examples:
+
+- `assets/examples/code-formatter-hook.json` — PostToolUse that runs Prettier on TypeScript edits.
+- `assets/examples/file-protection-hook.json` — PreToolUse that blocks edits to `.env`, lockfiles, and `.git/`.
+
 Scripts:
+
 - `scripts/init_hook.py` — scaffold a new hook + script pair.

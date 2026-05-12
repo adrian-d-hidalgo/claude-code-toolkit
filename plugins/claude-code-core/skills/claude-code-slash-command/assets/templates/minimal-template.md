@@ -32,6 +32,7 @@ Parse "$ARGUMENTS" for [parameter]. [Brief acknowledgment of what will be done]
 ## Validation
 
 **Success Criteria**:
+
 - [ ] [Check 1]
 - [ ] [Check 2]
 - [ ] [Check 3]
@@ -45,6 +46,7 @@ Parse "$ARGUMENTS" for [parameter]. [Brief acknowledgment of what will be done]
 ```
 
 **Expected Output**:
+
 ```
 [What user should see]
 ```
@@ -56,6 +58,7 @@ Parse "$ARGUMENTS" for [parameter]. [Brief acknowledgment of what will be done]
 ```
 
 **Expected Output**:
+
 ```
 [What user should see]
 ```
@@ -63,8 +66,10 @@ Parse "$ARGUMENTS" for [parameter]. [Brief acknowledgment of what will be done]
 ## Notes
 
 **Important**:
+
 - [Key consideration 1]
 - [Key consideration 2]
 
 **Tips**:
+
 - [Helpful tip for better results]

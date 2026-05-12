@@ -37,12 +37,15 @@ my-plugin/                          ← Raíz del plugin
 ## Características Clave
 
 ### Capabilities en Raíz
+
 - `commands/`, `agents/`, `skills/`, `hooks/`, `servers/` están **directamente en la raíz**
 - No hay sub-carpetas de plugins
 - Estructura plana y simple
 
 ### plugin.json
+
 Usa template de plugin individual (`plugin-json-template.json`):
+
 - `name`: Nombre del plugin
 - `description`: Descripción
 - `version`: Versión semver
@@ -54,6 +57,7 @@ Usa template de plugin individual (`plugin-json-template.json`):
 - `mcpServers`: Objeto con configuraciones de servidores
 
 ### Instalación
+
 ```bash
 /plugin install /path/to/my-plugin
 /plugin install https://github.com/user/my-plugin
@@ -62,6 +66,7 @@ Usa template de plugin individual (`plugin-json-template.json`):
 ## Ejemplo Mínimo
 
 **Estructura**:
+
 ```
 simple-plugin/
 ├── .claude-plugin/
@@ -73,6 +78,7 @@ simple-plugin/
 ```
 
 **plugin.json**:
+
 ```json
 {
   "name": "simple-plugin",
@@ -93,6 +99,7 @@ simple-plugin/
 ## Ejemplo Completo
 
 **Estructura**:
+
 ```
 full-plugin/
 ├── .claude-plugin/
@@ -115,6 +122,7 @@ full-plugin/
 ```
 
 **plugin.json**:
+
 ```json
 {
   "name": "full-plugin",
@@ -123,16 +131,9 @@ full-plugin/
   "author": {
     "name": "Your Name"
   },
-  "commands": [
-    "./commands/analyze.md",
-    "./commands/format.md"
-  ],
-  "agents": [
-    "./agents/code-helper.md"
-  ],
-  "skills": [
-    "./skills/analyzer"
-  ],
+  "commands": ["./commands/analyze.md", "./commands/format.md"],
+  "agents": ["./agents/code-helper.md"],
+  "skills": ["./skills/analyzer"],
   "mcpServers": {
     "formatter": {
       "command": "python",
@@ -149,11 +150,13 @@ full-plugin/
 ## Cuando Usar
 
 ✅ **Usa Plugin Individual cuando**:
+
 - Creas un solo plugin con un propósito específico
 - Quieres distribución simple
 - No necesitas agrupar múltiples plugins relacionados
 
 ❌ **NO uses Plugin Individual cuando**:
+
 - Tienes múltiples plugins relacionados que quieres distribuir juntos
 - Necesitas un catálogo de plugins
 - → En ese caso usa Marketplace
@@ -161,6 +164,7 @@ full-plugin/
 ## Pasos de Creación
 
 1. **Inicializar estructura**:
+
    ```bash
    mkdir -p my-plugin/.claude-plugin
    mkdir -p my-plugin/{commands,agents,skills,servers}
@@ -173,6 +177,7 @@ full-plugin/
 4. **Documentar** en README.md
 
 5. **Validar**:
+
    ```bash
    python -m json.tool .claude-plugin/plugin.json
    ```

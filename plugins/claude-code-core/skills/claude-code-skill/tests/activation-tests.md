@@ -2,11 +2,11 @@
 
 The canonical corpus lives in [activation-evals.json](./activation-evals.json). Treat that file as the source of truth; this document only summarises shape.
 
-## Coverage at a glance
+## Coverage
 
-- ~10 positive cases (must activate).
-- ~9 negative cases (must NOT activate; should route to a sibling meta-skill or to nothing).
-- ~3 edge cases (ambiguous or cross-domain; expected routing documented per case).
+- Positive: must activate.
+- Negative: must NOT activate (routes to a sibling meta-skill or nothing).
+- Edge: ambiguous or cross-domain; expected routing in `notes`.
 
 ## How to run
 

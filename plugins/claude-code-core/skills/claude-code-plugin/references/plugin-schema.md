@@ -16,6 +16,7 @@ Complete schema specification for `plugin.json` configuration files.
 ```
 
 **Required fields**:
+
 - `name`: Plugin identifier (kebab-case)
 - `version`: Semantic versioning
 
@@ -43,6 +44,7 @@ Complete schema specification for `plugin.json` configuration files.
 ```
 
 **Metadata fields** (optional):
+
 - `description`: Plugin description
 - `author`: Object with `name`, `email`, `url`
 - `homepage`: Plugin homepage URL
@@ -51,12 +53,14 @@ Complete schema specification for `plugin.json` configuration files.
 - `keywords`: Array of keywords
 
 **Component paths** (optional, supplement defaults):
+
 - `commands`: String or array of paths to command directories
 - `agents`: String or array of paths to agent directories
 - `hooks`: Path to hooks.json file
 - `mcpServers`: Path to .mcp.json file
 
 **IMPORTANT**:
+
 - Custom paths **supplement** default directories (don't replace them)
 - All paths must be relative and start with `./`
 - Use `${CLAUDE_PLUGIN_ROOT}` in hooks and MCP configs for portable paths
@@ -84,6 +88,7 @@ Complete schema specification for `plugin.json` configuration files.
 ```
 
 **When to use**:
+
 - Creating a catalog of multiple plugins
 - Publishing plugins to a marketplace
 - Local development with multiple plugins
@@ -95,6 +100,7 @@ Complete schema specification for `plugin.json` configuration files.
 ### Required Fields
 
 #### name
+
 - **Type**: string
 - **Format**: kebab-case recommended
 - **Constraints**:
@@ -104,6 +110,7 @@ Complete schema specification for `plugin.json` configuration files.
 - **Example**: `"database-tools"`, `"code-analyzer"`
 
 #### description
+
 - **Type**: string
 - **Constraints**:
   - 20-500 characters recommended
@@ -112,6 +119,7 @@ Complete schema specification for `plugin.json` configuration files.
 - **Example**: `"Provides database query tools and schema inspection capabilities"`
 
 #### version
+
 - **Type**: string
 - **Format**: Semantic versioning (semver)
 - **Pattern**: `MAJOR.MINOR.PATCH`
@@ -123,11 +131,14 @@ Complete schema specification for `plugin.json` configuration files.
 ### Optional Fields
 
 #### author
+
 Object with optional fields:
+
 - **name** (string): Author's full name
 - **email** (string): Valid email address format
 
 **Example**:
+
 ```json
 {
   "author": {
@@ -139,6 +150,7 @@ Object with optional fields:
 ### Component Arrays
 
 #### commands
+
 - **Type**: array of strings
 - **Format**: Relative paths from plugin root
 - **Path style**: Forward slashes only
@@ -146,16 +158,15 @@ Object with optional fields:
   - Paths must point to existing `.md` files
   - Paths relative to plugin root
 - **Example**:
+
 ```json
 {
-  "commands": [
-    "./commands/query.md",
-    "./commands/schema.md"
-  ]
+  "commands": ["./commands/query.md", "./commands/schema.md"]
 }
 ```
 
 #### agents
+
 - **Type**: array of strings
 - **Format**: Relative paths from plugin root
 - **Path style**: Forward slashes only
@@ -163,16 +174,15 @@ Object with optional fields:
   - Paths must point to existing `.md` files
   - Files must have valid YAML frontmatter
 - **Example**:
+
 ```json
 {
-  "agents": [
-    "./agents/database-specialist.md",
-    "./agents/query-optimizer.md"
-  ]
+  "agents": ["./agents/database-specialist.md", "./agents/query-optimizer.md"]
 }
 ```
 
 #### hooks
+
 - **Type**: array of strings
 - **Format**: Relative paths from plugin root
 - **Path style**: Forward slashes only
@@ -180,17 +190,17 @@ Object with optional fields:
   - Paths must point to existing `.json` files
   - Files must have valid hook configuration
 - **Example**:
+
 ```json
 {
-  "hooks": [
-    "./hooks/hooks.json"
-  ]
+  "hooks": ["./hooks/hooks.json"]
 }
 ```
 
 ### MCP Servers Configuration
 
 #### mcpServers
+
 - **Type**: object (dictionary/map)
 - **Keys**: Server names (alphanumeric, hyphens, underscores)
 - **Values**: Server configuration objects
@@ -208,6 +218,7 @@ Object with optional fields:
 ```
 
 ##### command
+
 - **Type**: string (required)
 - **Purpose**: Executable command to start server
 - **Formats**:
@@ -218,9 +229,11 @@ Object with optional fields:
   - `${CLAUDE_PLUGIN_ROOT}` - Plugin installation directory
 
 ##### args
+
 - **Type**: array of strings (optional)
 - **Purpose**: Command-line arguments for server
 - **Example**:
+
 ```json
 {
   "args": [
@@ -232,6 +245,7 @@ Object with optional fields:
 ```
 
 ##### env
+
 - **Type**: object (optional)
 - **Purpose**: Environment variables for server
 - **Key format**: Variable name (uppercase by convention)
@@ -240,6 +254,7 @@ Object with optional fields:
   - `${VAR}` - Required variable (error if missing)
   - `${VAR:-default}` - Variable with default value
 - **Example**:
+
 ```json
 {
   "env": {
@@ -260,33 +275,20 @@ Object with optional fields:
   "author": {
     "name": "Database Team"
   },
-  "commands": [
-    "./commands/db-query.md",
-    "./commands/db-schema.md"
-  ],
-  "agents": [
-    "./agents/database-specialist.md"
-  ],
-  "skills": [
-    "./skills/database-analyzer"
-  ],
+  "commands": ["./commands/db-query.md", "./commands/db-schema.md"],
+  "agents": ["./agents/database-specialist.md"],
+  "skills": ["./skills/database-analyzer"],
   "mcpServers": {
     "postgres": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-postgres"
-      ],
+      "args": ["-y", "@modelcontextprotocol/server-postgres"],
       "env": {
         "DATABASE_URL": "${POSTGRES_URL}"
       }
     },
     "custom-db-server": {
       "command": "${CLAUDE_PLUGIN_ROOT}/servers/custom-db/server.py",
-      "args": [
-        "--port",
-        "8080"
-      ],
+      "args": ["--port", "8080"],
       "env": {
         "DB_HOST": "${DB_HOST:-localhost}",
         "DB_PORT": "${DB_PORT:-5432}",
@@ -338,14 +340,16 @@ Object with optional fields:
 ### Syntax Errors
 
 ❌ **Trailing comma**:
+
 ```json
 {
   "name": "my-plugin",
-  "version": "1.0.0",  // <-- Trailing comma
+  "version": "1.0.0" // <-- Trailing comma
 }
 ```
 
 ✅ **Correct**:
+
 ```json
 {
   "name": "my-plugin",
@@ -354,13 +358,15 @@ Object with optional fields:
 ```
 
 ❌ **Single quotes**:
+
 ```json
 {
-  'name': 'my-plugin'  // <-- Single quotes
+  "name": "my-plugin" // <-- Single quotes
 }
 ```
 
 ✅ **Correct**:
+
 ```json
 {
   "name": "my-plugin"
@@ -370,6 +376,7 @@ Object with optional fields:
 ### Structural Errors
 
 ❌ **Missing required field**:
+
 ```json
 {
   "name": "my-plugin"
@@ -378,6 +385,7 @@ Object with optional fields:
 ```
 
 ✅ **Correct**:
+
 ```json
 {
   "name": "my-plugin",
@@ -387,13 +395,15 @@ Object with optional fields:
 ```
 
 ❌ **Invalid semver**:
+
 ```json
 {
-  "version": "1.0"  // <-- Missing patch version
+  "version": "1.0" // <-- Missing patch version
 }
 ```
 
 ✅ **Correct**:
+
 ```json
 {
   "version": "1.0.0"
@@ -403,37 +413,41 @@ Object with optional fields:
 ### Path Errors
 
 ❌ **Absolute path**:
+
 ```json
 {
   "commands": [
-    "/Users/name/plugin/commands/cmd.md"  // <-- Absolute path
+    "/Users/name/plugin/commands/cmd.md" // <-- Absolute path
   ]
 }
 ```
 
 ✅ **Correct**:
+
 ```json
 {
   "commands": [
-    "./commands/cmd.md"  // <-- Relative path
+    "./commands/cmd.md" // <-- Relative path
   ]
 }
 ```
 
 ❌ **Backslashes**:
+
 ```json
 {
   "commands": [
-    ".\\commands\\cmd.md"  // <-- Backslashes
+    ".\\commands\\cmd.md" // <-- Backslashes
   ]
 }
 ```
 
 ✅ **Correct**:
+
 ```json
 {
   "commands": [
-    "./commands/cmd.md"  // <-- Forward slashes
+    "./commands/cmd.md" // <-- Forward slashes
   ]
 }
 ```
@@ -441,6 +455,7 @@ Object with optional fields:
 ### MCP Server Errors
 
 ❌ **Missing command**:
+
 ```json
 {
   "mcpServers": {
@@ -453,6 +468,7 @@ Object with optional fields:
 ```
 
 ✅ **Correct**:
+
 ```json
 {
   "mcpServers": {

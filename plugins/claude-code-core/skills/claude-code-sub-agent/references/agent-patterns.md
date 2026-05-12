@@ -7,6 +7,7 @@ Complete pattern library for common agent types with structure examples.
 **Use Case**: Domain-specific technical expertise (e.g., Angular, React, Python)
 
 **Structure**:
+
 ```yaml
 ---
 name: [technology]-specialist
@@ -17,6 +18,7 @@ model: sonnet
 ```
 
 **Key Sections**:
+
 - Core Competencies: Technology-specific expertise
 - Standards & Best Practices: Framework/language standards
 - Tool Usage: Technology-specific commands and tools
@@ -27,6 +29,7 @@ model: sonnet
 **Use Case**: Expertise spanning multiple domains (e.g., Security, DevOps)
 
 **Structure**:
+
 ```yaml
 ---
 name: [domain]-specialist
@@ -37,6 +40,7 @@ model: sonnet
 ```
 
 **Key Sections**:
+
 - Core Competencies: Cross-domain expertise areas
 - Collaboration Framework: How to work with other specialists
 - Standards & Best Practices: Industry standards
@@ -47,6 +51,7 @@ model: sonnet
 **Use Case**: Coordination and delegation (e.g., research-specialist, claude-code-specialist)
 
 **Structure**:
+
 ```yaml
 ---
 name: [function]-specialist
@@ -57,6 +62,7 @@ model: sonnet
 ```
 
 **Key Sections**:
+
 - Orchestration Protocols: Delegation logic
 - Command Integration: When to use commands vs agents
 - Collaboration Patterns: Agent coordination strategies
@@ -67,6 +73,7 @@ model: sonnet
 **Use Case**: Analysis and reporting without modifications
 
 **Structure**:
+
 ```yaml
 ---
 name: [analysis-type]-analyst
@@ -77,6 +84,7 @@ model: sonnet
 ```
 
 **Key Sections**:
+
 - Analysis Methodologies: Approach to investigation
 - Reporting Standards: How to present findings
 - Tool Patterns: Efficient read/search patterns
@@ -87,6 +95,7 @@ model: sonnet
 **Use Case**: High-level design and planning (e.g., UX, Product)
 
 **Structure**:
+
 ```yaml
 ---
 name: [role]-[function]
@@ -97,6 +106,7 @@ model: sonnet
 ```
 
 **Key Sections**:
+
 - Design Methodologies: Approach to design/strategy
 - Business Integration: Alignment with goals
 - Collaboration Protocols: Working with technical teams
@@ -105,60 +115,75 @@ model: sonnet
 ## Common Anti-Patterns to Avoid
 
 ### ❌ Overly Broad Scope
+
 ```yaml
 description: Full-stack developer for everything. Use always.
 ```
+
 **Problem**: No clear activation trigger, overlaps with everything
 
 ### ❌ Missing Activation Examples
+
 ```yaml
 description: React specialist for React development.
 ```
+
 **Problem**: No "Use immediately when" clause, no examples
 
 ### ❌ Excessive Tool Permissions
+
 ```yaml
 tools: Read, Write, Edit, MultiEdit, Bash, WebSearch, TodoWrite, Grep, Glob
 ```
+
 **Problem**: Violates minimal permission principle
 
 ### ❌ Circular Dependencies
+
 ```markdown
 ## When to Delegate
+
 - Always call security-specialist before any action
 - Always call devops-engineer for any command
 - Always call architect before proceeding
 ```
+
 **Problem**: Cannot operate independently
 
 ## Best Practices
 
 ### ✅ Clear Activation Triggers
+
 ```yaml
 description: NestJS developer specialist for API design, microservices, database integration. Use immediately when working with NestJS projects, designing APIs, or implementing business logic.
 ```
 
 ### ✅ Specific Tool Permissions
+
 ```yaml
 tools: Read, Edit, Bash(npm *), Bash(nest *), Grep, Glob, LS
 ```
 
 ### ✅ Defined Scope and Boundaries
+
 ```markdown
 ## Scope & Boundaries
 
 **Within Scope**:
+
 - NestJS application development
 - API design and implementation
 - Database integration with TypeORM/Prisma
 
 **Out of Scope**:
+
 - Frontend development → Delegate to frontend specialist
 - Infrastructure → Delegate to devops-engineer
 - Security audits → Delegate to security-engineer
 ```
 
 ### ✅ Complete Activation Examples
+
 ```yaml
 Examples: <example>Context: Building new NestJS API. request: "Create user authentication module" assistant: "I'll design the auth module with NestJS guards and JWT" <commentary>Direct NestJS development work activates this agent</commentary></example> [Add 3-5 more examples]
 ```
@@ -166,10 +191,12 @@ Examples: <example>Context: Building new NestJS API. request: "Create user authe
 ## Integration Patterns
 
 ### Command Integration
+
 ```markdown
 ## Command Integration
 
 **Relevant Commands**:
+
 - `/development:angular:update-version`: For Angular upgrades
 - `/development:angular:setup-quality`: For quality tooling
 
@@ -177,28 +204,34 @@ Examples: <example>Context: Building new NestJS API. request: "Create user authe
 ```
 
 ### Agent Collaboration
+
 ```markdown
 ## Collaboration Framework
 
 **With research-specialist**:
+
 - Delegate when current information needed
 - Provide: technology stack, error details, context
 
 **With security-engineer**:
+
 - Consult for security reviews
 - Hand off: authentication implementation details
 ```
 
 ### Graceful Degradation
+
 ```markdown
 ## Fallback Strategies
 
 **If research-specialist unavailable**:
+
 - Use known best practices
 - Document assumptions
 - Proceed with standard patterns
 
 **If commands unavailable**:
+
 - Implement manually with available tools
 - Provide step-by-step guidance
 ```

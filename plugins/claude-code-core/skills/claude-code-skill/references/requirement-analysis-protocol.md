@@ -45,6 +45,7 @@ Please provide concrete examples if possible.
 ```
 
 **Question guidelines**:
+
 - Max 20 words per question
 - Focus on unknowns that affect architecture
 - Request concrete examples, not abstract descriptions
@@ -58,11 +59,13 @@ After gathering information, confirm with user:
 
 ```markdown
 **I understand you need a skill that**:
+
 - [Functionality summary in 1 sentence]
 - Activates when: [Trigger scenarios]
 - Does NOT handle: [Out of scope items]
 
 **Example usage**:
+
 1. [Concrete example 1]
 2. [Concrete example 2]
 
@@ -102,18 +105,21 @@ Classify skill into primary pattern:
 ### Step 2.2: Identify Complexity Level
 
 **Simple** (<200 lines SKILL.md, no scripts):
+
 - Single, straightforward operation
 - No external dependencies
 - Minimal decision logic
 - Example: "Format JSON consistently"
 
 **Moderate** (200-500 lines SKILL.md, maybe scripts/references):
+
 - Multiple related operations
 - Some decision logic
 - May need documentation references
 - Example: "Process PDFs (rotate, merge, extract)"
 
 **Complex** (500 lines SKILL.md + multiple resources):
+
 - Many interconnected operations
 - Significant decision logic
 - Requires scripts and references
@@ -128,6 +134,7 @@ For each category, evaluate need:
 #### Scripts Decision
 
 **Create script if**:
+
 ```
 [ ] Same code rewritten repeatedly (identical logic)
 [ ] Deterministic operation (no AI judgment needed)
@@ -144,6 +151,7 @@ For each category, evaluate need:
 #### References Decision
 
 **Create reference if**:
+
 ```
 [ ] Information repeatedly looked up (>3 times per task)
 [ ] Extensive documentation needed (>100 lines)
@@ -160,6 +168,7 @@ For each category, evaluate need:
 #### Assets Decision
 
 **Create asset if**:
+
 ```
 [ ] Template used in output (not loaded to context)
 [ ] Boilerplate code repeatedly copied (>50 lines)
@@ -181,6 +190,7 @@ For each category, evaluate need:
 
 ```markdown
 **Required sections**:
+
 1. Task identification (what triggers this skill)
 2. Primary workflow (step-by-step process)
 3. 3-5 concrete examples
@@ -190,6 +200,7 @@ For each category, evaluate need:
 **Length target**: [Target lines: estimate based on complexity]
 
 **Keep in SKILL.md** (don't extract to resources):
+
 - Core workflow instructions
 - Primary decision logic
 - Essential examples (3-5)
@@ -202,6 +213,7 @@ For each script identified in Step 2.3:
 
 ```markdown
 **Script 1**: [Name]
+
 - Purpose: [What it does in 1 sentence]
 - Inputs: [Parameters needed]
 - Outputs: [What it returns/produces]
@@ -215,6 +227,7 @@ Location: scripts/[name].py
 ```
 
 **Script checklist per script**:
+
 - [ ] Error handling defined (no punting to Claude)
 - [ ] Input validation planned
 - [ ] Dependencies documented
@@ -227,6 +240,7 @@ For each reference identified in Step 2.3:
 
 ```markdown
 **Reference 1**: [Name]
+
 - Content: [What information it contains]
 - Size: [Estimated lines]
 - Access pattern: [When loaded from SKILL.md]
@@ -239,6 +253,7 @@ Location: references/[name].md
 ```
 
 **Reference organization**:
+
 - 1 level deep (not nested)
 - Loaded conditionally (not all upfront)
 - Quick lookup structure (tables, lists)
@@ -250,6 +265,7 @@ For each asset identified in Step 2.3:
 
 ```markdown
 **Asset 1**: [Name]
+
 - Type: [Template|Boilerplate|Image|Config]
 - Purpose: [How it's used]
 - Size: [Estimate if large]
@@ -262,6 +278,7 @@ Location: assets/[name].[ext] or assets/[folder]/
 ```
 
 **Asset usage**:
+
 - Never loaded to context (unlimited size ok)
 - Copied/modified by AI for user
 - Document usage instructions in SKILL.md
@@ -274,11 +291,12 @@ Map when each resource loads:
 **Always loaded**: SKILL.md core (automatic)
 
 **Load conditionally**:
+
 1. references/[name].md → When: [Condition]
 2. references/[name].md → When: [Condition]
 3. scripts/[name].py → Executed when: [Condition]
 
-**Never loaded**: assets/* (used for output)
+**Never loaded**: assets/\* (used for output)
 ```
 
 ## Phase 4: Validation & Adjustment
@@ -286,25 +304,29 @@ Map when each resource loads:
 ### Step 4.1: Complexity Check
 
 **Total content estimate**:
+
 - SKILL.md: [estimated lines]
 - References: [count] files, [total lines]
 - Scripts: [count] files
 - Assets: [count] files/folders
 
 **Red flags** (reconsider structure if ANY true):
+
 - [ ] SKILL.md >500 lines → Extract to references
-- [ ] >10 references → Consider splitting skill or better organization
-- [ ] >5 scripts → May be too complex, consider simplifying
+- [ ] > 10 references → Consider splitting skill or better organization
+- [ ] > 5 scripts → May be too complex, consider simplifying
 - [ ] References >2 levels deep → Flatten structure
 - [ ] Duplicated content → Consolidate or remove
 
 ### Step 4.2: Token Efficiency Estimate
 
 **Baseline** (without skill):
+
 - User describes task each time
 - Estimate: [baseline tokens per task]
 
 **With skill**:
+
 - SKILL.md loaded: [estimated tokens]
 - Average references loaded: [estimated tokens]
 - Total per task: [estimated tokens]
@@ -317,16 +339,19 @@ Map when each resource loads:
 ### Step 4.3: Activation Clarity
 
 **Test description draft**:
+
 ```
 [Draft 1-2 sentence activation description combining What + When + Specific triggers]
 ```
 
 **Mental test cases**:
+
 - Positive triggers (should activate): [3+ examples]
 - Negative triggers (should NOT activate): [3+ examples]
 - Edge cases (ambiguous): [2+ examples]
 
 **Clarity score**:
+
 - [ ] Specific enough (not too generic)
 - [ ] Includes key domain terms
 - [ ] Clear boundaries (what NOT to do)
@@ -397,6 +422,7 @@ Based on analysis, generate ordered tasks:
 ### Step 5.2: Estimate Effort
 
 **Time estimate**:
+
 - Simple skill: 1-2 hours
 - Moderate skill: 3-6 hours
 - Complex skill: 8-16 hours
@@ -413,6 +439,7 @@ Present roadmap to user:
 **Type**: [Pattern type]
 **Complexity**: [Simple|Moderate|Complex]
 **Resources**:
+
 - SKILL.md core (~[X] lines)
 - Scripts: [count]
 - References: [count]
@@ -421,6 +448,7 @@ Present roadmap to user:
 **Estimated effort**: [X hours]
 
 **Next steps**:
+
 1. [First task]
 2. [Second task]
 3. [Third task]
@@ -433,11 +461,13 @@ Ready to proceed? (yes = continue, no = adjust plan)
 ### When to Use This Protocol
 
 **Always use for**:
+
 - Creating new skill from scratch
 - Major skill refactoring
 - User unclear on requirements
 
 **Can skip for**:
+
 - Minor skill updates
 - Bug fixes
 - Content clarifications
@@ -445,6 +475,7 @@ Ready to proceed? (yes = continue, no = adjust plan)
 ### Protocol Shortcuts
 
 **For simple skills** (single operation, <200 lines):
+
 - Phase 1: Minimal (just confirm examples)
 - Phase 2: Quick classification
 - Phase 3: SKILL.md only, no resources
@@ -452,6 +483,7 @@ Ready to proceed? (yes = continue, no = adjust plan)
 - Phase 5: Simplified roadmap
 
 **For skill updates** (existing skill modification):
+
 - Phase 1: Identify what changed
 - Phase 2: Re-assess only affected resources
 - Phase 3: Plan changes only
@@ -481,22 +513,26 @@ Clear requirements?
 ### Example 1: Simple Skill (JSON Formatter)
 
 **Phase 1**: User wants "format JSON consistently"
+
 - Clear requirements: Yes
 - Examples provided: Yes
 - Scope defined: Just formatting, no validation
 
 **Phase 2**:
+
 - Type: Processing Skill
 - Complexity: Simple (<200 lines)
 - Resources: None needed
 
 **Phase 3**:
+
 - SKILL.md: Core formatting instructions (~150 lines)
 - Scripts: None (AI handles formatting)
 - References: None
 - Assets: None
 
 **Phase 4**:
+
 - Complexity: ✓ Under 500 lines
 - Tokens: 80% reduction (no repeated formatting instructions)
 - Activation: "format JSON", "prettify JSON" ✓
@@ -506,22 +542,26 @@ Clear requirements?
 ### Example 2: Moderate Skill (PDF Processor)
 
 **Phase 1**: User wants "process PDFs"
+
 - Unclear: What operations? → Ask
 - User clarifies: Rotate, merge, extract text
 - Examples: 5 provided
 
 **Phase 2**:
+
 - Type: Processing Skill
 - Complexity: Moderate (300 lines + scripts)
 - Resources: Scripts needed
 
 **Phase 3**:
+
 - SKILL.md: Workflow, operation selection (~250 lines)
 - Scripts: 3 (rotate, merge, extract)
 - References: 1 (extraction methods guide)
 - Assets: None
 
 **Phase 4**:
+
 - Complexity: ✓ Within limits
 - Tokens: 60% reduction (scripts execute without loading code)
 - Activation: "process PDF", "rotate PDF", "merge PDF" ✓
@@ -531,23 +571,27 @@ Clear requirements?
 ### Example 3: Complex Skill (Project Scaffolder)
 
 **Phase 1**: User wants "scaffold projects"
+
 - Unclear: What frameworks? → Ask
 - User clarifies: React, Vue, Angular support
 - Unclear: What features? → Ask
 - User clarifies: TypeScript, testing, linting
 
 **Phase 2**:
+
 - Type: Generation Skill
 - Complexity: Complex (500 lines + extensive resources)
 - Resources: Scripts, references, assets needed
 
 **Phase 3**:
+
 - SKILL.md: Framework selection, configuration workflow (~450 lines)
 - Scripts: 2 (scaffold generator, dependency installer)
 - References: 3 (framework patterns, configuration guide, best practices)
 - Assets: 3 (React template/, Vue template/, Angular template/)
 
 **Phase 4**:
+
 - Complexity: ✓ At limit
 - Tokens: 50% reduction (templates not loaded, references conditional)
 - Activation: "create React project", "scaffold app", "new project" ✓

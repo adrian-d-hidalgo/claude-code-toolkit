@@ -24,6 +24,7 @@ When errors occur:
 
 ```markdown
 **Capture context**:
+
 - Error message (exact text)
 - Stack trace (if available)
 - Environment:
@@ -43,6 +44,7 @@ When errors occur:
 ### Step 2: Research Solution
 
 **When to research**:
+
 - Error message is unfamiliar
 - Error is environment/version specific
 - Standard solutions don't apply
@@ -51,11 +53,14 @@ When errors occur:
 ```markdown
 **Research current solutions** (if applicable):
 ```
+
 If error not in known patterns:
-  1. Use: [appropriate research command]
-  2. Provide: Full error message, stack, versions
-  3. Context: Configuration, reproduction steps
-  4. Parse: Prioritize Tier 1-2 solutions
+
+1. Use: [appropriate research command]
+2. Provide: Full error message, stack, versions
+3. Context: Configuration, reproduction steps
+4. Parse: Prioritize Tier 1-2 solutions
+
 ```
 
 **Fallback** if research unavailable:
@@ -71,19 +76,22 @@ If error not in known patterns:
 **Apply fixes progressively**:
 
 **Level 1 - Safe fixes** (no side effects):
-  1. [Safe fix 1]
-  2. [Safe fix 2]
-  Test after each
+
+1. [Safe fix 1]
+2. [Safe fix 2]
+   Test after each
 
 **Level 2 - Recommended fixes** (minor side effects):
-  1. [Recommended fix 1]
-  2. [Recommended fix 2]
-  Test after each
+
+1. [Recommended fix 1]
+2. [Recommended fix 2]
+   Test after each
 
 **Level 3 - Experimental fixes** (may have consequences):
-  1. [Experimental fix 1]
-  2. [Experimental fix 2]
-  Test and validate thoroughly
+
+1. [Experimental fix 1]
+2. [Experimental fix 2]
+   Test and validate thoroughly
 ```
 
 ### Step 4: Validate Resolution
@@ -92,6 +100,7 @@ If error not in known patterns:
 
 ```markdown
 **Validate resolution**:
+
 - [ ] Error no longer occurs
 - [ ] Expected functionality works
 - [ ] No new errors introduced
@@ -105,6 +114,7 @@ If error not in known patterns:
 
 ```markdown
 **Rollback procedure**:
+
 1. Restore previous state (from backup/git)
 2. Document what was attempted
 3. Preserve error context
@@ -117,15 +127,18 @@ If error not in known patterns:
 ### File System Errors
 
 **ENOENT (File Not Found)**:
+
 ```markdown
 **Error**: ENOENT: no such file or directory
 
 **Common Causes**:
+
 - Path incorrect or misspelled
 - File doesn't exist at expected location
 - Working directory not where expected
 
 **Progressive Fixes**:
+
 1. Verify file path is absolute or properly resolved
 2. Check if file exists: Glob or Read to verify
 3. Create missing parent directories
@@ -136,15 +149,18 @@ If error not in known patterns:
 ```
 
 **EACCES (Permission Denied)**:
+
 ```markdown
 **Error**: EACCES: permission denied
 
 **Common Causes**:
+
 - Insufficient file permissions
 - Directory not writable
 - File locked by another process
 
 **Progressive Fixes**:
+
 1. Check current permissions
 2. Verify user has write access to directory
 3. Check if file is locked
@@ -157,16 +173,19 @@ If error not in known patterns:
 ### Network Errors
 
 **ECONNREFUSED (Connection Refused)**:
+
 ```markdown
 **Error**: ECONNREFUSED
 
 **Common Causes**:
+
 - Service not running
 - Wrong port
 - Firewall blocking
 - localhost vs 127.0.0.1
 
 **Progressive Fixes**:
+
 1. Verify service is running
 2. Check port number correctness
 3. Try alternative host (localhost vs 127.0.0.1)
@@ -179,16 +198,19 @@ If error not in known patterns:
 ### Package/Dependency Errors
 
 **Module Not Found**:
+
 ```markdown
 **Error**: Cannot find module 'X'
 
 **Common Causes**:
+
 - Package not installed
 - Wrong package name
 - Version incompatibility
 - Missing dependency
 
 **Progressive Fixes**:
+
 1. Install missing package
 2. Check package name spelling
 3. Verify package.json includes dependency
@@ -199,15 +221,18 @@ If error not in known patterns:
 ```
 
 **Version Conflicts**:
+
 ```markdown
 **Error**: Peer dependency conflict
 
 **Common Causes**:
+
 - Incompatible versions
 - Multiple versions of same package
 - Outdated dependencies
 
 **Progressive Fixes**:
+
 1. Check dependency tree
 2. Update conflicting packages
 3. Use compatible versions
@@ -220,15 +245,18 @@ If error not in known patterns:
 ### Build/Compilation Errors
 
 **Syntax Errors**:
+
 ```markdown
 **Error**: SyntaxError: Unexpected token
 
 **Common Causes**:
+
 - Typo in code
 - Missing/extra bracket or parenthesis
 - Incorrect syntax for language version
 
 **Progressive Fixes**:
+
 1. Check line indicated in error
 2. Verify bracket/parenthesis matching
 3. Check for recent changes
@@ -239,15 +267,18 @@ If error not in known patterns:
 ```
 
 **Type Errors**:
+
 ```markdown
 **Error**: TypeError: Cannot read property 'X' of undefined
 
 **Common Causes**:
+
 - Variable is undefined/null
 - Property doesn't exist
 - Asynchronous timing issue
 
 **Progressive Fixes**:
+
 1. Add null/undefined checks
 2. Verify property exists
 3. Check initialization order
@@ -263,27 +294,31 @@ If error not in known patterns:
 
 ```markdown
 **When to use**: Operations that may fail but shouldn't crash command
+```
+
+Try:
+[Risky operation]
+Catch [SpecificError]:
+
+1. Log error with context
+2. Attempt recovery
+3. If recovery fails, fallback
+4. If fallback fails, report and exit gracefully
+   Finally:
+   Clean up resources
 
 ```
-Try:
-  [Risky operation]
-Catch [SpecificError]:
-  1. Log error with context
-  2. Attempt recovery
-  3. If recovery fails, fallback
-  4. If fallback fails, report and exit gracefully
-Finally:
-  Clean up resources
-```
+
 ```
 
 ### Validation-First Pattern
 
 ```markdown
 **When to use**: Prevent errors by validating before operations
-
 ```
+
 **Validate inputs**:
+
 - [ ] Required parameters present
 - [ ] Parameters correct type/format
 - [ ] Files/directories exist
@@ -291,36 +326,43 @@ Finally:
 - [ ] Dependencies available
 
 **Then proceed** with confidence
+
 ```
+
 ```
 
 ### Fail-Fast Pattern
 
 ```markdown
 **When to use**: Critical errors that prevent continuation
+```
+
+If critical_condition_failed:
+
+1. Report specific error clearly
+2. Explain why we can't continue
+3. Suggest resolution steps
+4. Exit gracefully (non-zero exit code)
+5. Clean up any partial changes
 
 ```
-If critical_condition_failed:
-  1. Report specific error clearly
-  2. Explain why we can't continue
-  3. Suggest resolution steps
-  4. Exit gracefully (non-zero exit code)
-  5. Clean up any partial changes
-```
+
 ```
 
 ### Gradual Degradation Pattern
 
 ```markdown
 **When to use**: Non-critical features that can be skipped
+```
+
+Try:
+[Optional enhanced feature]
+Catch error:
+Log: "Enhanced feature unavailable, using basic version"
+Proceed with basic functionality
 
 ```
-Try:
-  [Optional enhanced feature]
-Catch error:
-  Log: "Enhanced feature unavailable, using basic version"
-  Proceed with basic functionality
-```
+
 ```
 
 ## Error Communication
@@ -328,6 +370,7 @@ Catch error:
 ### User-Friendly Error Messages
 
 **Bad error message**:
+
 ```
 ❌ Error: undefined
 ❌ Something went wrong
@@ -335,6 +378,7 @@ Catch error:
 ```
 
 **Good error message**:
+
 ```
 ✅ Error: Cannot find configuration file 'config.json' in .claude/ directory
 
@@ -356,6 +400,7 @@ For more help: /command-name --help
 **Location**: [File, line, or component if applicable]
 
 **Solutions**:
+
 1. [Most likely solution]
 2. [Alternative solution]
 3. [Last resort / manual intervention]
@@ -370,24 +415,28 @@ For more help: /command-name --help
 ### Test Scenarios
 
 **Scenario 1: Missing Required Parameter**
+
 - Given: Command invoked without required parameter
 - When: Parameter validation runs
 - Then: Clear error message, suggests correct usage
 - Verify: Exit gracefully, no partial changes
 
 **Scenario 2: File Operation Fails**
+
 - Given: File doesn't exist or no permissions
 - When: File operation attempted
 - Then: Error caught, alternatives attempted, clear message
 - Verify: Rollback or safe state
 
 **Scenario 3: Network Operation Fails**
+
 - Given: Service unavailable
 - When: Connection attempted
 - Then: Timeout handled, fallback activated, user informed
 - Verify: Command continues or fails gracefully
 
 **Scenario 4: Unexpected Error**
+
 - Given: Unanticipated error occurs
 - When: Any operation
 - Then: Generic error handler catches, preserves context
@@ -396,19 +445,22 @@ For more help: /command-name --help
 ## Anti-Patterns
 
 ❌ **Silent Failure**:
+
 ```markdown
 Try:
-  risky_operation()
+risky_operation()
 Catch:
-  pass  # Ignores error completely
+pass # Ignores error completely
 ```
 
 ❌ **Vague Error**:
+
 ```markdown
-"Error occurred"  # What error? Where? How to fix?
+"Error occurred" # What error? Where? How to fix?
 ```
 
 ❌ **No Rollback**:
+
 ```markdown
 Partial changes made
 Error occurs
@@ -416,21 +468,23 @@ Leaves system in inconsistent state
 ```
 
 ❌ **Error Cascade**:
+
 ```markdown
 Error A → causes Error B → causes Error C
 User sees Error C, no context about A or B
 ```
 
 ✅ **Good Pattern**:
+
 ```markdown
 Try:
-  operation()
+operation()
 Catch SpecificError as e:
-  Log full context and error details
-  Attempt specific recovery
-  If recovery fails, rollback changes
-  Report clear error with solutions
-  Exit gracefully
+Log full context and error details
+Attempt specific recovery
+If recovery fails, rollback changes
+Report clear error with solutions
+Exit gracefully
 ```
 
 ## Logging and Debugging
@@ -439,6 +493,7 @@ Catch SpecificError as e:
 
 ```markdown
 **Log Entry**:
+
 - Timestamp: [when error occurred]
 - Command: [command being executed]
 - Operation: [specific operation that failed]
@@ -453,6 +508,7 @@ Catch SpecificError as e:
 ### Debug Information
 
 **Include in error reports**:
+
 - Command version
 - Environment details
 - Configuration state

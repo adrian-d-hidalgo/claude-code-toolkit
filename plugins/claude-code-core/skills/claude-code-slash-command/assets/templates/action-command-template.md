@@ -12,31 +12,37 @@ model: sonnet
 **Objective**: [Clear statement of what this command accomplishes]
 
 **Input Parameters**:
+
 - **[Parameter 1]**: [Description and validation requirements]
 - **[Parameter 2]** (optional): [Description and default behavior]
 
 **Expected Outcomes**:
+
 - [Specific outcome 1]
 - [Specific outcome 2]
 - [Specific outcome 3]
 
 **Success Criteria**:
+
 - [Measurable criterion 1]
 - [Measurable criterion 2]
 
 ## Prerequisites & Safety Checks
 
 **Environment Validation**:
+
 - [ ] Check required tools installed ([tool1], [tool2])
 - [ ] Verify project structure (package.json, [config-files])
 - [ ] Validate permissions (write access to target directories)
 
 **Safety Checks**:
+
 - [ ] Git status check (warn if uncommitted changes)
 - [ ] Backup existing files if modifications are destructive
 - [ ] Dry-run option for preview (if applicable)
 
 **Dependencies**:
+
 - [Tool/package 1] version [X.X.X or higher]
 - [Tool/package 2] installed globally/locally
 - [Configuration] file present at [location]
@@ -46,16 +52,19 @@ model: sonnet
 **Before creating any files** (if this command creates files):
 
 1. **Check for .claude/ directory**:
+
    ```bash
    Use Glob("**/.claude") to detect project structure
    ```
 
 2. **Verify target directory**:
+
    ```bash
    Check if [target-directory] exists and is writable
    ```
 
 3. **Create directory structure if needed**:
+
    ```bash
    Create [target-directory] if missing
    Validate creation was successful
@@ -80,11 +89,13 @@ model: sonnet
 [Detailed description of what this step does]
 
 **Actions**:
+
 1. [Specific action with tool]
 2. [Specific action with tool]
 3. [Specific action with tool]
 
 **Validation**:
+
 - Check that [expected result]
 - Verify [expected state]
 
@@ -93,10 +104,12 @@ model: sonnet
 [Detailed description of what this step does]
 
 **Actions**:
+
 1. [Specific action]
 2. [Specific action]
 
 **Validation**:
+
 - Confirm [expected result]
 
 ### Step 3: [Third Major Action]
@@ -108,6 +121,7 @@ model: sonnet
 [Completion step]
 
 **Final Checks**:
+
 - [ ] [Check 1]
 - [ ] [Check 2]
 - [ ] [Check 3]
@@ -115,20 +129,24 @@ model: sonnet
 ## Research Integration
 
 **When to use research** (if applicable):
+
 - Current [technology] version information needed
 - Error resolution required
 - Best practice validation
 - Tool comparison decisions
 
 **Research invocation**:
+
 ```markdown
 If [condition requiring current information]:
+
 1. Use: [Appropriate research command]
 2. Provide: [Specific context, technology stack, error details]
 3. Handle: Research failure gracefully with fallback approaches
 ```
 
 **Fallback approaches**:
+
 - [Fallback approach 1 if research unavailable]
 - [Fallback approach 2]
 
@@ -137,6 +155,7 @@ If [condition requiring current information]:
 ### Common Errors
 
 **Error 1: [Error Type]**
+
 - **Symptom**: [What user sees]
 - **Cause**: [Why it happens]
 - **Resolution**:
@@ -145,6 +164,7 @@ If [condition requiring current information]:
   3. [Step to resolve]
 
 **Error 2: [Error Type]**
+
 - **Symptom**: [What user sees]
 - **Cause**: [Why it happens]
 - **Resolution**:
@@ -186,21 +206,25 @@ When errors occur:
 ## Validation Protocol
 
 **Output Verification**:
+
 - [ ] [Expected file 1] exists at [location]
 - [ ] [Expected file 2] has correct content
 - [ ] [Configuration] is properly set
 
 **Functional Testing**:
+
 - [ ] Run [test command] to verify functionality
 - [ ] Execute [validation command] to check correctness
 - [ ] Confirm [expected behavior] works
 
 **Performance Checks**:
+
 - [ ] Operation completed within reasonable time
 - [ ] No excessive resource usage
 - [ ] Generated files are optimal size
 
 **Security Validation**:
+
 - [ ] No sensitive information exposed
 - [ ] Proper permissions set on created files
 - [ ] No security vulnerabilities introduced
@@ -214,11 +238,13 @@ When errors occur:
 ```
 
 **Expected Output**:
+
 ```
 [What user should see]
 ```
 
 **Result**:
+
 - [What gets created/modified]
 - [Expected state change]
 
@@ -229,6 +255,7 @@ When errors occur:
 ```
 
 **Expected Output**:
+
 ```
 [What user should see]
 ```
@@ -240,48 +267,58 @@ When errors occur:
 ```
 
 **Special Considerations**:
+
 - [Note about this usage]
 - [Warning or tip]
 
 ## Integration Notes
 
 **Integrates with**:
+
 - [Other command 1]: [How they work together]
 - [Other command 2]: [How they work together]
 - [Agent type]: [How agents can use this command]
 
 **Can be called by**:
+
 - [Agent types that benefit from this command]
 - [Other commands that might invoke this]
 
 **Provides**:
+
 - [Output/state that other commands can use]
 - [Feedback that agents can interpret]
 
 ## Troubleshooting
 
 **Issue: [Common Problem 1]**
+
 - Check: [What to verify]
 - Solution: [How to fix]
 
 **Issue: [Common Problem 2]**
+
 - Check: [What to verify]
 - Solution: [How to fix]
 
 **Issue: [Common Problem 3]**
+
 - Check: [What to verify]
 - Solution: [How to fix]
 
 ## Notes and Warnings
 
 **Important Notes**:
+
 - [Important consideration 1]
 - [Important consideration 2]
 
 **Warnings**:
+
 - ⚠️ [Warning about destructive operation]
 - ⚠️ [Warning about side effects]
 
 **Tips**:
+
 - 💡 [Helpful tip for better results]
 - 💡 [Optimization suggestion]

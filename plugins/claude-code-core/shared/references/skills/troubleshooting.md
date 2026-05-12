@@ -11,6 +11,7 @@ Solutions for frequent skill development problems.
 **Solutions**:
 
 1. **Check file paths**
+
    ```bash
    # Personal skills
    ls -la ~/.claude/skills/category/skill-name/SKILL.md
@@ -18,9 +19,11 @@ Solutions for frequent skill development problems.
    # Project skills
    ls -la .claude/skills/skill-name/SKILL.md
    ```
+
    Verify SKILL.md exists at correct location
 
 2. **Verify description specificity**
+
    ```yaml
    # Too vague (won't activate reliably)
    description: Helps with files
@@ -35,6 +38,7 @@ Solutions for frequent skill development problems.
    Include specific technologies, file types, operations in description
 
 4. **Restart Claude Code**
+
    ```bash
    # Skills load on startup
    # After changes, restart Claude Code
@@ -53,6 +57,7 @@ Solutions for frequent skill development problems.
 **Solutions**:
 
 1. **Make description more domain-specific**
+
    ```yaml
    # Too broad
    description: Works with data files
@@ -80,6 +85,7 @@ Solutions for frequent skill development problems.
 **Solutions**:
 
 1. **No tabs allowed**
+
    ```yaml
    # Bad (uses tab)
    name:→skill-name
@@ -89,17 +95,19 @@ Solutions for frequent skill development problems.
    ```
 
 2. **Verify delimiters**
+
    ```yaml
    ---
    name: skill-identifier
    description: Skill description here
    ---
-
    # Markdown content starts here
    ```
+
    Must have `---` at start and end of frontmatter
 
 3. **Check indentation**
+
    ```yaml
    # Bad
    description: >
@@ -111,9 +119,11 @@ Solutions for frequent skill development problems.
      Skill description
      here
    ```
+
    Continuation lines indented consistently
 
 4. **Validate multiline syntax**
+
    ```yaml
    # Use > for folded text (line breaks become spaces)
    description: >
@@ -131,6 +141,7 @@ Solutions for frequent skill development problems.
 **Symptoms**: Custom fields ignored or cause errors
 
 **Solution**: Only use official fields
+
 ```yaml
 # Valid fields only
 ---
@@ -140,12 +151,11 @@ allowed-tools:
   - Read
   - Write
 ---
-
 # Invalid (custom fields ignored)
 ---
-version: 1.0.0          # Not official field
-author: Name            # Not official field
-keywords:               # Not official field
+version: 1.0.0 # Not official field
+author: Name # Not official field
+keywords: # Not official field
   - keyword
 ---
 ```
@@ -159,6 +169,7 @@ keywords:               # Not official field
 **Problem**: Files nested >1 level deep
 
 **Solution**:
+
 ```
 # Bad
 skill-name/
@@ -182,23 +193,29 @@ Keep all references 1 level deep from SKILL.md
 **Solutions**:
 
 1. **Use forward slashes**
+
    ```markdown
    # Bad
+
    See references\guide.md
 
    # Good
+
    See references/guide.md
    ```
 
 2. **Verify relative paths**
+
    ```markdown
    # From SKILL.md
-   references/guide.md           # Correct
-   ./references/guide.md         # Also works
-   ../other/file.md              # Wrong (outside skill dir)
+
+   references/guide.md # Correct
+   ./references/guide.md # Also works
+   ../other/file.md # Wrong (outside skill dir)
    ```
 
 3. **Use descriptive names**
+
    ```
    # Bad
    references/doc1.md
@@ -218,17 +235,20 @@ Keep all references 1 level deep from SKILL.md
 **Solutions**:
 
 1. **Verify execute permissions**
+
    ```bash
    chmod +x scripts/helper.py
    ```
 
 2. **Include shebang**
+
    ```python
    #!/usr/bin/env python3
    # Rest of script
    ```
 
 3. **Document dependencies**
+
    ```python
    """
    Dependencies:
@@ -259,6 +279,7 @@ Keep all references 1 level deep from SKILL.md
 **Solutions**:
 
 1. **Never assume pre-installed packages**
+
    ```markdown
    ## Requirements
 
@@ -269,17 +290,19 @@ Keep all references 1 level deep from SKILL.md
    ```
 
 2. **Use virtual environments**
+
    ```markdown
    ## Setup
 
    \`\`\`bash
    python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   source venv/bin/activate # On Windows: venv\Scripts\activate
    pip install -r requirements.txt
    \`\`\`
    ```
 
 3. **Document system requirements**
+
    ```markdown
    ## System Requirements
 
@@ -297,27 +320,35 @@ Keep all references 1 level deep from SKILL.md
 **Solutions**:
 
 1. **Move content to references/**
+
    ```markdown
    # In SKILL.md (keep brief)
+
    See references/detailed-guide.md for complete information
 
    # In references/detailed-guide.md (extensive content)
+
    [Detailed information here...]
    ```
 
 2. **Use progressive disclosure**
+
    ```markdown
    # Summary in SKILL.md
+
    Brief overview here. For details, see references/details.md
    ```
 
 3. **Remove unnecessary words**
+
    ```markdown
    # Before (verbose)
+
    I would like to help you understand that you should carefully
    consider the following important steps...
 
    # After (concise)
+
    Follow these steps:
    ```
 
@@ -346,15 +377,19 @@ Keep all references 1 level deep from SKILL.md
 **Solutions**:
 
 1. **Clarify instructions**
+
    ```markdown
    # Vague
+
    Process the file
 
    # Specific
+
    Execute scripts/process.py with file path as argument
    ```
 
 2. **Provide examples**
+
    ```markdown
    ## Usage
 
@@ -366,9 +401,9 @@ Keep all references 1 level deep from SKILL.md
 3. **Use conditional workflows**
    ```markdown
    If task is rotation:
-     → Use scripts/rotate_pdf.py
+   → Use scripts/rotate_pdf.py
    Else if task is merging:
-     → Use scripts/merge_pdf.py
+   → Use scripts/merge_pdf.py
    ```
 
 ### Restricted Tool Access Issues
@@ -378,15 +413,17 @@ Keep all references 1 level deep from SKILL.md
 **Solutions**:
 
 1. **Verify allowed-tools match needs**
+
    ```yaml
    # If skill needs to execute scripts
    allowed-tools:
      - Read
      - Write
-     - Bash  # Required for script execution
+     - Bash # Required for script execution
    ```
 
 2. **Balance security and functionality**
+
    ```yaml
    # Read-only when possible
    allowed-tools:
@@ -406,6 +443,7 @@ Keep all references 1 level deep from SKILL.md
 **Solutions**:
 
 1. **Make descriptions mutually exclusive**
+
    ```yaml
    # Skill 1
    description: Processes PDF files specifically (rotation, merging)
@@ -428,8 +466,10 @@ Keep all references 1 level deep from SKILL.md
 **Solutions**:
 
 1. **Document delegation protocol**
+
    ```markdown
    When current information needed:
+
    - Delegate to research-specialist
    - Pass context: [what information needed]
    - Apply findings to implementation
@@ -445,6 +485,7 @@ Keep all references 1 level deep from SKILL.md
 **Cause**: File path incorrect or skill not in expected location
 
 **Fix**:
+
 ```bash
 # Verify location
 ls ~/.claude/skills/category/skill-name/SKILL.md
@@ -458,6 +499,7 @@ ls .claude/skills/skill-name/SKILL.md
 **Cause**: Invalid YAML syntax
 
 **Fix**:
+
 - Check for tabs (use spaces)
 - Verify `---` delimiters
 - Validate indentation
@@ -468,11 +510,14 @@ ls .claude/skills/skill-name/SKILL.md
 **Cause**: Referenced file doesn't exist or path incorrect
 
 **Fix**:
+
 ```markdown
 # Use forward slashes
+
 references/guide.md
 
 # Verify file exists
+
 ls skill-name/references/guide.md
 ```
 
@@ -481,6 +526,7 @@ ls skill-name/references/guide.md
 **Cause**: Script not executable
 
 **Fix**:
+
 ```bash
 chmod +x scripts/helper.py
 ```

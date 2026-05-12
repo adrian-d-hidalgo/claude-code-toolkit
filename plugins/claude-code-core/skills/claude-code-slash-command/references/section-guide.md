@@ -99,14 +99,14 @@ Same shape and semantics as skill frontmatter — see the skill `section-guide.m
 
 The body is plain markdown with substitutions applied before Claude reads it:
 
-| Token | Expands to |
-|---|---|
-| `$ARGUMENTS` | All arguments as one string. |
-| `$N` / `$ARGUMENTS[N]` | Nth positional argument. |
-| `$name` | Named argument from the `arguments:` frontmatter list. |
-| `${CLAUDE_SESSION_ID}` | Current session ID. |
-| `${CLAUDE_SKILL_DIR}` | The command's directory (yes, named "skill" even for commands — historical artifact). |
-| `${CLAUDE_PLUGIN_ROOT}` | Plugin root when applicable. |
+| Token                   | Expands to                                                                            |
+| ----------------------- | ------------------------------------------------------------------------------------- |
+| `$ARGUMENTS`            | All arguments as one string.                                                          |
+| `$N` / `$ARGUMENTS[N]`  | Nth positional argument.                                                              |
+| `$name`                 | Named argument from the `arguments:` frontmatter list.                                |
+| `${CLAUDE_SESSION_ID}`  | Current session ID.                                                                   |
+| `${CLAUDE_SKILL_DIR}`   | The command's directory (yes, named "skill" even for commands — historical artifact). |
+| `${CLAUDE_PLUGIN_ROOT}` | Plugin root when applicable.                                                          |
 
 Dynamic context injection: `` !`<command>` `` (inline) and ` ```! ` blocks run shell commands **before** Claude sees the body, replacing the token with stdout. Disable globally via `disableSkillShellExecution: true`.
 
@@ -124,11 +124,13 @@ Recommended structure:
 4. **Output format** (if structured output is expected).
 
 The body must:
+
 - Be focused on a single task.
 - Use substitutions correctly (every `$N` referenced has a matching positional slot).
 - Use `${CLAUDE_SKILL_DIR}` for paths to bundled assets, never absolute paths.
 
 The body must NOT:
+
 - Carry trigger language ("Use this when…") — the slash is the trigger.
 - Reference other commands or skills.
 - Re-state the description.

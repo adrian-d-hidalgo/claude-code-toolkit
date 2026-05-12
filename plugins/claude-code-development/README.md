@@ -4,8 +4,8 @@ Opinionated senior software-developer sub-agent for Claude Code. Encodes four co
 
 ## What it ships
 
-| Component | Type | Auto-trigger |
-|---|---|---|
+| Component            | Type      | Auto-trigger                                                                     |
+| -------------------- | --------- | -------------------------------------------------------------------------------- |
 | `software-developer` | sub-agent | Whenever the user asks to write, modify, refactor, debug, implement, or fix code |
 
 ## The four core rules
@@ -15,7 +15,7 @@ Opinionated senior software-developer sub-agent for Claude Code. Encodes four co
 3. **Surgical Changes** — touch only what the task requires; match existing style.
 4. **Goal-Driven Execution** — define success criteria; loop until verified.
 
-Each is stated with a *reason* and (where applicable) an *exception* so the model can generalise to edge cases rather than overfit to the rule's wording.
+Each is stated with a _reason_ and (where applicable) an _exception_ so the model can generalise to edge cases rather than overfit to the rule's wording.
 
 ## Engineering rules (tech-agnostic)
 
@@ -36,13 +36,13 @@ Fifteen practices applied uniformly across languages and frameworks. Highlights:
 - Measure before optimising.
 - Surface risks at the start, not at the deadline.
 
-Sources cited inline in the agent body: *Software Engineering at Google*, *Site Reliability Engineering*, *The Pragmatic Programmer*, *Code Complete 2*, *Clean Code*, 12factor.net, Conventional Commits 1.0.0, *The Staff Engineer's Path* (Tanya Reilly).
+Sources cited inline in the agent body: _Software Engineering at Google_, _Site Reliability Engineering_, _The Pragmatic Programmer_, _Code Complete 2_, _Clean Code_, 12factor.net, Conventional Commits 1.0.0, _The Staff Engineer's Path_ (Tanya Reilly).
 
 ## Comment philosophy
 
 Twelve rules favouring self-documenting code. Highlights:
 
-- Explain *why*, not *what*.
+- Explain _why_, not _what_.
 - Prefer a better identifier over a comment.
 - Delete commented-out code on sight.
 - Skip doc-blocks on trivial internal helpers; require them on public API surface.
@@ -50,9 +50,9 @@ Twelve rules favouring self-documenting code. Highlights:
 - No tombstone comments (PR numbers, dates, in-source changelogs).
 - Inline comments signal a function that should be decomposed.
 - Comments must survive a refactor — or do not write them.
-- For AI-assisted workflows, comment *invariants* (concurrency, security, performance budgets), not narration.
+- For AI-assisted workflows, comment _invariants_ (concurrency, security, performance budgets), not narration.
 
-Sources cited inline: Linux Kernel Coding Style, *Clean Code*, Rust API Guidelines, PEP 257/8, Google Documentation Best Practices, Addy Osmani's 2026 LLM coding workflow.
+Sources cited inline: Linux Kernel Coding Style, _Clean Code_, Rust API Guidelines, PEP 257/8, Google Documentation Best Practices, Addy Osmani's 2026 LLM coding workflow.
 
 ## Install
 

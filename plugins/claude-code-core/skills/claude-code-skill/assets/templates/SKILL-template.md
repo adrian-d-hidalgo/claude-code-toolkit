@@ -18,6 +18,7 @@ Automates PDF manipulation tasks including rotation, merging, splitting, and tex
 ## Overview
 
 What this skill provides:
+
 - Rotate PDF pages (90°, 180°, 270°)
 - Merge multiple PDF files into single document
 - Split PDFs by page ranges or individual pages
@@ -52,10 +53,11 @@ Output: "Created document_rotated.pdf with all pages rotated 90°"
 **Example 2: Merge Multiple PDFs**
 Input: "Merge report1.pdf, report2.pdf, and summary.pdf into final_report.pdf"
 Workflow:
+
 1. Validate all input PDFs exist
 2. Execute merge operation (see references/pdf-operations.md)
 3. Verify page count: 45 pages total
-Output: "Successfully merged 3 PDFs into final_report.pdf (45 pages)"
+   Output: "Successfully merged 3 PDFs into final_report.pdf (45 pages)"
 
 **Example 3: Extract Text with Errors**
 Input: "Extract text from scanned_document.pdf"
@@ -65,21 +67,24 @@ Output: "Warning: document contains scanned images. OCR required. Extracted 0 te
 ## Resources
 
 **Scripts** (scripts/):
+
 - pdf_processor.py - Core PDF manipulation operations (rotate, merge, split, extract)
 
 **References** (references/):
+
 - pdf-operations.md - Detailed operation specifications and parameters
 - troubleshooting.md - Common errors and solutions
 
 **Assets** (assets/):
+
 - example.pdf - Sample PDF for testing operations
 
 ## Common Issues
 
-| Problem | Solution |
-|---------|----------|
-| "PDF is encrypted" | Use --password flag or remove encryption first |
-| "Invalid page range" | Verify page numbers exist (1-indexed) |
+| Problem                       | Solution                                       |
+| ----------------------------- | ---------------------------------------------- |
+| "PDF is encrypted"            | Use --password flag or remove encryption first |
+| "Invalid page range"          | Verify page numbers exist (1-indexed)          |
 | "Memory error with large PDF" | Process in chunks using --batch-size parameter |
 
 See references/troubleshooting.md for complete issue database.
@@ -87,6 +92,7 @@ See references/troubleshooting.md for complete issue database.
 ## Output Format
 
 Provide concise responses:
+
 - Bullet points over paragraphs
 - Explanations limited to 3-5 sentences unless detail requested
 - Code examples only when needed

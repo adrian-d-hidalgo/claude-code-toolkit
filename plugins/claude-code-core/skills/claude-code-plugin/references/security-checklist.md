@@ -19,7 +19,7 @@ Comprehensive security validation for Claude Code plugins and MCP servers.
 - [ ] **No sensitive data** in committed files
 - [ ] **Proper file permissions** on scripts (chmod 755 for executables)
 - [ ] **No world-writable files**
-- [ ] **.gitignore** includes: .env, *.key, *.pem, secrets/, credentials.json
+- [ ] **.gitignore** includes: .env, _.key, _.pem, secrets/, credentials.json
 
 ### Documentation Security
 
@@ -43,6 +43,7 @@ Comprehensive security validation for Claude Code plugins and MCP servers.
 - [ ] **Path traversal prevention** in file operations
 
 **Example validation**:
+
 ```python
 def validate_input(user_input: str, max_length: int = 1000) -> str:
     # Length check
@@ -76,6 +77,7 @@ def validate_input(user_input: str, max_length: int = 1000) -> str:
 - [ ] **No secrets in error messages**
 
 **Example secret handling**:
+
 ```python
 import os
 from cryptography.fernet import Fernet
@@ -115,6 +117,7 @@ encrypted = cipher.encrypt(sensitive_data.encode())
 - [ ] **Error logging** doesn't include secrets
 
 **Example error handling**:
+
 ```python
 try:
     result = process_with_api_key(API_KEY, data)
@@ -149,6 +152,7 @@ except APIError as e:
 - [ ] **Trusted sources** only
 
 **Scan for vulnerabilities**:
+
 ```bash
 # Python
 pip install safety
@@ -173,6 +177,7 @@ dotnet list package --vulnerable
 - [ ] **Static analysis** tools used
 
 **Unsafe patterns to avoid**:
+
 ```python
 # ✗ BAD: SQL injection risk
 query = f"SELECT * FROM users WHERE name = '{user_input}'"
@@ -203,6 +208,7 @@ parsed = json.loads(user_input)  # Only if expecting JSON
 - [ ] **Backoff strategy** documented
 
 **Example rate limiter**:
+
 ```python
 from collections import defaultdict
 import time
@@ -248,6 +254,7 @@ async def call_tool(name: str, arguments: dict):
 - [ ] **Logs protected** from unauthorized access
 
 **Safe logging**:
+
 ```python
 import logging
 
@@ -336,6 +343,7 @@ logger.debug(f"API request initiated")
 - [ ] **Security tests** in test suite
 
 **Example security test**:
+
 ```python
 @pytest.mark.asyncio
 async def test_sql_injection_prevention():
@@ -377,6 +385,7 @@ async def test_path_traversal_prevention():
 - [ ] **Hall of fame** for researchers (optional)
 
 **Example SECURITY.md**:
+
 ```markdown
 # Security Policy
 

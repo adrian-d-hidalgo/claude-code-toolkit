@@ -17,6 +17,7 @@ Delete any section that doesn't apply. Replace TODOs.
 ## Security invariants
 
 <!-- Always in the first 20 lines. Absolute constraints. -->
+
 - Never commit secrets, `.env` files, API keys, or credentials.
 - No destructive shortcuts: never `--no-verify`; never `git push --force` on shared branches; never `git reset --hard` on uncommitted work; never `rm -rf` on unknown paths.
 

@@ -4,14 +4,14 @@ Meta-skills for authoring Claude Code extensions. Each skill scaffolds, refactor
 
 ## What it ships
 
-| Skill | Triggers on |
-|---|---|
-| [`claude-code-skill`](./skills/claude-code-skill/SKILL.md) | Authoring or refactoring a Claude Code skill. |
-| [`claude-code-sub-agent`](./skills/claude-code-sub-agent/SKILL.md) | Authoring or refactoring a sub-agent. |
+| Skill                                                                      | Triggers on                                            |
+| -------------------------------------------------------------------------- | ------------------------------------------------------ |
+| [`claude-code-skill`](./skills/claude-code-skill/SKILL.md)                 | Authoring or refactoring a Claude Code skill.          |
+| [`claude-code-sub-agent`](./skills/claude-code-sub-agent/SKILL.md)         | Authoring or refactoring a sub-agent.                  |
 | [`claude-code-slash-command`](./skills/claude-code-slash-command/SKILL.md) | Authoring slash commands or deciding command-vs-skill. |
-| [`claude-code-plugin`](./skills/claude-code-plugin/SKILL.md) | Authoring plugin manifests and marketplaces. |
-| [`claude-code-hook`](./skills/claude-code-hook/SKILL.md) | Configuring lifecycle hooks. |
-| [`claude-code-claude-md`](./skills/claude-code-claude-md/SKILL.md) | Authoring CLAUDE.md memory files at any scope. |
+| [`claude-code-plugin`](./skills/claude-code-plugin/SKILL.md)               | Authoring plugin manifests and marketplaces.           |
+| [`claude-code-hook`](./skills/claude-code-hook/SKILL.md)                   | Configuring lifecycle hooks.                           |
+| [`claude-code-claude-md`](./skills/claude-code-claude-md/SKILL.md)         | Authoring CLAUDE.md memory files at any scope.         |
 
 Each skill includes:
 
@@ -100,6 +100,7 @@ The harness reports two independent metrics per case:
 For **skills** the pass gate is routing accuracy (target ≥ 0.90). For **sub-agents** the pass gate is the judge outcome — sub-agent delegation in headless `--print` mode is conservative by design (Claude often handles small coding tasks inline), so routing is reported as informational with a separate `delegation_rate` field.
 
 The plugin discovers corpora at:
+
 - `skills/*/tests/activation-evals.json` (skill corpora, `kind: "skill"`)
 - `tests/*/activation-evals.json` (sub-agent corpora, `kind: "subagent"`)
 

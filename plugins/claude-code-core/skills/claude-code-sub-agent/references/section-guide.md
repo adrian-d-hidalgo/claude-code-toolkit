@@ -179,11 +179,13 @@ Recommended sections, in order:
 7. **Reporting format** — how the agent should summarize results.
 
 The body must:
+
 - Use imperative ("Read the file before editing", not "I will read the file").
 - State invariants, not narration.
 - Be ≤200 lines. Push deep playbooks into `references/` of the agent's directory (if used) or into a preloaded skill.
 
 The body must NOT:
+
 - Repeat the description verbatim.
 - Carry trigger language.
 - Mention specific external agents/skills/projects.

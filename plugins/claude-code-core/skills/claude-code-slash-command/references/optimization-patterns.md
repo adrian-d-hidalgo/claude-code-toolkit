@@ -20,9 +20,9 @@ Performance optimization techniques for Claude Code commands.
 ```markdown
 ❌ Slow:
 For each file:
-  Read file
-  Process
-  Write file
+Read file
+Process
+Write file
 
 ✅ Fast:
 Read all files in parallel
@@ -31,6 +31,7 @@ Write all in parallel
 ```
 
 **Implementation**:
+
 ```markdown
 ## Implementation Steps
 
@@ -57,10 +58,12 @@ If yes, run expensive operation
 ```
 
 **Example**:
+
 ```markdown
 ## Installation Check
 
 **Before installing dependencies**:
+
 1. Check if already installed
 2. Check if versions compatible
 3. If all present and compatible, skip installation
@@ -76,6 +79,7 @@ If yes, run expensive operation
 
 ```markdown
 **Cache strategy**:
+
 1. Check if result already computed
 2. If cached and fresh, use cached result
 3. If not cached or stale, compute
@@ -83,10 +87,12 @@ If yes, run expensive operation
 ```
 
 **Example**:
+
 ```markdown
 ## Package Version Check
 
 First check:
+
 - Read package.json → Parse → Cache
 - Use cached version for subsequent checks
 - Only re-read if file modified
@@ -121,11 +127,11 @@ Perform operation C on content
 
 ```markdown
 ❌ Slow:
-Glob("**/*")  # Finds everything
+Glob("\*_/_") # Finds everything
 Then filter for .ts files
 
 ✅ Fast:
-Glob("**/*.ts")  # Finds only .ts files
+Glob("\*_/_.ts") # Finds only .ts files
 ```
 
 ### Incremental Processing
@@ -156,10 +162,10 @@ Glob("**/*.ts")  # Finds only .ts files
 
 ```markdown
 ❌ Slow:
-Grep(pattern, path=".")  # Searches everything
+Grep(pattern, path=".") # Searches everything
 
 ✅ Fast:
-Grep(pattern, path="src", glob="*.ts")  # Specific location and type
+Grep(pattern, path="src", glob="\*.ts") # Specific location and type
 ```
 
 ### Early Termination
@@ -170,12 +176,13 @@ Grep(pattern, path="src", glob="*.ts")  # Specific location and type
 
 ```markdown
 **Search strategy**:
+
 1. Search with head_limit for quick results
 2. If sufficient results, stop
 3. If insufficient, broaden search
 
 Example:
-Grep(pattern, head_limit=10)  # Stop after 10 matches
+Grep(pattern, head_limit=10) # Stop after 10 matches
 ```
 
 ## Command Structure Optimization
@@ -190,12 +197,15 @@ Grep(pattern, head_limit=10)  # Stop after 10 matches
 **Command structure**:
 
 ## Main Command Body
+
 [Core instructions - always loaded]
 
 ## Detailed Documentation
+
 [Detailed guide - reference when needed]
 
 Load references/detailed-guide.md when:
+
 - User explicitly requests details
 - Error handling needs specifics
 - Complex scenario encountered
@@ -209,6 +219,7 @@ Load references/detailed-guide.md when:
 
 ```markdown
 **Optimization techniques**:
+
 1. Remove unnecessary words (target 30% reduction)
 2. Use bullet points instead of prose
 3. Move extensive examples to references/
@@ -217,11 +228,13 @@ Load references/detailed-guide.md when:
 ```
 
 **Before** (verbose):
+
 ```markdown
 This command is designed to help you set up the testing infrastructure for your project. It will install the necessary dependencies and create configuration files.
 ```
 
 **After** (concise):
+
 ```markdown
 Sets up project testing: installs dependencies, creates configuration.
 ```
@@ -234,11 +247,13 @@ Sets up project testing: installs dependencies, creates configuration.
 
 ```markdown
 **Main command** (<500 lines):
+
 - Task identification
 - Core workflow steps
 - Key decisions points
 
 **References** (deep-dive):
+
 - references/detailed-patterns.md
 - references/advanced-examples.md
 - references/troubleshooting.md
@@ -256,11 +271,13 @@ Sets up project testing: installs dependencies, creates configuration.
 ## Prerequisites & Validation
 
 **Check before execution**:
+
 1. Required tools installed
 2. Required files present
 3. Required permissions available
 
 **If any missing**:
+
 - Report specific missing item
 - Suggest resolution
 - Exit immediately (don't waste time on doomed execution)
@@ -277,13 +294,15 @@ Sets up project testing: installs dependencies, creates configuration.
 Install dependencies
 Run tests
 Build project
+
 # Total: sum of all times
 
 ✅ Parallel (fast):
 In parallel:
-  Install dependencies
-  Run linter
-  Build documentation
+Install dependencies
+Run linter
+Build documentation
+
 # Total: max of individual times
 ```
 
@@ -297,13 +316,15 @@ In parallel:
 ❌ Eager (wasteful):
 expensive_value = compute_expensive_operation()
 if condition:
-  use(expensive_value)
+use(expensive_value)
+
 # Computed even if condition false
 
 ✅ Lazy (efficient):
 if condition:
-  expensive_value = compute_expensive_operation()
-  use(expensive_value)
+expensive_value = compute_expensive_operation()
+use(expensive_value)
+
 # Only computed when needed
 ```
 
@@ -325,6 +346,7 @@ For operations > 5 seconds:
 3. **Completion**: "✅ Installation complete (15.3s)"
 
 For operations > 30 seconds:
+
 - Provide estimated time remaining
 - Show current step of multi-step process
 ```
@@ -339,10 +361,12 @@ For operations > 30 seconds:
 ## Search Results Pattern
 
 Instead of:
+
 - Search everything
 - Then show all results
 
 Do:
+
 - Start search
 - Show results as found
 - Continue searching
@@ -359,6 +383,7 @@ Do:
 ## Fast Error Recovery
 
 On error:
+
 1. **Immediate rollback** (if changes made)
 2. **Clear error message** (no debugging needed)
 3. **Specific solution** (not generic advice)
@@ -375,12 +400,14 @@ User back to working state quickly
 
 ```markdown
 **Command execution**:
+
 - Total execution time
 - Time per major step
 - Number of files processed
 - Cache hit rate
 
 **Resource usage**:
+
 - Peak memory usage
 - Disk I/O operations
 - Network requests made
@@ -392,11 +419,13 @@ User back to working state quickly
 
 ```markdown
 **Typical performance**:
+
 - Small project (<100 files): <5s
 - Medium project (100-500 files): <15s
 - Large project (>500 files): <60s
 
 **If exceeding baseline**:
+
 - Investigate bottlenecks
 - Apply optimization patterns
 - Consider splitting command
@@ -467,7 +496,7 @@ Before finalizing command:
 
 - [ ] Validated prerequisites early (fail fast)
 - [ ] Batched file operations where possible
-- [ ] Used specific glob patterns (not **/*)
+- [ ] Used specific glob patterns (not \*_/_)
 - [ ] Minimized file reads (read once, use many)
 - [ ] Provided progress feedback for long operations
 - [ ] Parallel execution for independent operations
@@ -485,6 +514,7 @@ Before finalizing command:
 **Target**: <10s for typical operations
 
 **Focus**:
+
 - Fast prerequisite validation
 - Efficient file operations
 - Quick error recovery
@@ -495,6 +525,7 @@ Before finalizing command:
 **Target**: <30s for comprehensive search
 
 **Focus**:
+
 - Progressive search (stop when sufficient)
 - Parallel web requests
 - Early result display
@@ -505,6 +536,7 @@ Before finalizing command:
 **Target**: <5s for file creation
 
 **Focus**:
+
 - Minimal validation overhead
 - Fast template loading
 - Quick directory creation

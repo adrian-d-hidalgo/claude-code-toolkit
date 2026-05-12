@@ -13,6 +13,7 @@
 ## Commands
 
 Validators:
+
 ```
 python3 plugins/claude-code-core/shared/scripts/validate_plugin.py plugins/<plugin> --marketplace .
 python3 plugins/claude-code-core/shared/scripts/validate_skill.py <skill-dir>/
@@ -21,9 +22,11 @@ python3 plugins/claude-code-core/shared/scripts/validate_hooks.py <hooks.json>
 ```
 
 Activation evals:
+
 ```
 python3 scripts/run_activation_evals.py --all plugins/claude-code-core --live --judge
 ```
+
 Reports auto-write to `.eval-runs/.eval-<scope>-<UTC-timestamp>.json`.
 
 ## Authoring

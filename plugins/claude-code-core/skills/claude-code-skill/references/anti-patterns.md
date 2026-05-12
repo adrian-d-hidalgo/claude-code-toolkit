@@ -76,13 +76,15 @@ Mistakes seen in the wild that this skill must reject. Each entry: pattern → w
 
 ## Test file with only positive cases
 
-**Pattern**: `tests/activation-tests.md` lists 10 cases, all of which should activate the skill.
+**Pattern**: `tests/activation-evals.json` lists 10 cases, all with `"should_trigger": true`.
 
-**Why wrong**: Without negative cases, you can't detect over-triggering. Common in early skill authoring.
+**Why wrong**: Without negative cases, you can't detect over-triggering. Common in early skill authoring. The canonical corpus is JSON because the repo-level `run_activation_evals.py` runner consumes it directly — a Markdown-only "test file" is invisible to the eval harness.
 
-**Fix**: Match every positive case with at least one adjacent negative case ("create a sub-agent" should NOT activate the skill skill).
+**Fix**: Match every positive case with at least one adjacent negative case ("create a sub-agent" should NOT activate the skill skill). Author the corpus in `activation-evals.json`; any sibling `.md` is only a human-readable pointer.
 
 ## Eval domain-pattern that captures sibling meta-skills
+
+> See `routing-detection.md` for the positive guide to `DOMAIN_PATTERNS` (when to register, schema, decision tree). This section documents one specific failure mode.
 
 **Pattern**: A meta-skill's eval `DOMAIN_PATTERNS` declares `paths: ["**/skills/**"]` to detect when Claude touches its territory. When several meta-skills coexist in the same plugin (`plugins/foo/skills/A/`, `plugins/foo/skills/B/`, …), the glob matches every sibling's `SKILL.md` too.
 

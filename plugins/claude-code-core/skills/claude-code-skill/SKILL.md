@@ -18,12 +18,12 @@ End-to-end authoring toolkit for Claude Code skills. Covers the full lifecycle: 
 
 This skill operates in four modes. Choose by intent.
 
-| Intent | Mode |
-|---|---|
-| "create / scaffold / build / design a new skill" | **Create** — generate the directory + SKILL.md + supporting files. |
-| "refactor / improve / clean up an existing SKILL.md" | **Refactor** — restructure, split into references, tighten trigger. |
-| "validate / lint / check this skill" | **Validate** — schema + frontmatter + structural checks. |
-| "audit / review / assess skill quality" | **Audit** — activation quality, security, token efficiency, production-readiness. |
+| Intent                                               | Mode                                                                              |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------- |
+| "create / scaffold / build / design a new skill"     | **Create** — generate the directory + SKILL.md + supporting files.                |
+| "refactor / improve / clean up an existing SKILL.md" | **Refactor** — restructure, split into references, tighten trigger.               |
+| "validate / lint / check this skill"                 | **Validate** — schema + frontmatter + structural checks.                          |
+| "audit / review / assess skill quality"              | **Audit** — activation quality, security, token efficiency, production-readiness. |
 
 ## Authoritative field reference
 
@@ -34,9 +34,11 @@ Same file documents the directory layout — what `references/`, `assets/templat
 ## Mode: Create
 
 1. **Scaffold** the directory with the init script:
+
    ```bash
    python3 plugins/claude-code-core/skills/claude-code-skill/scripts/init_skill.py <skill-name> --path ~/.claude/skills/
    ```
+
    Creates `SKILL.md` (with frontmatter placeholders), `references/`, `assets/templates/`, `scripts/`, `tests/`.
 
 2. **Gather requirements** following `references/requirement-analysis-protocol.md`: domain, 3–5 concrete usage examples, trigger phrases, edge cases, explicit non-goals.
@@ -56,15 +58,17 @@ Same file documents the directory layout — what `references/`, `assets/templat
    - `references/*.md` — long docs Claude loads only when needed. Always include `section-guide.md`, `anti-patterns.md`, `CURRENT-DOCS-INDEX.md`.
    - `assets/templates/*` — reusable templates with commented placeholders documenting each field.
    - `scripts/*` — only when there is genuine repeated logic; otherwise omit.
-   - `tests/activation-tests.md` — minimum 5 positive + 5 negative + 3 edge cases.
+   - `tests/activation-evals.json` — canonical eval corpus consumed by the repo-level `run_activation_evals.py` runner. Minimum 5 positive + 5 negative + 3 edge cases. A sibling `activation-tests.md` is optional and only ever a human-readable pointer to the JSON.
 
-6. **Validate** before sign-off (see Validate mode).
+6. **Register routing detection** (if the skill edits files in a specific domain). The runner detects "this skill fired" via `Skill(<name>)` tool_use **OR** path/command matches in `DOMAIN_PATTERNS` inside the repo-level `run_activation_evals.py` runner. Domain-editing skills without an entry will live with artificially-low live-eval routing scores. Output-only skills (produce text, don't write files) need no entry. See `references/routing-detection.md` for the decision tree and schema.
+
+7. **Validate** before sign-off (see Validate mode).
 
 ## Mode: Refactor
 
 Run when an existing SKILL.md is bloated, has weak triggers, or mixes routing and behavior.
 
-1. Read the current `SKILL.md`, all `references/`, and `tests/activation-tests.md`.
+1. Read the current `SKILL.md`, all `references/`, and `tests/activation-evals.json` (the canonical corpus consumed by the repo-level `run_activation_evals.py` runner).
 2. Apply `references/optimization-patterns.md` and `references/composition-patterns.md`.
 3. Split: move any section >50 lines into a new `references/<topic>.md`.
 4. Rewrite `description` against the routing-trigger contract from `references/section-guide.md`.
@@ -105,6 +109,7 @@ When the path is `.claude/skills/*` or `~/.claude/skills/*`, this skill applies.
 ## Reference index
 
 Local (this skill):
+
 - `references/section-guide.md` — every SKILL.md frontmatter field + every directory, exhaustively documented.
 - `references/CURRENT-DOCS-INDEX.md` — links to upstream Anthropic docs this skill mirrors.
 - `references/anti-patterns.md` — common authoring mistakes.
@@ -115,8 +120,10 @@ Local (this skill):
 - `references/deployment-checklist.md` — pre-ship checklist.
 - `references/lifecycle-management.md` — versioning + deprecation.
 - `references/optimization-patterns.md` — refactoring patterns.
+- `references/routing-detection.md` — when and how to register a skill in `DOMAIN_PATTERNS` so live evals score routing correctly.
 
 Shared (across all `claude-code-*` skills):
+
 - `${CLAUDE_PLUGIN_ROOT}/shared/protocols/skills/validation-protocol.md`
 - `${CLAUDE_PLUGIN_ROOT}/shared/protocols/skills/activation-protocol.md`
 - `${CLAUDE_PLUGIN_ROOT}/shared/scripts/validate_skill.py`
@@ -127,8 +134,10 @@ Shared (across all `claude-code-*` skills):
 - `${CLAUDE_PLUGIN_ROOT}/shared/references/skills/best-practices-comprehensive.md`
 
 Templates (this skill):
+
 - `assets/templates/SKILL-template.md` — annotated SKILL.md skeleton.
-- `assets/templates/test-suite-template.md` — activation-tests.md skeleton.
+- `assets/templates/activation-evals-template.json` — canonical eval-corpus skeleton (positive + negative + edge).
 
 Scripts (this skill):
+
 - `scripts/init_skill.py` — scaffold a new skill.

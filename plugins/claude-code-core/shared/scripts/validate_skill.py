@@ -24,6 +24,12 @@ import sys
 from pathlib import Path
 from typing import List, Tuple
 
+try:
+    import yaml
+    HAS_YAML = True
+except ImportError:
+    HAS_YAML = False
+
 
 # Official allowed-tools list (common tools)
 VALID_TOOLS = [
@@ -32,6 +38,81 @@ VALID_TOOLS = [
     'NotebookEdit', 'MultiEdit', 'AskUserQuestion',
     'SlashCommand', 'Skill', 'BashOutput', 'KillShell'
 ]
+
+# Permission patterns may wrap a base tool with a glob, e.g. `Bash(git status:*)`,
+# `Read(./src/*)`, or `mcp__server__tool(...)`. The base name is what matters for
+# validity; the parenthesised pattern is matched at runtime by the harness.
+MCP_TOOL_PATTERN = re.compile(r'^mcp__[a-zA-Z0-9_-]+__[a-zA-Z0-9_-]+$')
+
+
+def _base_tool_name(tool_str: str) -> str:
+    """Strip any `(...)` permission pattern, returning the base tool identifier."""
+    paren = tool_str.find('(')
+    return tool_str[:paren].strip() if paren != -1 else tool_str.strip()
+
+
+def _is_valid_tool(tool_str: str) -> bool:
+    base = _base_tool_name(tool_str)
+    return base in VALID_TOOLS or bool(MCP_TOOL_PATTERN.match(base))
+
+
+_TOP_KEY_RE = re.compile(r'^[A-Za-z][\w-]*:')
+
+
+def _parse_frontmatter_fallback(yaml_content: str):
+    """Minimal YAML scanner used when PyYAML is not installed.
+
+    Handles the three fields we care about (name, description, allowed-tools)
+    and correctly folds `description: >` block scalars by joining indented
+    continuation lines with spaces — which is what the YAML spec mandates and
+    what a regex `^description: (.+)$` cannot do on its own.
+    """
+    name = None
+    desc = None
+    tools = None
+
+    lines = yaml_content.split('\n')
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if line.startswith('name:'):
+            name = line.split(':', 1)[1].strip() or None
+            i += 1
+            continue
+        if line.startswith('description:'):
+            head = line.split(':', 1)[1].strip()
+            folded = head.lstrip('>|').strip()
+            parts = [folded] if folded else []
+            i += 1
+            while i < len(lines):
+                nxt = lines[i]
+                if nxt and not nxt.startswith((' ', '\t')) and _TOP_KEY_RE.match(nxt):
+                    break
+                parts.append(nxt.strip())
+                i += 1
+            desc = ' '.join(p for p in parts if p)
+            continue
+        if line.startswith('allowed-tools:'):
+            inline = line.split(':', 1)[1].strip()
+            collected = []
+            if inline and not inline.startswith('>') and not inline.startswith('|'):
+                collected.extend(t.strip() for t in inline.strip('[]').split(',') if t.strip())
+            i += 1
+            while i < len(lines):
+                nxt = lines[i]
+                stripped = nxt.lstrip()
+                if not nxt.startswith((' ', '\t')) and stripped and _TOP_KEY_RE.match(stripped):
+                    break
+                if stripped.startswith('- '):
+                    collected.append(stripped[2:].strip())
+                elif not stripped:
+                    pass
+                i += 1
+            tools = collected or None
+            continue
+        i += 1
+
+    return name, desc, tools
 
 # First/second person indicators (should use third person)
 PERSON_INDICATORS = [
@@ -104,16 +185,32 @@ class SkillValidator:
             lines_with_tabs = [i+1 for i, line in enumerate(yaml_content.split('\n')) if '\t' in line]
             self.error(f"Tabs found in YAML (use spaces). Lines: {lines_with_tabs}")
 
-        # Extract fields
-        name_match = re.search(r'^name:\s*(.+)$', yaml_content, re.MULTILINE)
-        desc_match = re.search(r'^description:\s*>?\s*(.+?)(?=^[a-z-]+:|$)', yaml_content, re.MULTILINE | re.DOTALL)
-        tools_match = re.search(r'^allowed-tools:\s*\n((?:  - .+\n?)+)', yaml_content, re.MULTILINE)
+        # Parse with PyYAML when available — this is the only correct way to
+        # measure folded scalars (`description: >`) and block lists, because the
+        # YAML spec folds newlines into spaces and joins continuation lines.
+        parsed = None
+        if HAS_YAML:
+            try:
+                parsed = yaml.safe_load(yaml_content) or {}
+            except yaml.YAMLError as exc:
+                self.error(f"YAML parse error: {exc}")
+                parsed = None
+
+        if parsed is not None:
+            name = parsed.get("name")
+            desc = parsed.get("description")
+            tools = parsed.get("allowed-tools")
+        else:
+            # Fallback when PyYAML is unavailable. We still need to fold the
+            # `description: >` block scalar, so we scan line-by-line and gather
+            # indented continuation lines until the next top-level key.
+            name, desc, tools = _parse_frontmatter_fallback(yaml_content)
 
         # Validate name (required)
-        if not name_match:
+        if not name:
             self.error("'name' field missing in YAML frontmatter")
         else:
-            name = name_match.group(1).strip()
+            name = str(name).strip()
             if len(name) > 64:
                 self.error(f"Name too long: {len(name)}/64 chars")
             else:
@@ -124,11 +221,13 @@ class SkillValidator:
                 self.warning(f"Name should be kebab-case: {name}")
 
         # Validate description (required)
-        if not desc_match:
+        if not desc:
             self.error("'description' field missing in YAML frontmatter")
         else:
-            # Clean description (remove newlines for length check)
-            desc = ' '.join(desc_match.group(1).split())
+            # Collapse internal whitespace so the length count reflects what
+            # users actually see (folded scalars already join lines with spaces;
+            # this also normalises any stray runs of whitespace).
+            desc = ' '.join(str(desc).split())
             if len(desc) > 1024:
                 self.error(f"Description too long: {len(desc)}/1024 chars")
             else:
@@ -136,18 +235,21 @@ class SkillValidator:
 
             # Check for first/second person
             desc_lower = desc.lower()
+            desc_for_check = re.sub(r'"[^"]*"', '', desc_lower)
+            desc_for_check = re.sub(r'`[^`]*`', '', desc_for_check)
             for pattern in PERSON_INDICATORS:
-                if re.search(pattern, desc_lower):
+                if re.search(pattern, desc_for_check):
                     self.warning(f"Description should use third person (found '{pattern.strip()}' pattern)")
                     break
             else:
                 self.success("Description uses third person")
 
         # Validate allowed-tools (optional but if present, must be valid)
-        if tools_match:
-            tools_text = tools_match.group(1)
-            tools = re.findall(r'- (.+)', tools_text)
-            invalid_tools = [t for t in tools if t not in VALID_TOOLS]
+        if tools:
+            if not isinstance(tools, list):
+                self.warning(f"allowed-tools should be a YAML list, got {type(tools).__name__}")
+                tools = []
+            invalid_tools = [t for t in tools if not _is_valid_tool(str(t))]
             if invalid_tools:
                 self.warning(f"Potentially invalid tools: {invalid_tools}")
             else:
@@ -165,32 +267,30 @@ class SkillValidator:
 
     def _validate_references(self, content: str):
         """Validate referenced files exist"""
-        # Find all references to files
         ref_patterns = [
-            r'references/([a-z-]+\.md)',
-            r'scripts/([a-z_]+\.py)',
-            r'assets/templates/([a-zA-Z-]+\.md)'
+            r'(references/[a-z-]+\.md)',
+            r'(scripts/[a-z_]+\.py)',
+            r'(assets/templates/[a-zA-Z0-9_.-]+\.(?:md|json|sh|py))',
         ]
+
+        skip_prefix_re = re.compile(
+            r'(\$\{[A-Z_]+\}/(shared/)?|the repo-level |repo-root |the toolkit\'s )$'
+        )
 
         all_refs = []
         for pattern in ref_patterns:
-            all_refs.extend(re.findall(pattern, content))
+            for match in re.finditer(pattern, content):
+                if skip_prefix_re.search(content[:match.start()]):
+                    continue
+                all_refs.append(match.group(1))
 
         if not all_refs:
             self.info.append("ℹ No file references found")
             return
 
-        # Check each reference exists
         missing = []
-        for ref in set(all_refs):  # unique refs
-            # Reconstruct path
-            if ref.endswith('.py'):
-                ref_path = self.skill_path / "scripts" / ref
-            elif 'template' in ref.lower():
-                ref_path = self.skill_path / "assets" / "templates" / ref
-            else:
-                ref_path = self.skill_path / "references" / ref
-
+        for ref in set(all_refs):
+            ref_path = self.skill_path / ref
             if not ref_path.exists():
                 missing.append(str(ref_path.relative_to(self.skill_path)))
 

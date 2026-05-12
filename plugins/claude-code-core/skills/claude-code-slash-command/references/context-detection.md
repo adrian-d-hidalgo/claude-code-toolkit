@@ -5,6 +5,7 @@ Implementation patterns for detecting and respecting project structure before fi
 ## Why Context Detection Matters
 
 **Problem**: Commands that create files without checking location can:
+
 - Create files in wrong directory
 - Pollute root directory
 - Miss existing project structure
@@ -22,6 +23,7 @@ Glob("**/.claude", path=current_working_directory)
 ```
 
 **Outcomes**:
+
 - **Found**: Use project-specific .claude/commands/
 - **Not found**: Use global ~/.claude/commands/
 - **Multiple found**: Use closest to current working directory
@@ -34,6 +36,7 @@ Glob(".claude/commands/**")
 ```
 
 **Outcomes**:
+
 - **Exists**: Use existing structure
 - **Not exists**: Create structure first
 
@@ -42,11 +45,13 @@ Glob(".claude/commands/**")
 Based on command type:
 
 **Action/Development commands**:
+
 - `.claude/commands/core/` - Meta-operations
 - `.claude/commands/development/` - Development tasks
 - `.claude/commands/[technology]/` - Tech-specific (angular, react, etc.)
 
 **Research commands**:
+
 - `.claude/commands/research/development/` - Technical research
 - `.claude/commands/research/business/` - Business research
 - `.claude/commands/research/general/` - General information
@@ -61,6 +66,7 @@ mkdir -p .claude/commands/[category]/[subcategory]
 ```
 
 **Safety checks**:
+
 - Verify parent directory exists
 - Check write permissions
 - Handle creation errors gracefully
@@ -79,7 +85,7 @@ Output: "Created command at .claude/commands/[category]/[subcategory]/[name].md"
 
 ### For Creation Commands
 
-```markdown
+````markdown
 ## Context Detection Implementation
 
 **Before creating any files**:
@@ -88,13 +94,16 @@ Output: "Created command at .claude/commands/[category]/[subcategory]/[name].md"
    ```bash
    Use Glob("**/.claude") to find project structure
    ```
+````
 
 2. **Verify commands directory**:
+
    ```bash
    Use Glob(".claude/commands/**") to check existing structure
    ```
 
 3. **Create directory structure if needed**:
+
    ```bash
    Create .claude/commands/[category]/ if missing
    ```
@@ -105,6 +114,7 @@ Output: "Created command at .claude/commands/[category]/[subcategory]/[name].md"
    - Based on purpose (core/development/research)
 
 5. **Create file in correct location**:
+
    ```bash
    .claude/commands/[category]/[subcategory]/[command-name].md
    ```
@@ -115,7 +125,8 @@ Output: "Created command at .claude/commands/[category]/[subcategory]/[name].md"
    ```
 
 **Never create files in root directory unless explicitly intended.**
-```
+
+````
 
 ### For Validation Commands
 
@@ -138,7 +149,7 @@ Output: "Created command at .claude/commands/[category]/[subcategory]/[name].md"
    - [ ] Reports file location clearly
    - [ ] Confirms successful creation
    - [ ] Explains directory structure choice
-```
+````
 
 ## Real-World Examples
 
@@ -147,6 +158,7 @@ Output: "Created command at .claude/commands/[category]/[subcategory]/[name].md"
 **Scenario**: Creating Angular component generation command
 
 **Context Detection**:
+
 1. Detect .claude/ → Found at project root
 2. Check .claude/commands/ → Exists
 3. Determine category → development/angular/
@@ -160,6 +172,7 @@ Output: "Created command at .claude/commands/[category]/[subcategory]/[name].md"
 **Scenario**: Creating API documentation research command
 
 **Context Detection**:
+
 1. Detect .claude/ → Found at project root
 2. Check .claude/commands/research/ → Exists
 3. Determine domain → research/development/
@@ -172,6 +185,7 @@ Output: "Created command at .claude/commands/[category]/[subcategory]/[name].md"
 **Scenario**: User in directory without .claude/
 
 **Context Detection**:
+
 1. Detect .claude/ → Not found in project
 2. Check global ~/.claude/commands/ → Exists
 3. Determine category → development/
@@ -217,11 +231,13 @@ project-root/
 ### Missing .claude/ Directory
 
 **Detection**:
+
 ```bash
 Glob("**/.claude") returns empty
 ```
 
 **Options**:
+
 1. **Use global**: Default to ~/.claude/commands/
 2. **Ask user**: "No .claude/ found. Create in current project or use global?"
 3. **Create project**: Create .claude/commands/ in current directory
@@ -231,11 +247,13 @@ Glob("**/.claude") returns empty
 ### Permission Issues
 
 **Detection**:
+
 ```bash
 mkdir fails or Write fails with permission error
 ```
 
 **Handling**:
+
 1. Report specific error
 2. Suggest permission fix: `chmod`
 3. Offer alternative location if available
@@ -244,11 +262,13 @@ mkdir fails or Write fails with permission error
 ### Multiple .claude/ Directories
 
 **Detection**:
+
 ```bash
 Glob("**/.claude") returns multiple results
 ```
 
 **Resolution**:
+
 1. Use closest to current working directory
 2. If ambiguous, prefer parent over deeper nested
 3. Report choice to user: "Found multiple .claude/ directories, using [chosen]"
@@ -281,6 +301,7 @@ Write(.claude/commands/development/command.md, content)
 
 ```markdown
 ✅ Good:
+
 1. Detect .claude/
 2. Check .claude/commands/development/
 3. Create directory if needed
@@ -298,6 +319,7 @@ Write(~/.claude/commands/command.md, content)
 
 ```markdown
 ✅ Good:
+
 1. Detect .claude/ (project or global)
 2. Use detected location
 3. Write file to detected location
@@ -338,30 +360,35 @@ Write(.claude/commands/[category]/command.md, content)
 ### Test Scenarios
 
 **Scenario 1: Fresh Project**
+
 - Given: Project with no .claude/
 - When: Create command
 - Then: Should create .claude/commands/[category]/ and file
 - Verify: Directory structure created correctly
 
 **Scenario 2: Existing Structure**
+
 - Given: Project with .claude/commands/
 - When: Create command
 - Then: Should use existing structure
 - Verify: No duplicate directories
 
 **Scenario 3: Global Fallback**
+
 - Given: No project .claude/, global ~/.claude/ exists
 - When: Create command
 - Then: Should use global ~/.claude/commands/
 - Verify: File in global location
 
 **Scenario 4: No .claude/ Anywhere**
+
 - Given: No .claude/ in project or global
 - When: Create command
 - Then: Should create structure in appropriate location
 - Verify: Structure created with proper permissions
 
 **Scenario 5: Permission Denied**
+
 - Given: .claude/ exists but no write permission
 - When: Create command
 - Then: Should report error clearly with resolution steps

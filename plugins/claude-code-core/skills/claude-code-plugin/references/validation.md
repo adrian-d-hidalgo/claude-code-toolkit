@@ -11,6 +11,7 @@ Read: path/to/target/.mcp.json
 ```
 
 **Decision Logic**:
+
 - IF `marketplace.json` exists → **Workflow I1: Marketplace Validation**
 - IF `plugin.json` exists → **Workflow I2: Plugin Validation**
 - IF `.mcp.json` exists → **Workflow I3: MCP Configuration Validation**
@@ -33,11 +34,13 @@ python -m json.tool .claude-plugin/marketplace.json
 Load `references/plugin-schema.md` (marketplace.json section) and check:
 
 **Required fields**:
+
 - `name` (string, kebab-case)
 - `owner` (object with `name` field)
 - `plugins` (array)
 
 **For each plugin in `plugins[]`**:
+
 - `name` (string, required)
 - `source` (string, required, must start with `./`)
 - `description` (string, required)
@@ -45,6 +48,7 @@ Load `references/plugin-schema.md` (marketplace.json section) and check:
 **3. Validate Plugin References**
 
 For each `plugins[].source`:
+
 - Directory exists
 - Contains `.claude-plugin/plugin.json`
 - Plugin name matches
@@ -89,6 +93,7 @@ python -m json.tool .claude-plugin/plugin.json
 Load `references/plugin-schema.md` and check:
 
 **Minimal Required Schema**:
+
 ```json
 {
   "name": "string (required, kebab-case)",
@@ -101,12 +106,14 @@ Load `references/plugin-schema.md` and check:
 ```
 
 **Optional arrays** (if present, must reference valid files):
+
 - `commands[]` → Each file exists (relative path)
 - `agents[]` → Each file exists (relative path)
 - `skills[]` → Each directory exists (relative path)
 - `hooks` → Object with valid hook types
 
 **Optional mcpServers** (if present):
+
 - Each server has `command` and `args`
 - Commands are valid executables (python, node, dotnet, etc.)
 - Args use `${CLAUDE_PLUGIN_ROOT}` for plugin-relative paths
@@ -114,6 +121,7 @@ Load `references/plugin-schema.md` and check:
 **3. Validate Component References**
 
 For each referenced file/directory:
+
 ```bash
 Read: path/from/plugin.json
 ```
@@ -201,4 +209,3 @@ Recommendations:
 - Provide default for ${DATABASE_URL} using ${DATABASE_URL:-sqlite:///local.db}
 - Create missing server script or remove server configuration
 ```
-

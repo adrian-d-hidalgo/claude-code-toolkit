@@ -41,11 +41,13 @@ my-marketplace/                     ← Raíz del marketplace
 ## Características Clave
 
 ### Estructura Jerárquica
+
 - Cada plugin tiene **su propio directorio** en la raíz del marketplace
 - Cada plugin es **completamente independiente**
 - Cada plugin usa la estructura de **Plugin Individual** internamente
 
 ### marketplace.json
+
 Ubicación: `<marketplace-root>/.claude-plugin/marketplace.json`
 
 ```json
@@ -70,6 +72,7 @@ Ubicación: `<marketplace-root>/.claude-plugin/marketplace.json`
 ```
 
 ### Plugin Interno: plugin.json
+
 Cada plugin usa template de plugin individual:
 
 Ubicación: `<marketplace-root>/plugin-1/.claude-plugin/plugin.json`
@@ -88,6 +91,7 @@ Ubicación: `<marketplace-root>/plugin-1/.claude-plugin/plugin.json`
 ```
 
 ### Instalación
+
 ```bash
 # Instalar marketplace completo (todos los plugins)
 /plugin install /path/to/my-marketplace
@@ -99,6 +103,7 @@ Ubicación: `<marketplace-root>/plugin-1/.claude-plugin/plugin.json`
 ## Ejemplo Completo
 
 **Estructura**:
+
 ```
 dev-tools-suite/
 ├── .claude-plugin/
@@ -131,6 +136,7 @@ dev-tools-suite/
 ```
 
 **marketplace.json**:
+
 ```json
 {
   "name": "dev-tools-suite",
@@ -158,6 +164,7 @@ dev-tools-suite/
 ```
 
 **linter-plugin/.claude-plugin/plugin.json**:
+
 ```json
 {
   "name": "linter",
@@ -166,9 +173,7 @@ dev-tools-suite/
   "author": {
     "name": "DevTools Team"
   },
-  "commands": [
-    "./commands/lint.md"
-  ],
+  "commands": ["./commands/lint.md"],
   "mcpServers": {
     "linter": {
       "command": "python",
@@ -181,12 +186,14 @@ dev-tools-suite/
 ## Cuando Usar
 
 ✅ **Usa Marketplace cuando**:
+
 - Tienes múltiples plugins relacionados
 - Quieres distribuirlos juntos como suite
 - Los usuarios pueden instalar todo o plugins individuales
 - Mantienes catálogo de plugins temáticos
 
 ❌ **NO uses Marketplace cuando**:
+
 - Solo tienes un plugin
 - → En ese caso usa Plugin Individual
 
@@ -201,6 +208,7 @@ dev-tools-suite/
 ## Pasos de Creación
 
 1. **Inicializar marketplace**:
+
    ```bash
    mkdir -p my-marketplace/.claude-plugin
    ```
@@ -208,6 +216,7 @@ dev-tools-suite/
 2. **Crear marketplace.json** usando `marketplace-json-template.json`
 
 3. **Por cada plugin**:
+
    ```bash
    mkdir -p my-marketplace/plugin-1/.claude-plugin
    mkdir -p my-marketplace/plugin-1/{commands,agents,servers}
@@ -222,6 +231,7 @@ dev-tools-suite/
    - README.md de cada plugin (detalles específicos)
 
 7. **Validar**:
+
    ```bash
    python -m json.tool .claude-plugin/marketplace.json
    python -m json.tool plugin-1/.claude-plugin/plugin.json
@@ -236,6 +246,7 @@ dev-tools-suite/
 ## Relación con plugin.json
 
 **Importante**: Cada plugin dentro del marketplace es un **Plugin Individual completo**:
+
 - Tiene su propio `.claude-plugin/plugin.json`
 - Usa la estructura de Plugin Individual
 - Es independiente de otros plugins
@@ -246,6 +257,7 @@ El `marketplace.json` solo **referencia** los plugins, no define su contenido.
 ## Patterns Comunes
 
 ### 1. Suite Temática
+
 ```
 database-tools/
 ├── postgres-plugin/
@@ -254,6 +266,7 @@ database-tools/
 ```
 
 ### 2. Stack Completo
+
 ```
 fullstack-dev/
 ├── frontend-plugin/
@@ -262,6 +275,7 @@ fullstack-dev/
 ```
 
 ### 3. Framework Específico
+
 ```
 react-toolkit/
 ├── components-plugin/

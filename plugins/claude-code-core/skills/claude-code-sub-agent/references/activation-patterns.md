@@ -17,6 +17,7 @@ Examples: [4-6 detailed examples]
 **Format**: `[Role] specialist`
 
 **Examples**:
+
 - ✅ "Senior NestJS developer specialist"
 - ✅ "Security and compliance specialist"
 - ✅ "User experience design specialist"
@@ -28,6 +29,7 @@ Examples: [4-6 detailed examples]
 **Format**: `for [specific domains/technologies]`
 
 **Examples**:
+
 - ✅ "for API design, microservices architecture, database integration"
 - ✅ "for security audits, vulnerability analysis, compliance assessment"
 - ✅ "for UX research, usability testing, interface optimization"
@@ -38,6 +40,7 @@ Examples: [4-6 detailed examples]
 **Format**: `[capability1], [capability2], and [technology] best practices`
 
 **Examples**:
+
 - ✅ "authentication/authorization, testing strategies, and Node.js best practices"
 - ✅ "threat modeling, security implementation, and defensive security measures"
 - ❌ "does everything well" (not specific)
@@ -49,6 +52,7 @@ Examples: [4-6 detailed examples]
 **Format**: `Use immediately when [specific trigger conditions]`
 
 **Examples**:
+
 - ✅ "Use immediately when working with NestJS projects, designing APIs, implementing business logic, or making backend architectural decisions"
 - ✅ "Use immediately when current information is needed, technical troubleshooting is required, or comprehensive analysis is necessary"
 - ✅ "Use immediately when users need UX validation, interface design, or usability improvements"
@@ -69,6 +73,7 @@ assistant: "[Agent's response approach]"
 ```
 
 ### Example Count
+
 - **Minimum**: 4 examples
 - **Recommended**: 4-6 examples
 - **Maximum**: 6 examples
@@ -106,6 +111,7 @@ description: Research orchestration specialist for deep investigation across mul
 ## Trigger Keywords by Agent Type
 
 ### Technical Development Agents
+
 - "working with [technology]"
 - "implementing features"
 - "designing [architecture component]"
@@ -114,6 +120,7 @@ description: Research orchestration specialist for deep investigation across mul
 - "building [technology-specific component]"
 
 ### Cross-Domain Specialists
+
 - "security assessment needed"
 - "compliance requirements"
 - "quality improvement"
@@ -121,6 +128,7 @@ description: Research orchestration specialist for deep investigation across mul
 - "deployment planning"
 
 ### Orchestration Agents
+
 - "current information needed"
 - "research required"
 - "troubleshooting needed"
@@ -128,6 +136,7 @@ description: Research orchestration specialist for deep investigation across mul
 - "comparison required"
 
 ### Design/Strategy Agents
+
 - "UX validation needed"
 - "product requirements"
 - "user research"
@@ -137,59 +146,75 @@ description: Research orchestration specialist for deep investigation across mul
 ## Common Activation Mistakes
 
 ### ❌ Too Generic
+
 ```
 Use when you need help
 ```
+
 **Problem**: Doesn't specify what kind of help or when
 
 ### ❌ Missing Examples
+
 ```
 Use immediately when working with React
 ```
+
 **Problem**: No examples to demonstrate activation patterns
 
 ### ❌ Incomplete Examples
+
 ```
 <example>request: "Build feature" assistant: "OK"</example>
 ```
+
 **Problem**: Missing Context and commentary
 
 ### ❌ Wrong Example Count
+
 ```
 Examples: <example>...</example> [only 2 examples]
 ```
+
 **Problem**: Below minimum of 4 examples
 
 ### ❌ Overlapping Triggers
+
 ```
 Agent A: Use immediately when doing any development
 Agent B: Use immediately when writing code
 Agent C: Use immediately when building features
 ```
+
 **Problem**: All three trigger for same scenarios
 
 ## Best Practices
 
 ### ✅ Specific Triggers
+
 ```
 Use immediately when working with NestJS projects, designing APIs, implementing business logic, or making backend architectural decisions
 ```
 
 ### ✅ Complete Examples
+
 Each example has all 4 components:
+
 1. Context
 2. request
 3. assistant
 4. commentary
 
 ### ✅ Diverse Scenarios
+
 Examples cover:
+
 - Direct requests
 - Contextual activation
 - Delegation scenarios
 - Edge cases
 
 ### ✅ Clear Boundaries
+
 ```
 Context: Frontend styling needed
 request: "Style this component"
@@ -212,6 +237,7 @@ assistant: "This requires frontend expertise - delegating to frontend specialist
 ### Conflict Testing
 
 Test against existing agents:
+
 1. List all agent activation triggers
 2. Identify potential overlaps
 3. Refine triggers to be more specific

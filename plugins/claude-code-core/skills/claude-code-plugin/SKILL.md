@@ -127,7 +127,6 @@ Local:
 - `references/plugin-examples.md` — worked examples.
 - `references/troubleshooting-guide.md` — common failure modes.
 - `references/analysis.md` — audit workflow.
-- `references/example-guide.md` — patterns by use case.
 
 Templates:
 - `assets/templates/plugin-json-template.json`
@@ -135,7 +134,6 @@ Templates:
 - `assets/templates/plugin-readme-template.md`
 - `assets/templates/plugin-structure-individual.md`
 - `assets/templates/marketplace-structure.md`
-- `assets/templates/example-template.md`
 
 Scripts:
 - `scripts/init_plugin.sh` — scaffold a new plugin.

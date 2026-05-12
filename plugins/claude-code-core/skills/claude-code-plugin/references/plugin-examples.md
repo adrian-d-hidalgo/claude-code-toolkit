@@ -16,6 +16,7 @@ Bundles a single MCP server providing development tools.
 **Pattern**: Single MCP server
 
 **Structure**:
+
 ```
 dev-tools-plugin/
 ├── .claude-plugin/
@@ -28,6 +29,7 @@ dev-tools-plugin/
 ```
 
 **plugin.json**:
+
 ```json
 {
   "name": "dev-tools",
@@ -56,6 +58,7 @@ Bundles commands, agents, and MCP servers together.
 **Pattern**: Multiple capabilities in root
 
 **Structure**:
+
 ```
 project-assistant/
 ├── .claude-plugin/
@@ -72,6 +75,7 @@ project-assistant/
 ```
 
 **plugin.json**:
+
 ```json
 {
   "name": "project-assistant",
@@ -80,13 +84,8 @@ project-assistant/
   "author": {
     "name": "Developer"
   },
-  "commands": [
-    "./commands/scaffold-project.md",
-    "./commands/run-tests.md"
-  ],
-  "agents": [
-    "./agents/project-analyzer.md"
-  ],
+  "commands": ["./commands/scaffold-project.md", "./commands/run-tests.md"],
+  "agents": ["./agents/project-analyzer.md"],
   "mcpServers": {
     "project-tools": {
       "command": "python",
@@ -106,6 +105,7 @@ Wraps existing MCP server with custom configuration.
 **Pattern**: External server wrapper
 
 **plugin.json**:
+
 ```json
 {
   "name": "brave-search-wrapper",
@@ -136,6 +136,7 @@ Multiple database servers with shared configuration.
 **Pattern**: Multiple MCP servers
 
 **plugin.json**:
+
 ```json
 {
   "name": "database-suite",
@@ -176,6 +177,7 @@ Custom TypeScript MCP server with build process.
 **Pattern**: Compiled TypeScript server
 
 **Structure**:
+
 ```
 typescript-server-plugin/
 ├── .claude-plugin/
@@ -192,6 +194,7 @@ typescript-server-plugin/
 ```
 
 **plugin.json**:
+
 ```json
 {
   "name": "typescript-server",
@@ -222,6 +225,7 @@ Combines MCP server with workflow automation hooks.
 **Pattern**: Hooks + MCP server
 
 **Structure**:
+
 ```
 git-assistant/
 ├── .claude-plugin/
@@ -235,6 +239,7 @@ git-assistant/
 ```
 
 **plugin.json**:
+
 ```json
 {
   "name": "git-assistant",
@@ -243,9 +248,7 @@ git-assistant/
   "author": {
     "name": "Your Name"
   },
-  "hooks": [
-    "./hooks/hooks.json"
-  ],
+  "hooks": ["./hooks/hooks.json"],
   "mcpServers": {
     "git-tools": {
       "command": "python",
@@ -256,6 +259,7 @@ git-assistant/
 ```
 
 **hooks/hooks.json**:
+
 ```json
 {
   "pre-commit": "python ${CLAUDE_PLUGIN_ROOT}/hooks/pre-commit.py",
@@ -273,6 +277,7 @@ Different configurations for dev/staging/production.
 **Pattern**: Environment-based configuration
 
 **plugin.json**:
+
 ```json
 {
   "name": "api-client",
@@ -297,6 +302,7 @@ Different configurations for dev/staging/production.
 ```
 
 **.env.development**:
+
 ```bash
 API_URL=https://api.dev.com
 API_KEY=dev_key_123
@@ -305,6 +311,7 @@ DEBUG=true
 ```
 
 **.env.production**:
+
 ```bash
 API_URL=https://api.production.com
 API_KEY=prod_key_456
@@ -326,6 +333,7 @@ Collection of development tools organized as marketplace.
 **Pattern**: Multiple related plugins
 
 **Directory structure**:
+
 ```
 dev-tools-marketplace/
 ├── .claude-plugin/
@@ -358,6 +366,7 @@ dev-tools-marketplace/
 ```
 
 **marketplace.json**:
+
 ```json
 {
   "name": "dev-tools-suite",
@@ -385,6 +394,7 @@ dev-tools-marketplace/
 ```
 
 **linter-plugin/.claude-plugin/plugin.json** (example):
+
 ```json
 {
   "name": "linter",
@@ -393,9 +403,7 @@ dev-tools-marketplace/
   "author": {
     "name": "DevTools Team"
   },
-  "commands": [
-    "./commands/lint.md"
-  ],
+  "commands": ["./commands/lint.md"],
   "mcpServers": {
     "linter": {
       "command": "python",
@@ -406,6 +414,7 @@ dev-tools-marketplace/
 ```
 
 **Installation**:
+
 ```bash
 # Install entire marketplace (all 3 plugins)
 /plugin install /path/to/dev-tools-marketplace
@@ -424,6 +433,7 @@ Multiple database tools organized by database type.
 **Pattern**: Service-specific plugins
 
 **Directory structure**:
+
 ```
 database-marketplace/
 ├── .claude-plugin/
@@ -450,6 +460,7 @@ database-marketplace/
 ```
 
 **marketplace.json**:
+
 ```json
 {
   "name": "database-tools",
@@ -486,6 +497,7 @@ Complete development workflow with multiple specialized plugins.
 **Pattern**: Workflow-based plugins
 
 **Directory structure**:
+
 ```
 fullstack-marketplace/
 ├── .claude-plugin/
@@ -515,6 +527,7 @@ fullstack-marketplace/
 ```
 
 **marketplace.json**:
+
 ```json
 {
   "name": "fullstack-dev-suite",
@@ -546,12 +559,14 @@ fullstack-marketplace/
 ## Key Differences: Individual Plugin vs Marketplace
 
 ### Individual Plugin
+
 - **Structure**: Capabilities in root (commands/, agents/, servers/)
 - **Configuration**: `.claude-plugin/plugin.json`
 - **Use case**: Single focused purpose
 - **Installation**: `/plugin install /path/to/plugin`
 
 ### Marketplace
+
 - **Structure**: Folder per plugin, each with own structure
 - **Configuration**: `.claude-plugin/marketplace.json` at root
 - **Use case**: Multiple related plugins bundled
@@ -562,11 +577,13 @@ fullstack-marketplace/
 ### When to Use Which?
 
 **Use Individual Plugin when**:
+
 - Single focused purpose
 - Standalone distribution
 - Simple scope
 
 **Use Marketplace when**:
+
 - Multiple related plugins
 - Suite/collection of tools
 - Users may want to install selectively
@@ -577,11 +594,13 @@ fullstack-marketplace/
 ## Template Initialization
 
 ### Initialize Individual Plugin:
+
 ```bash
 bash scripts/init_plugin.sh my-plugin [path]
 ```
 
 ### Initialize Marketplace:
+
 ```bash
 bash scripts/init_marketplace.sh my-marketplace [path]
 cd my-marketplace

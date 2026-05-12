@@ -27,6 +27,7 @@ Replace TODOs.
 ## Security invariants
 
 <!-- First 20 lines. Absolute, non-negotiable rules. -->
+
 - TODO: project-specific security constraints (e.g., "No PII in logs", "All write paths validate input via `src/lib/validate.ts`").
 
 ## Commands
@@ -53,6 +54,7 @@ Replace TODOs.
 ## When writing migrations
 
 <!-- Example of an active pointer. Replace with relevant domain. -->
+
 Read `docs/db-conventions.md` first. Test cycle: `pnpm db:migrate && pnpm db:rollback`.
 
 ## When to stop and ask

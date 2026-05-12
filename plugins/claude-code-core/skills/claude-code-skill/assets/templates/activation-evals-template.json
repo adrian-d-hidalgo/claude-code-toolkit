@@ -1,0 +1,87 @@
+{
+  "_comment_top": "Canonical activation-evals corpus template. Consumed by scripts/run_activation_evals.py. Author ≥5 positive + ≥5 negative + ≥3 edge cases. See shared/references/skills/testing-guide.md for query-pattern guidance (especially: prefer Create/Scaffold/Design/Walk-through verbs over Validate/Audit/Refactor in positives, since the latter trigger Claude's verify-before-act behavior and look like routing misses).",
+  "skill": "TODO-skill-name",
+  "version": "1.0.0",
+  "snapshot_date": "YYYY-MM-DD",
+  "notes": "One-line description of how the corpus was authored, any known query-pattern caveats, and link to testing-guide.md.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Create a new <thing this skill authors>",
+      "should_trigger": true,
+      "category": "positive-direct"
+    },
+    {
+      "id": "pos-02",
+      "query": "Scaffold <canonical path/artifact> for <use case>",
+      "should_trigger": true,
+      "category": "positive-scaffold"
+    },
+    {
+      "id": "pos-03",
+      "query": "Design <artifact> with <specific field/section> configured for <goal>",
+      "should_trigger": true,
+      "category": "positive-design"
+    },
+    {
+      "id": "pos-04",
+      "query": "Walk me through the <frontmatter/manifest> fields and what each controls",
+      "should_trigger": true,
+      "category": "positive-knowledge"
+    },
+    {
+      "id": "pos-05",
+      "query": "What sections should a <artifact> have, and what's the convention for <field>?",
+      "should_trigger": true,
+      "category": "positive-knowledge-structure"
+    },
+    {
+      "id": "neg-01",
+      "query": "<Adjacent prompt that belongs to a sibling meta-skill>",
+      "should_trigger": false,
+      "category": "negative-adjacent-sibling"
+    },
+    {
+      "id": "neg-02",
+      "query": "<Prompt about application source code — out of scope entirely>",
+      "should_trigger": false,
+      "category": "negative-out-of-domain"
+    },
+    {
+      "id": "neg-03",
+      "query": "<Generic question that mentions a keyword from this skill but isn't an authoring intent>",
+      "should_trigger": false,
+      "category": "negative-keyword-false-positive"
+    },
+    {
+      "id": "neg-04",
+      "query": "<Prompt about a different Claude Code component type>",
+      "should_trigger": false,
+      "category": "negative-wrong-component-type"
+    },
+    {
+      "id": "neg-05",
+      "query": "<Pure runtime/usage question, not an authoring question>",
+      "should_trigger": false,
+      "category": "negative-runtime-usage"
+    },
+    {
+      "id": "edge-01",
+      "query": "<Genuinely ambiguous but routable prompt — should clarify and proceed>",
+      "should_trigger": true,
+      "category": "edge-ambiguous-routable"
+    },
+    {
+      "id": "edge-02",
+      "query": "<Cross-component prompt where this skill is one valid destination>",
+      "should_trigger": true,
+      "category": "edge-cross-component"
+    },
+    {
+      "id": "edge-03",
+      "query": "<Prompt that names the artifact but in an unusual context — verify negative scope works>",
+      "should_trigger": false,
+      "category": "edge-negative-scope"
+    }
+  ]
+}

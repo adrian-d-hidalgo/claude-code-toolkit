@@ -5,11 +5,13 @@
 **1. Gather Information**
 
 For plugin:
+
 - Read plugin.json
 - Inventory components
 - List capabilities
 
 For MCP server:
+
 - Extract tools/resources/prompts from code
 - Identify configuration options
 
@@ -29,4 +31,3 @@ Generate `.env.example`, sample plugin.json, and sample .mcp.json.
 **5. Add Troubleshooting Section**
 
 Include common issues and solutions from `references/troubleshooting-guide.md`.
-

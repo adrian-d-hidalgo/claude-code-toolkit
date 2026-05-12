@@ -9,6 +9,7 @@ Versioning, maintenance, and iteration practices for skills.
 Use MAJOR.MINOR.PATCH format.
 
 **Version format**:
+
 ```
 1.0.0
 │ │ │
@@ -18,6 +19,7 @@ Use MAJOR.MINOR.PATCH format.
 ```
 
 **Examples**:
+
 ```
 1.0.0 → 1.0.1  (Bug fix: corrected file path handling)
 1.0.1 → 1.1.0  (New feature: added merging capability)
@@ -29,6 +31,7 @@ Use MAJOR.MINOR.PATCH format.
 Document versions in skill notes or separate file.
 
 **Version tracking file** (optional):
+
 ```
 skill-name/
 ├── SKILL.md
@@ -38,6 +41,7 @@ skill-name/
 ```
 
 **VERSION.md**:
+
 ```markdown
 # Version
 
@@ -46,32 +50,42 @@ Released: 2025-10-21
 ```
 
 **CHANGELOG.md**:
+
 ```markdown
 # Changelog
 
 ## [1.2.0] - 2025-10-21
+
 ### Added
+
 - Excel spreadsheet processing support
 - Batch operation capability
 
 ### Changed
+
 - Improved activation description specificity
 - Optimized token usage (48% reduction from baseline)
 
 ### Fixed
+
 - File path handling on Windows
 - Error handling for corrupted files
 
 ## [1.1.0] - 2025-09-15
+
 ### Added
+
 - PDF merging functionality
 - Validation scripts
 
 ### Changed
+
 - Updated dependencies (PyPDF2 3.0.0)
 
 ## [1.0.0] - 2025-08-01
+
 ### Added
+
 - Initial release
 - PDF rotation capability
 - Basic text extraction
@@ -84,22 +98,26 @@ Regular review and updates.
 ### Weekly Maintenance
 
 **Monitor**:
+
 - Activation logs for false positives/negatives
 - User feedback and requests
 - Error reports
 
 **Actions**:
+
 - Document issues for review
 - Quick fixes for critical bugs
 
 ### Monthly Maintenance
 
 **Review**:
+
 - Activation accuracy metrics
 - Performance metrics (tokens, speed)
 - User satisfaction feedback
 
 **Actions**:
+
 - Update description if activation issues
 - Optimize token usage if exceeding targets
 - Address common user requests
@@ -107,12 +125,14 @@ Regular review and updates.
 ### Quarterly Maintenance
 
 **Comprehensive review**:
+
 - Re-run full test suite
 - Security audit
 - Dependency updates
 - Performance benchmarking
 
 **Actions**:
+
 - Major optimizations
 - Feature enhancements
 - Documentation updates
@@ -120,11 +140,13 @@ Regular review and updates.
 ### Annual Maintenance
 
 **Strategic evaluation**:
+
 - Skill relevance and usage
 - Technology stack updates
 - Deprecation decisions
 
 **Actions**:
+
 - Major refactors if needed
 - Technology upgrades
 - Deprecate if no longer used
@@ -178,6 +200,7 @@ Continuous improvement based on usage.
 Gather insights from real usage.
 
 **Sources**:
+
 - User reports (direct feedback)
 - Activation logs (false positives/negatives)
 - Performance metrics (token usage, speed)
@@ -185,6 +208,7 @@ Gather insights from real usage.
 - Team observations (usage patterns)
 
 **Feedback template**:
+
 ```markdown
 ## Feedback Log
 
@@ -193,19 +217,24 @@ Version: 1.1.0
 Reporter: [User/Team member]
 
 Issue:
+
 - Skill didn't activate for "merge PDF files" request
 
 Expected:
+
 - Should activate for merge operations
 
 Actual:
+
 - Generic Claude response instead
 
 Analysis:
+
 - Description doesn't include "merge" keyword
 - Activation too narrow
 
 Action:
+
 - Update description to include "merging"
 - Add to test suite
 - Target for v1.2.0
@@ -229,6 +258,7 @@ Before deploying updates:
 ### Deployment Process
 
 **Personal skills**:
+
 ```bash
 # Update files
 cd ~/.claude/skills/category/skill-name/
@@ -239,6 +269,7 @@ cd ~/.claude/skills/category/skill-name/
 ```
 
 **Project skills**:
+
 ```bash
 # Update files
 cd .claude/skills/skill-name/
@@ -262,16 +293,19 @@ git push
 After deploying update:
 
 **Immediate** (day 1):
+
 - Monitor for critical errors
 - Verify activation working
 - Check user feedback
 
 **Short-term** (week 1):
+
 - Compare metrics to previous version
 - Address any regression issues
 - Collect user feedback
 
 **Medium-term** (month 1):
+
 - Analyze impact of changes
 - Validate improvements achieved
 - Plan next iteration
@@ -283,6 +317,7 @@ Retiring outdated or unused skills.
 ### When to Deprecate
 
 Consider deprecation when:
+
 - Skill no longer used (0 activations in 3+ months)
 - Technology stack obsolete
 - Better alternative exists
@@ -291,6 +326,7 @@ Consider deprecation when:
 ### Deprecation Process
 
 **Step 1: Mark as deprecated** (in SKILL.md):
+
 ```markdown
 ---
 name: legacy-pdf-processor
@@ -312,39 +348,46 @@ Migration guide: references/MIGRATION.md
 ```
 
 **Step 2: Provide migration path**:
+
 ```markdown
 # MIGRATION.md
 
 ## Migrating from legacy-pdf-processor to pdf-processor-v2
 
 ### What changed
+
 - Improved activation (more reliable)
 - Better performance (60% faster)
 - Enhanced error handling
 - Additional features (merging, splitting)
 
 ### Migration steps
+
 1. Update requests to use new activation phrases
 2. No code changes required (backward compatible)
 3. Test with new skill
 4. Remove references to legacy skill
 
 ### Timeline
+
 - 2025-10-21: Deprecation announced
 - 2026-01-21: Legacy skill removed
 ```
 
 **Step 3: Notify users**:
+
 - Update documentation
 - Announce in team channels
 - Provide migration timeline
 
 **Step 4: Monitor migration**:
+
 - Track usage of deprecated skill
 - Assist users with migration
 - Address migration issues
 
 **Step 5: Remove**:
+
 - After end-of-support date
 - Verify 0 usage
 - Archive or delete skill
@@ -356,31 +399,39 @@ Monitor skill effectiveness over time.
 ### Key Metrics
 
 **Activation metrics**:
+
 ```markdown
 Version 1.0.0:
+
 - Activation accuracy: 85%
 - False positive rate: 8%
 
 Version 1.1.0:
+
 - Activation accuracy: 92% (+7%)
 - False positive rate: 3% (-5%)
 
 Version 1.2.0:
+
 - Activation accuracy: 94% (+2%)
 - False positive rate: 2% (-1%)
 ```
 
 **Performance metrics**:
+
 ```markdown
 Version 1.0.0:
+
 - Avg tokens: 2000
 - Task completion: 82%
 
 Version 1.1.0:
+
 - Avg tokens: 1500 (25% reduction)
 - Task completion: 88% (+6%)
 
 Version 1.2.0:
+
 - Avg tokens: 1200 (40% reduction from v1.0.0)
 - Task completion: 91% (+9% from v1.0.0)
 ```
@@ -396,22 +447,25 @@ Skill: pdf-processor
 Current Version: 1.2.0
 
 ## Activation Metrics
+
 | Version | Accuracy | False Positive | False Negative |
-|---------|----------|----------------|----------------|
+| ------- | -------- | -------------- | -------------- |
 | 1.0.0   | 85%      | 8%             | 12%            |
 | 1.1.0   | 92%      | 3%             | 8%             |
 | 1.2.0   | 94%      | 2%             | 6%             |
 
 ## Performance Metrics
-| Version | Avg Tokens | Completion | Speed   |
-|---------|------------|------------|---------|
-| 1.0.0   | 2000       | 82%        | 15s     |
-| 1.1.0   | 1500       | 88%        | 12s     |
-| 1.2.0   | 1200       | 91%        | 10s     |
+
+| Version | Avg Tokens | Completion | Speed |
+| ------- | ---------- | ---------- | ----- |
+| 1.0.0   | 2000       | 82%        | 15s   |
+| 1.1.0   | 1500       | 88%        | 12s   |
+| 1.2.0   | 1200       | 91%        | 10s   |
 
 ## Usage Metrics
+
 | Version | Activations | Users | Errors |
-|---------|-------------|-------|--------|
+| ------- | ----------- | ----- | ------ |
 | 1.0.0   | 150         | 12    | 18     |
 | 1.1.0   | 280         | 18    | 12     |
 | 1.2.0   | 420         | 25    | 8      |
@@ -488,6 +542,7 @@ For team skills:
 **Versioning**: Use semantic versioning (MAJOR.MINOR.PATCH)
 
 **Maintenance**:
+
 - Weekly: Monitor logs, quick fixes
 - Monthly: Review metrics, user feedback
 - Quarterly: Full test suite, security audit

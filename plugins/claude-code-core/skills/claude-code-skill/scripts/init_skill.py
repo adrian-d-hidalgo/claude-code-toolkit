@@ -11,11 +11,14 @@ Creates:
     - skill-name/scripts/ (directory)
     - skill-name/references/ (directory)
     - skill-name/assets/templates/ (directory)
+    - skill-name/tests/activation-evals.json (canonical eval corpus skeleton)
 """
 
 import argparse
+import json
 import os
 import sys
+from datetime import date
 from pathlib import Path
 
 
@@ -152,6 +155,7 @@ def create_skill_structure(skill_name, base_path):
         (skill_dir / "scripts").mkdir()
         (skill_dir / "references").mkdir()
         (skill_dir / "assets" / "templates").mkdir(parents=True)
+        (skill_dir / "tests").mkdir()
 
         # Create SKILL.md
         skill_md = skill_dir / "SKILL.md"
@@ -173,81 +177,39 @@ def create_skill_structure(skill_name, base_path):
         readme = skill_dir / "README.md"
         readme.write_text(README_TEMPLATE.format(skill_name=skill_name))
 
-        # Create example script
-        example_script = skill_dir / "scripts" / "example.py"
-        example_script.write_text("""#!/usr/bin/env python3
-\"\"\"
-Example script template.
-
-TODO: Replace with actual script.
-
-Usage:
-    python example.py --input file.txt
-
-Requirements:
-    - None (add dependencies here)
-\"\"\"
-
-import argparse
-import sys
-
-
-def main():
-    parser = argparse.ArgumentParser(description="Example script")
-    parser.add_argument('--input', required=True, help="Input file")
-
-    args = parser.parse_args()
-
-    try:
-        # TODO: Implement script logic
-        print(f"Processing: {args.input}")
-        return 0
-    except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
-        return 1
-
-
-if __name__ == "__main__":
-    sys.exit(main())
-""")
-        example_script.chmod(0o755)
-
-        # Create example reference
-        example_ref = skill_dir / "references" / "example-guide.md"
-        example_ref.write_text("""# Example Guide
-
-TODO: Replace with actual reference documentation.
-
-## Section 1
-
-Content here...
-
-## Section 2
-
-Content here...
-
-## Quick Reference
-
-| Item | Description |
-|------|-------------|
-| X    | Details     |
-| Y    | Details     |
-""")
-
-        # Create example asset
-        example_asset = skill_dir / "assets" / "templates" / "example-template.md"
-        example_asset.write_text("""# Example Template
-
-TODO: Replace with actual template.
-
-## Section 1
-
-[TODO: Content]
-
-## Section 2
-
-[TODO: Content]
-""")
+        # Create canonical activation-evals.json skeleton (consumed by run_activation_evals.py)
+        evals_skeleton = {
+            "skill": skill_name,
+            "version": "1.0.0",
+            "snapshot_date": date.today().isoformat(),
+            "notes": (
+                "Canonical eval corpus for run_activation_evals.py. "
+                "Author at least 5 positive + 5 negative + 3 edge cases before shipping. "
+                "See shared/references/skills/testing-guide.md for query-pattern guidance."
+            ),
+            "cases": [
+                {
+                    "id": "pos-01",
+                    "query": "TODO: a prompt that should clearly trigger this skill",
+                    "should_trigger": True,
+                    "category": "positive-direct"
+                },
+                {
+                    "id": "neg-01",
+                    "query": "TODO: an adjacent prompt that should NOT trigger this skill",
+                    "should_trigger": False,
+                    "category": "negative-adjacent"
+                },
+                {
+                    "id": "edge-01",
+                    "query": "TODO: a genuinely ambiguous but routable prompt",
+                    "should_trigger": True,
+                    "category": "edge-ambiguous"
+                }
+            ]
+        }
+        evals_path = skill_dir / "tests" / "activation-evals.json"
+        evals_path.write_text(json.dumps(evals_skeleton, indent=2) + "\n")
 
         print(f"✓ Created skill structure at: {skill_dir}")
         print("\nNext steps:")
@@ -256,6 +218,7 @@ TODO: Replace with actual template.
         print("   - Replace TODO sections with actual content")
         print("   - Remove example files if not needed")
         print("2. Add scripts/, references/, assets/ as needed")
+        print("   - Fill out tests/activation-evals.json (≥5 positive + ≥5 negative + ≥3 edge)")
         print("3. Test activation with: claude --debug")
         print("4. Restart Claude Code to load skill")
 

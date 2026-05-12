@@ -27,6 +27,7 @@ claude mcp get server-name
 ### Plugin Not Loading
 
 **Symptoms**:
+
 - Plugin doesn't appear in `/plugin list`
 - Commands from plugin not available in `/help`
 - Agents from plugin not activated
@@ -34,17 +35,20 @@ claude mcp get server-name
 **Diagnosis**:
 
 1. **Check plugin installation**:
+
    ```bash
    /plugin list
    # Should show your plugin
    ```
 
 2. **Verify plugin.json exists**:
+
    ```bash
    ls -la /path/to/plugin/.claude-plugin/plugin.json
    ```
 
 3. **Check JSON syntax**:
+
    ```bash
    python3 -m json.tool /path/to/plugin/.claude-plugin/plugin.json
    ```
@@ -58,11 +62,13 @@ claude mcp get server-name
 **Solutions**:
 
 ✅ **Invalid plugin.json**:
+
 - Validate JSON syntax (no trailing commas, proper quotes)
 - Check all required fields present (name, description, version)
 - Verify paths use forward slashes
 
 ✅ **Plugin not installed correctly**:
+
 ```bash
 # Reinstall plugin
 /plugin remove plugin-name
@@ -70,12 +76,14 @@ claude mcp get server-name
 ```
 
 ✅ **Restart required**:
+
 ```bash
 # Exit Claude Code and restart
 # Plugins load on startup
 ```
 
 ✅ **Permission issues**:
+
 ```bash
 # Check plugin directory permissions
 ls -la ~/.claude/plugins/plugin-name
@@ -85,21 +93,24 @@ chmod -R 755 ~/.claude/plugins/plugin-name
 ### Commands Not Appearing
 
 **Symptoms**:
+
 - Plugin loaded but commands missing from `/help`
 - Command files exist but not recognized
 
 **Diagnosis**:
 
 1. **Check plugin.json**:
+
    ```json
    {
      "commands": [
-       "./commands/my-command.md"  // Path correct?
+       "./commands/my-command.md" // Path correct?
      ]
    }
    ```
 
 2. **Verify command files exist**:
+
    ```bash
    ls -la /path/to/plugin/commands/
    ```
@@ -111,6 +122,7 @@ chmod -R 755 ~/.claude/plugins/plugin-name
 **Solutions**:
 
 ✅ **Incorrect path in plugin.json**:
+
 ```json
 // ❌ Wrong
 "commands": [
@@ -124,6 +136,7 @@ chmod -R 755 ~/.claude/plugins/plugin-name
 ```
 
 ✅ **File doesn't exist**:
+
 ```bash
 # Create missing command file
 mkdir -p /path/to/plugin/commands
@@ -131,18 +144,21 @@ touch /path/to/plugin/commands/my-command.md
 ```
 
 ✅ **Restart Claude Code**:
+
 - Commands loaded on startup
 - Exit and restart after changes
 
 ### Agents Not Activating
 
 **Symptoms**:
+
 - Agent defined but never triggers
 - Agent not listed in available agents
 
 **Diagnosis**:
 
 1. **Check agent YAML frontmatter**:
+
    ```yaml
    ---
    name: my-agent
@@ -152,11 +168,10 @@ touch /path/to/plugin/commands/my-command.md
    ```
 
 2. **Verify agent path in plugin.json**:
+
    ```json
    {
-     "agents": [
-       "./agents/my-agent.md"
-     ]
+     "agents": ["./agents/my-agent.md"]
    }
    ```
 
@@ -167,10 +182,12 @@ touch /path/to/plugin/commands/my-command.md
 **Solutions**:
 
 ✅ **Invalid YAML frontmatter**:
+
 - Check YAML syntax (proper indentation, no tabs)
 - Verify required fields: name, description, tools
 
 ✅ **Poor activation triggers**:
+
 ```yaml
 # ❌ Too generic
 description: Helps with files
@@ -182,10 +199,11 @@ description: >
 ```
 
 ✅ **Missing from plugin.json**:
+
 ```json
 {
   "agents": [
-    "./agents/my-agent.md"  // Add if missing
+    "./agents/my-agent.md" // Add if missing
   ]
 }
 ```
@@ -195,6 +213,7 @@ description: >
 ### Server Not Connecting
 
 **Symptoms**:
+
 - Server shows as "Disconnected" in `/mcp status`
 - Tools from server not available
 - Error messages in debug mode
@@ -202,11 +221,13 @@ description: >
 **Diagnosis**:
 
 1. **Check server configuration**:
+
    ```bash
    claude mcp get server-name
    ```
 
 2. **Verify command exists**:
+
    ```bash
    which npx
    which python3
@@ -215,6 +236,7 @@ description: >
    ```
 
 3. **Check server logs**:
+
    ```bash
    claude --debug
    # Look for server startup errors
@@ -230,6 +252,7 @@ description: >
 **Solutions**:
 
 ✅ **Command not found**:
+
 ```json
 // ❌ Command not in PATH
 {
@@ -247,18 +270,21 @@ description: >
 ```
 
 ✅ **Incorrect arguments**:
+
 ```json
 // Check args order and format
 {
   "command": "python3",
   "args": [
-    "/absolute/path/to/server.py",  // Absolute path
-    "--port", "8080"
+    "/absolute/path/to/server.py", // Absolute path
+    "--port",
+    "8080"
   ]
 }
 ```
 
 ✅ **Permission issues**:
+
 ```bash
 # Make server executable
 chmod +x /path/to/server.py
@@ -268,11 +294,12 @@ which python3
 ```
 
 ✅ **Port already in use**:
+
 ```json
 // Change port in configuration
 {
   "env": {
-    "PORT": "8081"  // Use different port
+    "PORT": "8081" // Use different port
   }
 }
 ```
@@ -280,6 +307,7 @@ which python3
 ### Tools Not Appearing
 
 **Symptoms**:
+
 - Server connected but no tools visible
 - `/mcp` shows server but empty tool list
 
@@ -290,6 +318,7 @@ which python3
    - Tool registration syntax correct?
 
 2. **Test with MCP Inspector**:
+
    ```bash
    npx @modelcontextprotocol/inspector python3 server.py
    ```
@@ -303,6 +332,7 @@ which python3
 **Solutions**:
 
 ✅ **Tools not registered**:
+
 ```python
 # ❌ Tool defined but not registered
 def my_tool():
@@ -316,17 +346,20 @@ async def my_tool(param: str) -> str:
 ```
 
 ✅ **Server crashed on startup**:
+
 - Check debug logs for errors
 - Verify all dependencies installed
 - Test server independently
 
 ✅ **Restart Claude Code**:
+
 - Tool list may need refresh
 - Exit and restart
 
 ### Environment Variables Not Working
 
 **Symptoms**:
+
 - Server fails with missing credentials
 - Error: "Environment variable not set"
 - API calls fail with auth errors
@@ -334,16 +367,18 @@ async def my_tool(param: str) -> str:
 **Diagnosis**:
 
 1. **Check variable is set**:
+
    ```bash
    echo $API_KEY
    echo $DATABASE_URL
    ```
 
 2. **Verify configuration syntax**:
+
    ```json
    {
      "env": {
-       "API_KEY": "${API_KEY}"  // Correct syntax?
+       "API_KEY": "${API_KEY}" // Correct syntax?
      }
    }
    ```
@@ -357,6 +392,7 @@ async def my_tool(param: str) -> str:
 **Solutions**:
 
 ✅ **Variable not set in environment**:
+
 ```bash
 # Set in shell profile
 export API_KEY="your-key"
@@ -371,6 +407,7 @@ source .env
 ```
 
 ✅ **Incorrect syntax**:
+
 ```json
 // ❌ Missing ${} syntax
 {
@@ -388,6 +425,7 @@ source .env
 ```
 
 ✅ **Variable not exported**:
+
 ```bash
 # ❌ Not exported
 API_KEY="value"
@@ -397,12 +435,14 @@ export API_KEY="value"
 ```
 
 ✅ **Restart required**:
+
 - Environment changes require restart
 - Exit Claude Code and restart
 
 ### Server Crashes or Timeouts
 
 **Symptoms**:
+
 - Server starts but crashes quickly
 - Tools timeout when executed
 - Intermittent connection issues
@@ -414,6 +454,7 @@ export API_KEY="value"
    - Use `console.error()` or `logging.error()`
 
 2. **Test server independently**:
+
    ```bash
    # Run server directly to see errors
    python3 server.py
@@ -430,6 +471,7 @@ export API_KEY="value"
 **Solutions**:
 
 ✅ **Missing dependencies**:
+
 ```bash
 # Python
 pip install -r requirements.txt
@@ -442,6 +484,7 @@ dotnet restore
 ```
 
 ✅ **Uncaught exceptions**:
+
 ```python
 # Add error handling
 @server.tool()
@@ -455,16 +498,18 @@ async def my_tool(param: str) -> str:
 ```
 
 ✅ **Increase timeout**:
+
 ```json
 // For long-running operations
 {
   "env": {
-    "TIMEOUT": "60000"  // 60 seconds
+    "TIMEOUT": "60000" // 60 seconds
   }
 }
 ```
 
 ✅ **Memory issues**:
+
 - Check server memory usage
 - Optimize data processing
 - Add connection pooling
@@ -475,6 +520,7 @@ async def my_tool(param: str) -> str:
 ### Invalid JSON Syntax
 
 **Symptoms**:
+
 - Parse error when loading config
 - "Unexpected token" errors
 - Config file not recognized
@@ -493,6 +539,7 @@ jq . plugin.json
 **Solutions**:
 
 ✅ **Trailing comma**:
+
 ```json
 // ❌ Trailing comma
 {
@@ -508,6 +555,7 @@ jq . plugin.json
 ```
 
 ✅ **Single quotes**:
+
 ```json
 // ❌ Single quotes
 {
@@ -521,6 +569,7 @@ jq . plugin.json
 ```
 
 ✅ **Unquoted keys**:
+
 ```json
 // ❌ Unquoted keys
 {
@@ -534,6 +583,7 @@ jq . plugin.json
 ```
 
 ✅ **Invalid escape sequences**:
+
 ```json
 // ❌ Invalid backslash
 {
@@ -554,6 +604,7 @@ jq . plugin.json
 ### Path Issues
 
 **Symptoms**:
+
 - Files not found
 - "No such file or directory" errors
 - Components not loading
@@ -573,6 +624,7 @@ jq . plugin.json
 **Solutions**:
 
 ✅ **Absolute paths in plugin.json**:
+
 ```json
 // ❌ Absolute path (not portable)
 {
@@ -590,6 +642,7 @@ jq . plugin.json
 ```
 
 ✅ **Backslashes**:
+
 ```json
 // ❌ Backslashes
 {
@@ -607,6 +660,7 @@ jq . plugin.json
 ```
 
 ✅ **Wrong working directory**:
+
 ```json
 // Use ${PWD} for project-relative paths
 {
@@ -626,6 +680,7 @@ jq . plugin.json
 ### Version Conflicts
 
 **Symptoms**:
+
 - Dependency version mismatches
 - "Incompatible version" errors
 - Features not working as expected
@@ -633,6 +688,7 @@ jq . plugin.json
 **Diagnosis**:
 
 1. **Check versions**:
+
    ```bash
    # Node packages
    npm list @modelcontextprotocol/sdk
@@ -651,6 +707,7 @@ jq . plugin.json
 **Solutions**:
 
 ✅ **Update dependencies**:
+
 ```bash
 # Node.js
 npm update
@@ -661,6 +718,7 @@ pip install --upgrade mcp
 ```
 
 ✅ **Specify versions in plugin**:
+
 ```json
 {
   "engines": {
@@ -671,6 +729,7 @@ pip install --upgrade mcp
 ```
 
 ✅ **Lock dependency versions**:
+
 ```bash
 # Node.js
 npm install @modelcontextprotocol/sdk@1.2.3
@@ -685,6 +744,7 @@ pip install -r requirements.txt
 ### Slow Server Response
 
 **Symptoms**:
+
 - Tools take long time to execute
 - Timeouts on operations
 - UI feels sluggish
@@ -703,6 +763,7 @@ pip install -r requirements.txt
 **Solutions**:
 
 ✅ **Add caching**:
+
 ```python
 from functools import lru_cache
 
@@ -713,6 +774,7 @@ def expensive_operation(param):
 ```
 
 ✅ **Optimize database queries**:
+
 ```python
 # Add indexes
 # Use connection pooling
@@ -720,6 +782,7 @@ def expensive_operation(param):
 ```
 
 ✅ **Async operations**:
+
 ```python
 # Use async for I/O operations
 async def fetch_data():
@@ -729,10 +792,11 @@ async def fetch_data():
 ```
 
 ✅ **Increase timeout**:
+
 ```json
 {
   "env": {
-    "TIMEOUT": "30000"  // 30 seconds
+    "TIMEOUT": "30000" // 30 seconds
   }
 }
 ```
@@ -740,6 +804,7 @@ async def fetch_data():
 ### High Memory Usage
 
 **Symptoms**:
+
 - System slows down
 - Out of memory errors
 - Server crashes
@@ -747,6 +812,7 @@ async def fetch_data():
 **Diagnosis**:
 
 1. **Monitor memory**:
+
    ```bash
    # Check server memory usage
    ps aux | grep server
@@ -760,6 +826,7 @@ async def fetch_data():
 **Solutions**:
 
 ✅ **Stream large data**:
+
 ```python
 # Don't load entire file into memory
 def read_large_file(file_path):
@@ -769,6 +836,7 @@ def read_large_file(file_path):
 ```
 
 ✅ **Implement pagination**:
+
 ```python
 # Return data in chunks
 def get_records(page=1, per_page=100):
@@ -777,6 +845,7 @@ def get_records(page=1, per_page=100):
 ```
 
 ✅ **Clear caches periodically**:
+
 ```python
 import gc
 
@@ -789,6 +858,7 @@ gc.collect()
 ### Exposed Secrets
 
 **Symptoms**:
+
 - Hardcoded credentials in config
 - API keys in version control
 - Sensitive data in logs
@@ -796,6 +866,7 @@ gc.collect()
 **Solutions**:
 
 ✅ **Use environment variables**:
+
 ```json
 // ❌ Hardcoded
 {
@@ -813,6 +884,7 @@ gc.collect()
 ```
 
 ✅ **Add to .gitignore**:
+
 ```
 .env
 .env.local
@@ -821,6 +893,7 @@ gc.collect()
 ```
 
 ✅ **Remove from git history**:
+
 ```bash
 # If accidentally committed
 git filter-branch --force --index-filter \
@@ -831,6 +904,7 @@ git filter-branch --force --index-filter \
 ### Permission Issues
 
 **Symptoms**:
+
 - "Permission denied" errors
 - Can't read/write files
 - Server won't start
@@ -838,6 +912,7 @@ git filter-branch --force --index-filter \
 **Solutions**:
 
 ✅ **Fix file permissions**:
+
 ```bash
 # Make script executable
 chmod +x server.py
@@ -850,6 +925,7 @@ chmod 644 file.txt
 ```
 
 ✅ **Check user permissions**:
+
 ```bash
 # Check file owner
 ls -la file.txt

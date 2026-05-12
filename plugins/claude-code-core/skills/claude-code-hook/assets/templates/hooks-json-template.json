@@ -1,0 +1,87 @@
+{
+  "_comment_file": "Annotated hooks.json skeleton. Keys prefixed with _comment document the event and are NOT part of the schema; strip before shipping: jq 'walk(if type==\"object\" then with_entries(select(.key|startswith(\"_comment\")|not)) else . end)' hooks.json. All 10 events shown; delete the ones you don't use.",
+  "PreToolUse": [
+    {
+      "_comment": "Before tool call. Exit 2 BLOCKS; stderr is shown to Claude as the reason.",
+      "matcher": "Bash",
+      "hooks": [
+        { "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/validate-bash.sh", "timeout": 5000 }
+      ]
+    }
+  ],
+  "PostToolUse": [
+    {
+      "_comment": "After tool call. Fires concurrently for parallel calls; script MUST be idempotent.",
+      "matcher": "Edit|Write",
+      "hooks": [
+        { "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/format-on-write.sh", "timeout": 10000 }
+      ]
+    }
+  ],
+  "UserPromptSubmit": [
+    {
+      "_comment": "Before Claude sees the prompt. stdout is APPENDED to the prompt — stdout is a security surface. Exit 2 rejects the prompt.",
+      "hooks": [
+        { "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/inject-context.sh", "timeout": 2000 }
+      ]
+    }
+  ],
+  "Stop": [
+    {
+      "_comment": "When Claude finishes a turn. In sub-agent frontmatter, auto-converted to SubagentStop.",
+      "hooks": [
+        { "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/on-stop.sh", "timeout": 5000 }
+      ]
+    }
+  ],
+  "Notification": [
+    {
+      "_comment": "When Claude Code surfaces a notification. Use for custom alerting.",
+      "hooks": [
+        { "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/notify.sh", "timeout": 2000 }
+      ]
+    }
+  ],
+  "SessionStart": [
+    {
+      "_comment": "Once at session start. Bootstrap per-session state; mirror in SessionEnd.",
+      "hooks": [
+        { "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/session-init.sh", "timeout": 10000 }
+      ]
+    }
+  ],
+  "SessionEnd": [
+    {
+      "_comment": "Once at session end. Cleanup mirror of SessionStart.",
+      "hooks": [
+        { "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/session-cleanup.sh", "timeout": 10000 }
+      ]
+    }
+  ],
+  "PreCompact": [
+    {
+      "_comment": "Before auto-compaction summarizes the conversation. Snapshot state worth preserving.",
+      "hooks": [
+        { "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/snapshot.sh", "timeout": 10000 }
+      ]
+    }
+  ],
+  "SubagentStart": [
+    {
+      "_comment": "Matcher is the sub-agent name. Per-agent setup.",
+      "matcher": "research-specialist",
+      "hooks": [
+        { "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/agent-start.sh", "timeout": 5000 }
+      ]
+    }
+  ],
+  "SubagentStop": [
+    {
+      "_comment": "Matcher is the sub-agent name. Mirror of SubagentStart.",
+      "matcher": "research-specialist",
+      "hooks": [
+        { "type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/agent-stop.sh", "timeout": 5000 }
+      ]
+    }
+  ]
+}

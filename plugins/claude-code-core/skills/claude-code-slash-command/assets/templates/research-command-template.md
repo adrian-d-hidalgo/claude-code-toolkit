@@ -10,6 +10,7 @@ Research [topic] for "$ARGUMENTS" with progressive search methodology and reinci
 ## Parse Arguments
 
 From "$ARGUMENTS":
+
 - **Primary Context**: [Main search topic or question]
 - **Previous Terms** (optional): Extract from `--previous-terms="[terms]"`
 - **Failed Approaches** (optional): Extract from `--failed-approaches="[approaches]"`
@@ -20,30 +21,35 @@ From "$ARGUMENTS":
 Evaluate sources using domain-specific tier system:
 
 **Tier 1 - Highest Trust** (Prioritize in results):
+
 - [Domain-specific authoritative source 1] (e.g., Official documentation)
 - [Domain-specific authoritative source 2] (e.g., Maintainer responses)
 - [Domain-specific authoritative source 3] (e.g., Security advisories)
 - [Domain-specific authoritative source 4] (e.g., Regulatory publications)
 
 **Tier 2 - High Trust** (Strong validation):
+
 - [Validated community source 1] (e.g., Stack Overflow >10 upvotes)
 - [Validated community source 2] (e.g., GitHub issues with resolution)
 - [Validated community source 3] (e.g., Expert technical blogs)
 - [Validated community source 4] (e.g., Peer-reviewed studies)
 
 **Tier 3 - Moderate Trust** (Use with caution):
+
 - [Community source 1] (e.g., Medium community validation 3-10 upvotes)
 - [Community source 2] (e.g., Technical articles with examples)
 - [Community source 3] (e.g., Conference presentations)
 - [Community source 4] (e.g., Professional forums)
 
 **Tier 4 - Low Trust** (Avoid or use only as last resort):
+
 - [Unvalidated source 1] (e.g., Unvalidated solutions)
 - [Outdated source 1] (e.g., Significantly different versions)
 - [Questionable source 1] (e.g., Deprecated approaches)
 - [Promotional content] (e.g., Unvalidated marketing claims)
 
 **Source Evaluation Criteria**:
+
 - Recency (prioritize content from last 12 months for tech, 24 months for general)
 - Author credibility (maintainers > contributors > users)
 - Community validation (upvotes, verification, peer review)
@@ -56,20 +62,20 @@ Evaluate sources using domain-specific tier system:
 
 ```markdown
 If --previous-terms provided:
-  → This is a reincidence case (previous search failed)
-  → Skip Level 1 searches (already attempted)
-  → Use term variations instead of exact repeats
-  → Jump to Level 3 for broader patterns
+→ This is a reincidence case (previous search failed)
+→ Skip Level 1 searches (already attempted)
+→ Use term variations instead of exact repeats
+→ Jump to Level 3 for broader patterns
 
 If --failed-approaches provided:
-  → Exclude these solution types from results
-  → Focus on alternative methodologies
-  → Filter out similar approach patterns
+→ Exclude these solution types from results
+→ Focus on alternative methodologies
+→ Filter out similar approach patterns
 
 If --context-refinement provided:
-  → Incorporate into all search levels
-  → Add to search queries for specificity
-  → Use to narrow or focus results
+→ Incorporate into all search levels
+→ Add to search queries for specificity
+→ Use to narrow or focus results
 ```
 
 **Refinement Strategies**:
@@ -90,6 +96,7 @@ Execute searches in order, advancing to next level if insufficient results:
 Target: Exact match for specific context and current version.
 
 **Search Queries**:
+
 1. `"[exact-error-or-question]" [technology] [version/year]`
 2. `"[specific-terminology]" [technology] [precise-context]`
 3. `[exact-use-case] [technology] [environment]`
@@ -107,11 +114,13 @@ Target: Exact match for specific context and current version.
 Target: Technology-specific solutions with broader context.
 
 **Search Queries**:
+
 1. `"[core-problem-terms]" [technology-category] [general-timeframe]`
 2. `[technology] [problem-domain] [broader-context]`
 3. `[related-concepts] [technology-family] [solution-type]`
 
 **Term Variations** (use if previous-terms exist):
+
 - Vary terminology while keeping core meaning
 - Use synonyms and related technical terms
 - Rephrase problem from different angle
@@ -129,16 +138,19 @@ Target: Technology-specific solutions with broader context.
 Target: Broader patterns and approaches that apply to problem domain.
 
 **Search Queries**:
+
 1. `"[pattern-keywords]" [technology-family] [solution-category]`
 2. `[core-problem-type] [methodology] [industry-context]`
 3. `[underlying-pattern] [approach-type] [best-practices]`
 
 **Incorporate context-refinement**:
+
 - Add environmental details to queries
 - Include version, OS, configuration specifics
 - Use refined context to filter results
 
 **Exclude failed-approaches**:
+
 - Filter out solution types already attempted
 - Focus on alternative methodologies
 - Look for different architectural approaches
@@ -154,11 +166,13 @@ Target: Broader patterns and approaches that apply to problem domain.
 Target: Underlying concepts, principles, and alternative strategies.
 
 **Search Queries**:
+
 1. `[underlying-concept] [approach-category] [general-principles]`
 2. `[problem-domain] [established-solutions] [industry-standards]`
 3. `[alternative-methodology] [different-technology-family] [comparable-use-case]`
 
 **Think differently**:
+
 - Consider different technology stacks with similar problems
 - Look for conceptual solutions adaptable to context
 - Research alternative approaches to same goal
@@ -218,19 +232,23 @@ Tag synthesized information with confidence level:
 [Detailed explanation of this approach]
 
 **Implementation**:
+
 1. [Step 1]
 2. [Step 2]
 3. [Step 3]
 
 **Pros**:
+
 - [Advantage 1]
 - [Advantage 2]
 
 **Cons**:
+
 - [Limitation 1]
 - [Limitation 2]
 
 **Source References**:
+
 - [Source 1 with tier indicator]
 - [Source 2 with tier indicator]
 
@@ -245,14 +263,17 @@ Tag synthesized information with confidence level:
 ### Considerations
 
 **Environmental Factors**:
+
 - [Factor 1 affecting applicability]
 - [Factor 2 affecting applicability]
 
 **Prerequisites**:
+
 - [Requirement 1]
 - [Requirement 2]
 
 **Potential Issues**:
+
 - [Issue 1 to watch for]
 - [Issue 2 to watch for]
 
@@ -261,11 +282,13 @@ Tag synthesized information with confidence level:
 **Search Levels Executed**: [1, 2, 3, 4]
 
 **Reincidence Detected**: [Yes/No]
+
 - Previous terms avoided: [list if applicable]
 - Failed approaches excluded: [list if applicable]
 - Context refinement used: [details if applicable]
 
 **Total Sources Evaluated**: [number]
+
 - Tier 1: [count]
 - Tier 2: [count]
 - Tier 3: [count]
@@ -286,6 +309,7 @@ Tag synthesized information with confidence level:
 ```
 
 **For next attempt, consider adding**:
+
 - More specific version numbers
 - Operating system details
 - Configuration specifics
@@ -295,11 +319,13 @@ Tag synthesized information with confidence level:
 ## Integration Notes
 
 **This research command can be called by**:
+
 - Action commands needing current information
 - Other research commands for broader context
 - Agents requiring domain knowledge
 
 **Provides**:
+
 - Structured findings with confidence levels
 - Multiple approaches with trade-offs
 - Source credibility assessment

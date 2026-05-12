@@ -160,6 +160,7 @@ Array of plugin entries. Each entry:
 - `strict` — boolean. When `true`, validation errors during install block installation.
 
 **Per-entry `description` MUST NOT contain**:
+
 - Behavioral instructions.
 - "Do not confuse with X" disambiguation.
 - Internal wiring.

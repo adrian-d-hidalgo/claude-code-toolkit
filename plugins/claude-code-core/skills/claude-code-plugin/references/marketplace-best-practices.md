@@ -5,21 +5,26 @@ Patrones, recomendaciones y mejores prácticas para crear y mantener marketplace
 ## Principios Fundamentales
 
 ### 1. Cohesión Temática
+
 Los plugins en un marketplace deben estar **relacionados temáticamente**.
 
 ✅ **Bueno**:
+
 - `database-tools` → postgres-plugin, mysql-plugin, mongodb-plugin
 - `web-dev-suite` → frontend-plugin, backend-plugin, api-plugin
 - `code-quality` → linter-plugin, formatter-plugin, tester-plugin
 
 ❌ **Malo**:
+
 - `random-tools` → database-plugin, weather-plugin, game-plugin
 - No hay relación clara entre plugins
 
 ### 2. Independencia de Plugins
+
 Cada plugin debe funcionar **standalone**.
 
 ✅ **Bueno**:
+
 ```
 Each plugin works independently:
 - Can be installed separately
@@ -28,6 +33,7 @@ Each plugin works independently:
 ```
 
 ❌ **Malo**:
+
 ```
 Plugins depend on each other:
 - plugin-1 requires plugin-2 to be installed
@@ -35,6 +41,7 @@ Plugins depend on each other:
 ```
 
 ### 3. Documentación Clara
+
 Marketplace + cada plugin deben estar bien documentados.
 
 ## Estructura Recomendada
@@ -121,26 +128,31 @@ marketplace-name/
 ```
 
 **Required fields**:
+
 - `name`: Marketplace identifier (kebab-case)
 - `owner`: Maintainer information object
 - `plugins`: Array of plugin entries
 
 **Optional metadata**:
+
 - `metadata.description`: Purpose of the marketplace
 - `metadata.version`: Release version (semver)
 - `metadata.pluginRoot`: Base path for relative sources
 
 **Plugin entry fields**:
+
 - `name` (required): Plugin identifier (kebab-case)
 - `source` (required): String path (`"./plugin"`) or object with source type
 - `description`, `version`, `author`, `homepage`, `license`, `keywords`, `category`, `tags` (optional)
 
 **Supported source types**:
+
 - Relative path: `"./plugins/my-plugin"`
 - GitHub: `{"source": "github", "repo": "owner/repo"}`
 - Git URL: `{"source": "url", "url": "https://...git"}`
 
 **Best practices**:
+
 - `name`: kebab-case, descriptive
 - `owner.name`: Consistent across all plugins
 - `plugins[].description`: Brief (marketplace-level), detailed in plugin README
@@ -151,12 +163,14 @@ marketplace-name/
 ### Marketplace Names
 
 ✅ **Bueno**:
+
 - `database-tools-suite`
 - `web-development-kit`
 - `ai-assistants-collection`
 - `devops-automation-plugins`
 
 ❌ **Malo**:
+
 - `stuff` (too vague)
 - `MyAwesomePlugins` (not kebab-case)
 - `plugin-collection` (too generic)
@@ -164,11 +178,13 @@ marketplace-name/
 ### Plugin Names dentro del Marketplace
 
 ✅ **Bueno**:
+
 - Específicos: `postgres-client`, `eslint-integration`, `git-workflow-helper`
 - Cortos pero descriptivos
 - Kebab-case
 
 ❌ **Malo**:
+
 - Genéricos: `tool1`, `helper`, `utils`
 - Largos: `super-advanced-postgresql-database-management-tool`
 - CamelCase o snake_case
@@ -208,14 +224,17 @@ git-workflow-suite/
 ## Versionado
 
 ### Marketplace Version
+
 Versión del marketplace **independiente** de versiones de plugins.
 
 **Cuándo incrementar**:
+
 - **MAJOR**: Cambios breaking en estructura del marketplace
 - **MINOR**: Agregar/remover plugins
 - **PATCH**: Actualizar documentación, arreglar metadata
 
 ### Plugin Versions
+
 Cada plugin tiene su **propia versión semver**.
 
 ```json
@@ -232,6 +251,7 @@ Cada plugin tiene su **propia versión semver**.
 ```
 
 `plugin-1/.claude-plugin/plugin.json`:
+
 ```json
 {
   "name": "plugin-1",
@@ -251,19 +271,23 @@ Brief description of the marketplace and its purpose.
 ## Plugins
 
 ### Plugin 1
+
 Brief description. [More details](./plugin-1/README.md)
 
 ### Plugin 2
+
 Brief description. [More details](./plugin-2/README.md)
 
 ## Installation
 
 ### All plugins:
+
 \`\`\`bash
 /plugin install /path/to/marketplace
 \`\`\`
 
 ### Individual plugin:
+
 \`\`\`bash
 /plugin install /path/to/marketplace/plugin-1
 \`\`\`
@@ -282,33 +306,41 @@ MIT
 Cada plugin debe tener documentación completa y específica.
 
 **Template**:
+
 ```markdown
 # Plugin Name
 
 Detailed description of what this specific plugin does.
 
 ## Features
+
 - Feature 1
 - Feature 2
 
 ## Installation
+
 \`\`\`bash
 /plugin install /path/to/marketplace/plugin-name
 \`\`\`
 
 ## Configuration
+
 [Environment variables, setup steps]
 
 ## Usage
+
 [Detailed examples]
 
 ## Troubleshooting
+
 [Common issues]
 
 ## Contributing
+
 [How to contribute to this plugin]
 
 ## License
+
 MIT
 ```
 
@@ -336,6 +368,7 @@ MIT
 ### Automated Testing
 
 **Estructura recomendada**:
+
 ```
 marketplace/
 ├── plugin-1/
@@ -386,6 +419,7 @@ Organizations can configure automatic marketplace installation via `.claude/sett
 ### Local Testing
 
 Use marketplace add command for local development and testing:
+
 ```bash
 /plugin marketplace add ./path/to/local/marketplace
 ```
@@ -393,6 +427,7 @@ Use marketplace add command for local development and testing:
 ### Validation
 
 Before sharing, validate JSON syntax:
+
 ```bash
 claude plugin validate
 ```
@@ -400,6 +435,7 @@ claude plugin validate
 ### Releases
 
 **Tag conventions**:
+
 ```
 marketplace/v2.0.0           ← Marketplace version
 plugin-1/v1.5.0              ← Individual plugin version
@@ -413,6 +449,7 @@ plugin-2/v2.1.3
 ### Adding a New Plugin
 
 1. Create plugin structure:
+
    ```bash
    ./scripts/add_plugin.sh . new-plugin
    ```
@@ -420,6 +457,7 @@ plugin-2/v2.1.3
 2. Develop plugin (commands, agents, servers, etc.)
 
 3. Update `marketplace.json`:
+
    ```json
    {
      "plugins": [
@@ -457,6 +495,7 @@ plugin-2/v2.1.3
 ### Updating a Plugin
 
 Each plugin updates independently:
+
 ```bash
 cd plugin-1
 # Make changes
@@ -472,6 +511,7 @@ Marketplace version only changes if marketplace-level changes occur.
 ### Environment Variables
 
 **Per-Plugin Isolation**:
+
 ```
 marketplace/
 ├── plugin-1/
@@ -486,6 +526,7 @@ marketplace/
 ### Secrets Management
 
 Never commit:
+
 - `.env` files
 - API keys
 - Credentials
@@ -540,7 +581,7 @@ agile-workflow/
 // BAD: plugin-2 requires plugin-1
 {
   "name": "plugin-2",
-  "dependencies": ["plugin-1"]  // ← Not supported, don't do this
+  "dependencies": ["plugin-1"] // ← Not supported, don't do this
 }
 ```
 
@@ -596,6 +637,7 @@ webdev-pro/
 ```
 
 **Por qué funciona**:
+
 - Cohesión temática (web development)
 - Cada plugin es útil standalone
 - Workflow completo cubierto
@@ -611,6 +653,7 @@ data-eng-toolkit/
 ```
 
 **Por qué funciona**:
+
 - Cubre pipeline completo de datos
 - Plugins interoperables pero independientes
 - Especialización clara
@@ -618,6 +661,7 @@ data-eng-toolkit/
 ## Métricas de Éxito
 
 Un marketplace bien diseñado tiene:
+
 - **Alta cohesión**: Plugins relacionados temáticamente
 - **Baja coupling**: Plugins funcionan independientemente
 - **Buena documentación**: README claro + docs por plugin

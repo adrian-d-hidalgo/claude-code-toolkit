@@ -16,12 +16,12 @@ End-to-end authoring toolkit for Claude Code sub-agents. Covers creating new sub
 
 ## What this skill does
 
-| Intent | Mode |
-|---|---|
-| "create / scaffold / build / design a new sub-agent" | **Create** — generate the .md file with valid frontmatter + system-prompt skeleton. |
-| "refactor / improve / clean up an agent's system prompt" | **Refactor** — restructure, separate routing trigger from behavior. |
-| "validate / lint / check this agent" | **Validate** — schema + frontmatter + tool/permission audit. |
-| "audit / review / assess agent quality" | **Audit** — activation reliability, tool least-privilege, prompt clarity. |
+| Intent                                                   | Mode                                                                                |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| "create / scaffold / build / design a new sub-agent"     | **Create** — generate the .md file with valid frontmatter + system-prompt skeleton. |
+| "refactor / improve / clean up an agent's system prompt" | **Refactor** — restructure, separate routing trigger from behavior.                 |
+| "validate / lint / check this agent"                     | **Validate** — schema + frontmatter + tool/permission audit.                        |
+| "audit / review / assess agent quality"                  | **Audit** — activation reliability, tool least-privilege, prompt clarity.           |
 
 ## Authoritative field reference
 
@@ -30,9 +30,11 @@ End-to-end authoring toolkit for Claude Code sub-agents. Covers creating new sub
 ## Mode: Create
 
 1. **Scaffold** the agent file:
+
    ```bash
    python3 plugins/claude-code-core/skills/claude-code-sub-agent/scripts/init_agent.py <agent-name> --path ~/.claude/agents/
    ```
+
    Creates an agent .md with frontmatter placeholders and a body skeleton (role → rules → scope → reporting).
 
 2. **Author the frontmatter** using `references/section-guide.md`. Hard rules every time:
@@ -118,7 +120,7 @@ For evaluating a sub-agent in `tests/activation-evals.json`, **outcome (judged) 
 
 ### Sub-agent corpus authoring — repo-context bias (May 2026)
 
-Even when queries are large enough to require delegation (multi-file libraries, full test suites, end-to-end services), Claude consistently pauses to clarify scope when the request **doesn't fit the current repository context**. Empirically (May 2026, software-developer agent re-tested across 12 multi-deliverable positives in a plugin-marketplace repo): 11/12 cases the judge rated as *"Claude correctly identified the repo mismatch and asked clarifying questions before delegating"* — i.e. the routing was structurally correct but the agent didn't fire because the work clearly didn't belong in this codebase.
+Even when queries are large enough to require delegation (multi-file libraries, full test suites, end-to-end services), Claude consistently pauses to clarify scope when the request **doesn't fit the current repository context**. Empirically (May 2026, software-developer agent re-tested across 12 multi-deliverable positives in a plugin-marketplace repo): 11/12 cases the judge rated as _"Claude correctly identified the repo mismatch and asked clarifying questions before delegating"_ — i.e. the routing was structurally correct but the agent didn't fire because the work clearly didn't belong in this codebase.
 
 This is unfixable from the agent side. Sub-agent corpora must:
 
@@ -143,6 +145,7 @@ When the path is `.claude/agents/*` or `~/.claude/agents/*`, this skill applies.
 ## Reference index
 
 Local:
+
 - `references/section-guide.md` — every frontmatter field + body structure, exhaustively documented.
 - `references/CURRENT-DOCS-INDEX.md` — links to upstream Anthropic docs.
 - `references/anti-patterns.md` — common authoring mistakes.
@@ -153,12 +156,14 @@ Local:
 - `references/validation-checklist.md` — pre-ship checklist.
 
 Shared:
+
 - `${CLAUDE_PLUGIN_ROOT}/shared/scripts/validate_agent.py`
 
 Templates:
-- `assets/templates/agent-template.md`
-- `assets/templates/system-prompt-template.md`
+
+- `assets/templates/agent-template.md` — full sub-agent skeleton.
+- `assets/templates/minimal-agent-template.md` — minimal skeleton for simple sub-agents.
 
 Scripts:
+
 - `scripts/init_agent.py` — scaffold a new sub-agent.
-- `scripts/validate_agent.py` — local validator (delegates to shared).

@@ -15,6 +15,7 @@ at the project level instead.
 ## Scope
 
 <!-- One sentence: what's in this directory and how it differs from the project root. -->
+
 - TODO: e.g. "API service. Express + Postgres. Different lint config than the `web/` package."
 
 ## Commands (only those that differ from project root)

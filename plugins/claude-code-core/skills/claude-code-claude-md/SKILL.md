@@ -13,25 +13,25 @@ allowed-tools:
 
 # claude-code-claude-md
 
-End-to-end authoring toolkit for CLAUDE.md — Claude Code's persistent agent instruction file. Treats CLAUDE.md as one layer of an *instruction surface* (root file + on-demand pointers + skills), not a single document. Applies equally to AGENTS.md (the cross-tool open standard) when both files coexist.
+End-to-end authoring toolkit for CLAUDE.md — Claude Code's persistent agent instruction file. Treats CLAUDE.md as one layer of an _instruction surface_ (root file + on-demand pointers + skills), not a single document. Applies equally to AGENTS.md (the cross-tool open standard) when both files coexist.
 
 ## Identity (read before anything else)
 
-CLAUDE.md is **for the agent, not for humans**. Empirically (arxiv:2601.20404, arxiv:2602.11988): instruction files improve agent performance *only when content is operative* (commands, conventions, constraints, triggered pointers). Descriptive content (architecture, file maps, intent) actively hurts performance and inflates cost by 20%+.
+CLAUDE.md is **for the agent, not for humans**. Empirically (arxiv:2601.20404, arxiv:2602.11988): instruction files improve agent performance _only when content is operative_ (commands, conventions, constraints, triggered pointers). Descriptive content (architecture, file maps, intent) actively hurts performance and inflates cost by 20%+.
 
 - **README** explains a project to humans.
 - **CLAUDE.md** instructs the agent: what to run, what to enforce, when to stop.
 
-When in doubt of any line, ask: *"Would removing this cause Claude to do the wrong thing on a task it currently handles correctly?"* If no, delete it.
+When in doubt of any line, ask: _"Would removing this cause Claude to do the wrong thing on a task it currently handles correctly?"_ If no, delete it.
 
 ## What this skill does
 
-| Intent | Mode |
-|---|---|
-| "create / scaffold / set up CLAUDE.md for this project" | **Create** — pick scope; emit a minimal annotated skeleton with the six operative categories. |
-| "refactor / improve / clean up my CLAUDE.md" | **Refactor** — split via `@import` and active pointers, drop README-content + architectural overviews, reorder critical rules to the front. |
-| "validate / lint / audit CLAUDE.md" | **Validate** — run the linter for structural and content rules. |
-| "optimize tokens / it's too long" | **Optimize** — measure, identify low-signal lines, propose cuts. |
+| Intent                                                  | Mode                                                                                                                                        |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| "create / scaffold / set up CLAUDE.md for this project" | **Create** — pick scope; emit a minimal annotated skeleton with the six operative categories.                                               |
+| "refactor / improve / clean up my CLAUDE.md"            | **Refactor** — split via `@import` and active pointers, drop README-content + architectural overviews, reorder critical rules to the front. |
+| "validate / lint / audit CLAUDE.md"                     | **Validate** — run the linter for structural and content rules.                                                                             |
+| "optimize tokens / it's too long"                       | **Optimize** — measure, identify low-signal lines, propose cuts.                                                                            |
 
 ## Authoritative reference
 
@@ -42,7 +42,7 @@ When in doubt of any line, ask: *"Would removing this cause Claude to do the wro
 1. **Pick the scope** with the user:
    - **Global** (`~/.claude/CLAUDE.md`): identity defaults, commit conventions, security invariants, behavioral preferences that apply across all the user's projects.
    - **Project** (`<root>/CLAUDE.md`): build/test/lint commands, project-specific conventions and constraints. Checked into git.
-   - **Directory** (`<subdir>/CLAUDE.md`): monorepo per-package rules that *differ from the project root*. Adds to, does not replace, project-level.
+   - **Directory** (`<subdir>/CLAUDE.md`): monorepo per-package rules that _differ from the project root_. Adds to, does not replace, project-level.
 
 2. **Pick the right template**:
    - `assets/templates/global-claude-md.template.md`
@@ -52,8 +52,10 @@ When in doubt of any line, ask: *"Would removing this cause Claude to do the wro
 3. **Fill the skeleton minimally** using the six categories from `references/section-guide.md` Part B. Skip any category that does not apply. Aim for 30–100 lines.
 
 4. **Active pointers, not inline content.** When the agent needs domain knowledge ("here's how our migrations work"), put a triggered pointer in CLAUDE.md and the content in `docs/` or `docs/adr/`. Pattern:
+
    ```markdown
    ## When writing migrations
+
    Read `docs/db-conventions.md` first.
    ```
 
@@ -130,6 +132,7 @@ This skill authors CLAUDE.md (and adjacent AGENTS.md) files. It does not author:
 ## Reference index
 
 Local:
+
 - `references/section-guide.md` — every section, every category, every rule, exhaustively documented with empirical sourcing.
 - `references/CURRENT-DOCS-INDEX.md` — upstream Anthropic + AGENTS.md spec + peer-reviewed papers + community sources.
 - `references/anti-patterns.md` — thirteen authoring mistakes with sources and fixes.
@@ -137,9 +140,11 @@ Local:
 - `references/validation-checklist.md` — pre-ship checklist.
 
 Templates:
+
 - `assets/templates/global-claude-md.template.md`
 - `assets/templates/project-claude-md.template.md`
 - `assets/templates/directory-claude-md.template.md`
 
 Scripts:
+
 - `scripts/validate_claude_md.py` — structural + content linter.

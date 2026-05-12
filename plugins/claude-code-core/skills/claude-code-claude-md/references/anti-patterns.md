@@ -9,8 +9,10 @@ Mistakes that turn CLAUDE.md from operative configuration into noise. Each entry
 **Why wrong**: Empirically increases inference cost by 20%+ AND reduces task success rates (arxiv:2602.11988, ETH Zurich, Feb 2026). Primes the agent to over-explore the codebase; it tries to validate the overview against reality, which is broader file traversal without behavior improvement.
 
 **Fix**: delete entirely. Move to `docs/adr/<NNNN>-event-sourcing.md`. If the agent genuinely needs the context for one type of work, add an active pointer:
+
 ```markdown
 ## When modifying write paths
+
 Read `docs/adr/0007-event-sourcing.md` first.
 ```
 
@@ -21,8 +23,10 @@ Read `docs/adr/0007-event-sourcing.md` first.
 **Why wrong**: Goes stale immediately. Encourages broader traversal without improving outcomes. Augment Code's term: "context file landmines."
 
 **Fix**: delete. The agent discovers structure as it works. If a specific path matters (generated code, vendored deps, build artifacts), include only that pointer:
+
 ```markdown
 ## File-tree notes
+
 - `dist/` — generated; never edit.
 - `vendor/` — vendored; treat as binary.
 ```
@@ -34,8 +38,10 @@ Read `docs/adr/0007-event-sourcing.md` first.
 **Why wrong**: alexop.dev empirical analysis: passive pointers are ignored ~56% of the time. The agent skips them because there's no trigger telling it when to read.
 
 **Fix**: add the trigger condition.
+
 ```markdown
 ## When adding a new module
+
 Read `docs/style-guide.md` before naming files or organizing exports.
 ```
 
@@ -50,6 +56,7 @@ Read `docs/style-guide.md` before naming files or organizing exports.
 ## Linter-redundant rules
 
 **Pattern**:
+
 ```markdown
 - Use 2-space indentation
 - Prefer single quotes
@@ -60,6 +67,7 @@ Read `docs/style-guide.md` before naming files or organizing exports.
 **Why wrong**: Prettier / Biome / Ruff / Rubocop enforce these deterministically. Recording them in CLAUDE.md doubles the token cost AND creates a divergence risk if the linter config changes.
 
 **Fix**: delete. Reference the source of truth in one line:
+
 ```markdown
 Style enforced by `biome.json`.
 ```
@@ -71,6 +79,7 @@ Style enforced by `biome.json`.
 **Why wrong**: Zero operative value. The agent has no measurable criterion. Test: "Would a competent senior engineer disagree with this rule, or need clarification to follow it?" If yes, it's vague.
 
 **Fix**: make concrete or delete.
+
 ```markdown
 - For new public functions: write a unit test covering happy path + 2 edge cases before implementation.
 - Use ES2022+ syntax (top-level await, `.at()`, `structuredClone()`).
@@ -95,6 +104,7 @@ Style enforced by `biome.json`.
 ## Negation without alternative
 
 **Pattern**:
+
 ```markdown
 - Never use `any` in TypeScript
 - Don't use default exports
@@ -104,6 +114,7 @@ Style enforced by `biome.json`.
 **Why wrong**: Tells the agent what NOT to do without telling it what to do instead. When the legitimate need arises, it has no positive direction.
 
 **Fix**: rewrite as constraints-with-alternatives.
+
 ```markdown
 - No `any`; use `unknown` + type narrowing or explicit generics.
 - Named exports only; default exports break refactoring tooling.
@@ -116,13 +127,13 @@ Style enforced by `biome.json`.
 
 **Why wrong**: Scopes concatenate. Duplicate content burns tokens twice per session. One copy will go stale.
 
-**Fix**: keep each rule at the most general scope where it still applies. Subdirectory files only contain *differences* from the project level.
+**Fix**: keep each rule at the most general scope where it still applies. Subdirectory files only contain _differences_ from the project level.
 
 ## Rules you don't enforce
 
 **Pattern**: CLAUDE.md says "always run tests before marking done" — but the user routinely skips it.
 
-**Why wrong**: MindStudio: silent credibility killer. The agent learns the rule is optional, which erodes confidence in *all* other rules.
+**Why wrong**: MindStudio: silent credibility killer. The agent learns the rule is optional, which erodes confidence in _all_ other rules.
 
 **Fix**: only write rules you actually enforce. If aspirational, delete until enforcement is real (a hook, CI gate, pre-commit check).
 
@@ -165,6 +176,7 @@ Style enforced by `biome.json`.
 **Why wrong**: Inconsistent with the imperative voice the agent best follows. Sounds like marketing/team self-description, not configuration.
 
 **Fix**: imperative or third-person.
+
 ```markdown
 Conventional Commits 1.0.0: `type(scope): subject`.
 ```

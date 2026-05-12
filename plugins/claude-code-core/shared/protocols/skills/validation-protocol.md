@@ -22,6 +22,7 @@ python3 ${CLAUDE_PLUGIN_ROOT}/shared/scripts/validate_skill.py [skill-path]
 ```
 
 **Validates**:
+
 - YAML frontmatter syntax and required fields
 - Field length limits (name <64 chars, description <1024 chars)
 - SKILL.md line count (<500 lines recommended)
@@ -33,6 +34,7 @@ python3 ${CLAUDE_PLUGIN_ROOT}/shared/scripts/validate_skill.py [skill-path]
 - Third-person voice in description
 
 **If errors occur**:
+
 1. Load `${CLAUDE_PLUGIN_ROOT}/shared/references/skills/troubleshooting.md`
 2. Fix reported issues
 3. Re-run validation
@@ -47,6 +49,7 @@ ${CLAUDE_PLUGIN_ROOT}/shared/references/skills/security-checklist.md
 ```
 
 **Verify**:
+
 - [ ] `allowed-tools` follows least privilege principle
 - [ ] No unnecessary tools granted
 - [ ] Input validation present for user-provided data
@@ -56,6 +59,7 @@ ${CLAUDE_PLUGIN_ROOT}/shared/references/skills/security-checklist.md
 - [ ] Sensitive operations require confirmation
 
 **Common issues**:
+
 - Granting `Bash(*)` without restrictions
 - Missing input sanitization in scripts
 - Hardcoded credentials in examples
@@ -70,6 +74,7 @@ ${CLAUDE_PLUGIN_ROOT}/shared/references/skills/testing-guide.md
 ```
 
 **Verify**:
+
 - [ ] 5+ positive activation tests (should trigger)
 - [ ] 5+ negative activation tests (should NOT trigger)
 - [ ] 3+ edge case tests
@@ -77,6 +82,7 @@ ${CLAUDE_PLUGIN_ROOT}/shared/references/skills/testing-guide.md
 - [ ] Tests cover all major skill features
 
 **Test types**:
+
 - **Activation tests**: Verify skill triggers on correct keywords/contexts
 - **Functionality tests**: Verify skill performs intended operations
 - **Boundary tests**: Verify skill handles edge cases properly
@@ -85,6 +91,7 @@ ${CLAUDE_PLUGIN_ROOT}/shared/references/skills/testing-guide.md
 ### Step 4: Activation Quality Check
 
 **Verify description effectiveness**:
+
 - [ ] Starts with action verbs (not "Manages", "Handles" alone)
 - [ ] Lists specific triggers (not generic "working with files")
 - [ ] NO internal components mentioned (SKILL.md, YAML, config files)
@@ -95,6 +102,7 @@ ${CLAUDE_PLUGIN_ROOT}/shared/references/skills/testing-guide.md
 - [ ] Length within 200-500 chars (sweet spot for clarity)
 
 **Reference**:
+
 ```
 ${CLAUDE_PLUGIN_ROOT}/shared/references/skills/activation-examples.md
 ```
@@ -108,6 +116,7 @@ ${CLAUDE_PLUGIN_ROOT}/shared/references/skills/best-practices-comprehensive.md
 ```
 
 **Quick checklist**:
+
 - [ ] Single capability focus (one skill per distinct capability)
 - [ ] Progressive disclosure (load references only when needed)
 - [ ] Concise writing (remove 30%+ unnecessary words)
@@ -119,11 +128,13 @@ ${CLAUDE_PLUGIN_ROOT}/shared/references/skills/best-practices-comprehensive.md
 ### Step 6: Sign-off
 
 **For claude-code-skill**:
+
 - Basic validation complete (Steps 1-5 passing)
 - Skill meets minimum quality standards
 - **Result**: Skill ready for use
 
 **For claude-code-skill**:
+
 - Full validation + optimization metrics
 - Activation rate measured and acceptable (>70%)
 - Token efficiency optimized (40-50% reduction vs baseline)
@@ -133,12 +144,14 @@ ${CLAUDE_PLUGIN_ROOT}/shared/references/skills/best-practices-comprehensive.md
 ## Validation Levels
 
 ### Level 1: Basic (claude-code-skill)
+
 - Technical validation ✅
 - Security check ✅
 - Testing check ✅
 - **Output**: Functional skill
 
 ### Level 2: Production (claude-code-skill)
+
 - All Level 1 checks ✅
 - Activation optimization ✅
 - Performance tuning ✅
@@ -148,21 +161,25 @@ ${CLAUDE_PLUGIN_ROOT}/shared/references/skills/best-practices-comprehensive.md
 ## Common Failure Modes
 
 ### YAML Syntax Errors
+
 **Symptom**: Skill won't load
 **Fix**: Check for tabs, missing quotes, invalid characters
 **Reference**: troubleshooting.md
 
 ### Low Activation Rate
+
 **Symptom**: Skill rarely triggers when it should
 **Fix**: Optimize description with more verb variations
 **Reference**: activation-examples.md
 
 ### Token Bloat
+
 **Symptom**: Slow response times, high token usage
 **Fix**: Apply progressive disclosure, move content to references
 **Reference**: best-practices-comprehensive.md
 
 ### Security Vulnerabilities
+
 **Symptom**: Failed security audit
 **Fix**: Restrict allowed-tools, add input validation
 **Reference**: security-checklist.md

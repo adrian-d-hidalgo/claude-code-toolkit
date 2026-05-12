@@ -15,6 +15,7 @@ Systematic process for optimizing skill activation rates through description ref
 ## Prerequisites
 
 Before optimizing activation:
+
 1. Skill must pass technical validation (`validation-protocol.md`)
 2. Core functionality must be working
 3. At least 10 test scenarios defined (5 positive, 5 negative)
@@ -45,22 +46,24 @@ Before optimizing activation:
 **Analyze current description for weaknesses**:
 
 Load activation examples:
+
 ```
 ${CLAUDE_PLUGIN_ROOT}/shared/references/skills/activation-examples.md
 ```
 
 **Common weaknesses**:
 
-| Weakness | Example | Impact |
-|----------|---------|--------|
-| Too generic | "Works with files" | Low semantic match confidence |
-| Implementation-focused | "Uses YAML and scripts" | Confuses HOW with WHEN |
-| Missing verb variations | Only "creating" | Misses "building", "designing", "making" |
-| No context triggers | Missing directory paths | Doesn't activate in correct locations |
-| Too verbose | >600 chars | Dilutes key activation signals |
-| No differentiation | Overlaps with other skills | Activation conflicts |
+| Weakness                | Example                    | Impact                                   |
+| ----------------------- | -------------------------- | ---------------------------------------- |
+| Too generic             | "Works with files"         | Low semantic match confidence            |
+| Implementation-focused  | "Uses YAML and scripts"    | Confuses HOW with WHEN                   |
+| Missing verb variations | Only "creating"            | Misses "building", "designing", "making" |
+| No context triggers     | Missing directory paths    | Doesn't activate in correct locations    |
+| Too verbose             | >600 chars                 | Dilutes key activation signals           |
+| No differentiation      | Overlaps with other skills | Activation conflicts                     |
 
 **Checklist**:
+
 - [ ] Starts with what it does (not how it works)
 - [ ] Lists specific action triggers (verbs)
 - [ ] Includes context triggers (paths, file types, domains)
@@ -77,28 +80,31 @@ Primary actions should have multiple verb forms to capture user intent variation
 
 **Verb variation table**:
 
-| Primary Action | Variations (include 3-5) |
-|----------------|--------------------------|
-| Create | creating, building, designing, making, generating, initializing |
-| Improve | improving, enhancing, optimizing, refactoring, fixing, upgrading |
-| Validate | validating, checking, verifying, reviewing, auditing, inspecting |
-| Configure | configuring, setting up, establishing, defining, customizing |
-| Analyze | analyzing, examining, evaluating, assessing, reviewing, diagnosing |
-| Manage | managing, handling, organizing, maintaining, controlling |
-| Deploy | deploying, publishing, releasing, distributing, shipping |
-| Test | testing, verifying, validating, checking, evaluating |
+| Primary Action | Variations (include 3-5)                                           |
+| -------------- | ------------------------------------------------------------------ |
+| Create         | creating, building, designing, making, generating, initializing    |
+| Improve        | improving, enhancing, optimizing, refactoring, fixing, upgrading   |
+| Validate       | validating, checking, verifying, reviewing, auditing, inspecting   |
+| Configure      | configuring, setting up, establishing, defining, customizing       |
+| Analyze        | analyzing, examining, evaluating, assessing, reviewing, diagnosing |
+| Manage         | managing, handling, organizing, maintaining, controlling           |
+| Deploy         | deploying, publishing, releasing, distributing, shipping           |
+| Test           | testing, verifying, validating, checking, evaluating               |
 
 **Example optimization**:
 
 ❌ **Before** (low density):
+
 ```yaml
 description: >
   Creates and improves Claude Code skills. Use when creating skills
   or working with .claude/skills/* directories.
 ```
+
 Activation triggers: "create", "improve", "skills"
 
 ✅ **After** (high density):
+
 ```yaml
 description: >
   Creates, builds, designs, improves, enhances, optimizes, validates,
@@ -106,7 +112,8 @@ description: >
   new skills, designing skills, improving skills, fixing skills,
   validating skill structure, or working with .claude/skills/* directories.
 ```
-Activation triggers: "create/build/design", "improve/enhance/optimize/fix", "validate/audit", "skills", ".claude/skills/*"
+
+Activation triggers: "create/build/design", "improve/enhance/optimize/fix", "validate/audit", "skills", ".claude/skills/\*"
 
 **Result**: Higher semantic matching confidence across different user phrasings.
 
@@ -119,11 +126,12 @@ Context triggers help activation in correct scenarios even without explicit keyw
 **Context types**:
 
 1. **Path triggers**: `.claude/skills/*`, `~/.claude/skills/*`, specific directories
-2. **File type triggers**: "*.md files", "JSON files", "Python scripts"
+2. **File type triggers**: "\*.md files", "JSON files", "Python scripts"
 3. **Domain triggers**: "authentication", "database", "API"
 4. **Operation triggers**: "in production", "during deployment", "for testing"
 
 **Example**:
+
 ```yaml
 description: >
   Creates and optimizes Claude Code skills. REQUIRED when creating skills,
@@ -140,6 +148,7 @@ Path triggers (`.claude/skills/*`) help activate even if user says "fix this" wh
 If multiple skills have overlapping domains, add explicit differentiation.
 
 **Strategy**:
+
 1. Identify potentially conflicting skills
 2. Add "NOT handled" clause to both descriptions
 3. Use "REQUIRED when" for critical infrastructure skills
@@ -147,6 +156,7 @@ If multiple skills have overlapping domains, add explicit differentiation.
 **Example** (claude-code-skill vs claude-code-sub-agent):
 
 claude-code-skill:
+
 ```yaml
 description: >
   Creates new Claude Code skills. Use when creating skills, building skills,
@@ -155,6 +165,7 @@ description: >
 ```
 
 claude-code-sub-agent:
+
 ```yaml
 description: >
   Creates new Claude Code agents. REQUIRED when creating agents, building agents,
@@ -189,6 +200,7 @@ description: >
    - Target: <10% false positive rate
 
 2. Cross-check with validation protocol:
+
    ```
    ${CLAUDE_PLUGIN_ROOT}/shared/protocols/skills/validation-protocol.md
    ```
@@ -198,6 +210,7 @@ description: >
 4. Monitor activation in production (if using `--debug` mode)
 
 **Sign-off criteria**:
+
 - [ ] Activation rate >80% on test suite
 - [ ] False positive rate <10%
 - [ ] Real-world testing completed
@@ -208,6 +221,7 @@ description: >
 ## Activation Patterns
 
 ### Standard Pattern (most skills)
+
 ```yaml
 description: >
   [What it does]. Use when [trigger-1], [trigger-2], or working with [paths].
@@ -216,6 +230,7 @@ description: >
 **When to use**: General-purpose skills, optional functionality
 
 ### Imperative Pattern (critical infrastructure)
+
 ```yaml
 description: >
   [What it does]. REQUIRED when [trigger-1], [trigger-2], or working with [paths].
@@ -278,32 +293,36 @@ description: >
 
 ### Target Benchmarks
 
-| Metric | Minimum | Good | Excellent |
-|--------|---------|------|-----------|
-| Activation Rate | 70% | 80% | 90%+ |
-| Precision | 80% | 90% | 95%+ |
-| False Positive Rate | <20% | <10% | <5% |
-| Consistency | 70% | 85% | 95%+ |
+| Metric              | Minimum | Good | Excellent |
+| ------------------- | ------- | ---- | --------- |
+| Activation Rate     | 70%     | 80%  | 90%+      |
+| Precision           | 80%     | 90%  | 95%+      |
+| False Positive Rate | <20%    | <10% | <5%       |
+| Consistency         | 70%     | 85%  | 95%+      |
 
 ## Tools and Resources
 
 **Analysis Tools**:
+
 ```bash
 # Analyze activation patterns (future)
 python3 ${CLAUDE_PLUGIN_ROOT}/shared/scripts/analyze_activation.py [skill-path]
 ```
 
 **References**:
+
 - `${CLAUDE_PLUGIN_ROOT}/shared/references/skills/activation-examples.md` - Real-world description patterns
 - `${CLAUDE_PLUGIN_ROOT}/shared/references/skills/best-practices-comprehensive.md` - Comprehensive guidelines
 
 **Debug Mode**:
+
 ```bash
 # See activation decisions in real-time
 claude --debug
 ```
 
 Shows:
+
 - Which skills were considered
 - Why each was selected/rejected
 - Confidence scores (if available)

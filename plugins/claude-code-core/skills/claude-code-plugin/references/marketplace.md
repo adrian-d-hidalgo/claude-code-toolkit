@@ -15,6 +15,7 @@ Create marketplace to group multiple related plugins.
 ### 1. Gather Requirements
 
 Ask user (max 3 questions):
+
 - What is the theme/purpose of this marketplace?
 - How many plugins initially? (2-5 recommended)
 - Brief description of each plugin's purpose
@@ -26,6 +27,7 @@ bash scripts/init_marketplace.sh marketplace-name [path]
 ```
 
 This creates:
+
 ```
 marketplace-name/
 ├── .claude-plugin/marketplace.json
@@ -39,6 +41,7 @@ Load `assets/templates/marketplace-structure.md` for complete structure referenc
 ### 3. Configure marketplace.json
 
 Edit `.claude-plugin/marketplace.json`:
+
 ```json
 {
   "name": "marketplace-name",
@@ -59,6 +62,7 @@ bash scripts/add_plugin.sh . plugin-1-name
 ```
 
 This creates plugin structure using Individual Plugin pattern:
+
 ```
 marketplace-name/
 ├── .claude-plugin/marketplace.json
@@ -78,6 +82,7 @@ Each plugin is a **complete Individual Plugin**.
 ### 6. Update marketplace.json
 
 Add plugin reference:
+
 ```json
 {
   "name": "marketplace-name",
@@ -102,6 +107,7 @@ Add plugin reference:
 ### 7. Generate Documentation
 
 Update marketplace README.md:
+
 - Overview of marketplace theme
 - List of plugins with brief descriptions
 - Installation instructions (full marketplace vs individual plugins)

@@ -30,6 +30,7 @@ Clear objective, inputs, outputs, success criteria
 ## [Section 3: Context Detection Implementation]
 
 **Before creating any files**:
+
 1. Check for .claude/ directory
 2. Verify directory structure
 3. Create structure if needed
@@ -68,6 +69,7 @@ When to use research, how to invoke, handling failures
 Purpose: Configure testing tools and frameworks
 
 Key sections:
+
 - Prerequisites: Check package.json, git status
 - Context: Detect project type (Angular, React, Node)
 - Execution: Install dependencies, create config files
@@ -78,6 +80,7 @@ Key sections:
 Purpose: Generate component with tests and styles
 
 Key sections:
+
 - Prerequisites: Verify framework installed
 - Context: Detect component directory structure
 - Execution: Generate files from templates
@@ -100,15 +103,19 @@ model: sonnet
 ## Domain-Specific Source Credibility
 
 **Tier 1** (Highest Trust):
+
 - [Domain-specific authoritative sources]
 
 **Tier 2** (High Trust):
+
 - [Validated community sources]
 
 **Tier 3** (Moderate Trust):
+
 - [Community content with some validation]
 
 **Tier 4** (Low Trust):
+
 - [Unvalidated or outdated sources]
 
 ## Progressive Search Strategy
@@ -116,25 +123,31 @@ model: sonnet
 Execute searches in order, moving to next level if insufficient results:
 
 **Level 1 - Highly Specific**:
+
 - "[exact-context]" [technology] [version]
 
 **Level 2 - Technology Focused**:
+
 - "[core-terms]" [technology-category] [timeframe]
 
 **Level 3 - Pattern Recognition**:
+
 - "[pattern-keywords]" [technology-family] [solution-type]
 
 **Level 4 - Conceptual**:
+
 - "[underlying-concept]" [approach-category] [principles]
 
 ## Reincidence Handling
 
 **Check for reincidence parameters**:
+
 - `--previous-terms` → Avoid same searches, jump to alternatives
 - `--failed-approaches` → Exclude solution types, focus on different methodologies
 - `--context-refinement` → Use more specific terms, add environmental context
 
 **Refinement Strategies**:
+
 - Level 1 failed → Jump to Level 3
 - No exact matches → Pattern-based broader searches
 - Solutions don't apply → Add environmental context
@@ -156,12 +169,14 @@ Execute searches in order, moving to next level if insufficient results:
 Purpose: Research technical error solutions
 
 Credibility:
+
 - Tier 1: Official docs, security advisories
 - Tier 2: Stack Overflow >10 upvotes, GitHub issues
 - Tier 3: Technical blogs, 3-10 upvotes
 - Tier 4: Unvalidated, deprecated
 
 Search progression:
+
 - Level 1: "[exact-error]" [technology] [version]
 - Level 2: "[error-pattern]" [technology] "solution"
 - Level 3: [error-category] [technology-family] "fix"
@@ -172,6 +187,7 @@ Search progression:
 Purpose: Research development standards
 
 Credibility:
+
 - Tier 1: Official style guides, framework docs
 - Tier 2: Established blog authors, conference talks
 - Tier 3: Community wikis, professional forums
@@ -225,6 +241,7 @@ model: sonnet
 Purpose: Generate new command with architectural compliance
 
 Key sections:
+
 - Standards: Template selection, security config
 - Quality: Independence validation, testing
 - Integration: Reference updates, ecosystem integration
@@ -235,6 +252,7 @@ Key sections:
 Purpose: Check command compliance with standards
 
 Key sections:
+
 - Standards: YAML validation, structure checks
 - Quality: Security audit, independence verification
 - Integration: Ecosystem compatibility checks
@@ -242,18 +260,21 @@ Key sections:
 ## Pattern Selection Guide
 
 **Choose Action/Development when**:
+
 - Command performs development tasks
 - Modifies files or runs operations
 - Needs bash execution
 - Creates or updates project artifacts
 
 **Choose Research when**:
+
 - Command gathers current information
 - No file modifications needed
 - Requires web search
 - Provides recommendations without execution
 
 **Choose Meta/Core when**:
+
 - Command creates/manages other commands
 - Validates ecosystem components
 - Updates system documentation
@@ -280,7 +301,7 @@ Key sections:
 **Before creating any files**:
 
 1. Check for .claude/ directory: `Glob("**/.claude")`
-2. Verify directory structure: Check .claude/commands/**
+2. Verify directory structure: Check .claude/commands/\*\*
 3. Create structure if needed: mkdir -p .claude/commands/[category]
 4. Determine category: Based on command type and purpose
 5. Create file: .claude/commands/[category]/[name].md

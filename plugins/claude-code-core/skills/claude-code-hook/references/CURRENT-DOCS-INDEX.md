@@ -5,21 +5,21 @@
 
 ## Primary sources
 
-| Topic | URL |
-|---|---|
-| Hooks reference | <https://code.claude.com/docs/en/hooks> |
-| Hooks (Spanish) | <https://code.claude.com/docs/es/hooks> |
-| Settings | <https://code.claude.com/docs/en/settings> |
-| Tools reference | <https://code.claude.com/docs/en/tools-reference> |
-| Sub-agents (hooks in agent frontmatter) | <https://code.claude.com/docs/en/sub-agents> |
-| Skills (hooks in skill frontmatter) | <https://code.claude.com/docs/en/skills> |
+| Topic                                   | URL                                               |
+| --------------------------------------- | ------------------------------------------------- |
+| Hooks reference                         | <https://code.claude.com/docs/en/hooks>           |
+| Hooks (Spanish)                         | <https://code.claude.com/docs/es/hooks>           |
+| Settings                                | <https://code.claude.com/docs/en/settings>        |
+| Tools reference                         | <https://code.claude.com/docs/en/tools-reference> |
+| Sub-agents (hooks in agent frontmatter) | <https://code.claude.com/docs/en/sub-agents>      |
+| Skills (hooks in skill frontmatter)     | <https://code.claude.com/docs/en/skills>          |
 
 ## Reference repos consulted
 
-| Repo | Why |
-|---|---|
-| <https://github.com/anthropics/claude-plugins-official> | Canonical hook examples |
-| <https://github.com/wshobson/agents> | Plugin-scoped hook patterns |
+| Repo                                                      | Why                          |
+| --------------------------------------------------------- | ---------------------------- |
+| <https://github.com/anthropics/claude-plugins-official>   | Canonical hook examples      |
+| <https://github.com/wshobson/agents>                      | Plugin-scoped hook patterns  |
 | <https://github.com/hesreallyhim/claude-code-json-schema> | hooks.json schema validators |
 
 ## Coverage in `section-guide.md`

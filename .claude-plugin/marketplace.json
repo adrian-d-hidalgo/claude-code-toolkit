@@ -10,7 +10,7 @@
     {
       "name": "claude-code-core",
       "source": "./plugins/claude-code-core",
-      "description": "Meta-skills for authoring Claude Code extensions: scaffold, validate, and audit skills, sub-agents, slash commands, plugins, hooks, and CLAUDE.md memory files against current official conventions.",
+      "description": "Meta-skills for authoring Claude Code extensions: scaffold, validate, and audit skills, sub-agents, slash commands, plugins, hooks, and CLAUDE.md memory files against the latest official conventions.",
       "category": "development",
       "tags": ["meta", "skills", "agents", "commands", "plugins", "hooks", "claude-md", "scaffolding", "validation"]
     },

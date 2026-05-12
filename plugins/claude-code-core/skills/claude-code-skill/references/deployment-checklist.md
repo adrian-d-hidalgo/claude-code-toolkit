@@ -88,6 +88,7 @@ claude --debug
 ## Quick Reference
 
 **Pass criteria**:
+
 - All checklist items checked
 - Validation script passes
 - 90%+ activation accuracy
@@ -96,6 +97,7 @@ claude --debug
 - <5% error rate
 
 **If any items fail**:
+
 1. Document specific failure
 2. Reference appropriate guide (security-checklist.md, testing-guide.md, optimization-patterns.md)
 3. Fix issue

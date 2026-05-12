@@ -15,11 +15,13 @@ allowed-tools:
 ## Overview
 
 **What this skill provides**:
+
 - [Capability 1]
 - [Capability 2]
 - [Capability 3]
 
 **When to use**:
+
 - [Scenario 1]
 - [Scenario 2]
 
@@ -32,10 +34,12 @@ Complete process for using this skill:
 [Description of what happens in this step]
 
 **Actions**:
+
 - [Action 1]
 - [Action 2]
 
 **Validation**:
+
 - Check [expected result]
 
 ### Step 2: [Second Major Step]
@@ -43,10 +47,12 @@ Complete process for using this skill:
 [Description]
 
 **Actions**:
+
 - [Action 1]
 - [Action 2]
 
 **Load when needed**:
+
 - references/[reference-file].md - [When to load this reference]
 
 ### Step 3: [Final Step]
@@ -54,6 +60,7 @@ Complete process for using this skill:
 [Description]
 
 **Validation**:
+
 - [ ] [Check 1]
 - [ ] [Check 2]
 
@@ -74,15 +81,17 @@ Complete process for using this skill:
 ## Resources
 
 **Scripts** (scripts/):
+
 - [script-name].py - [What it does]
 
 **References** (references/):
+
 - [reference-file].md - [What information it contains]
 
 ## Common Issues
 
-| Problem | Solution |
-|---------|----------|
+| Problem   | Solution     |
+| --------- | ------------ |
 | [Issue 1] | [How to fix] |
 | [Issue 2] | [How to fix] |
 

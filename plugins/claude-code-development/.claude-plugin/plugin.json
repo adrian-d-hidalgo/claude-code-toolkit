@@ -1,6 +1,6 @@
 {
   "name": "claude-code-development",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Opinionated senior software-developer sub-agent that enforces Think-Before-Coding, Simplicity-First, Surgical-Changes, and Goal-Driven Execution rules for any coding task.",
   "author": {
     "name": "Adrián Darío Hidalgo Flores"

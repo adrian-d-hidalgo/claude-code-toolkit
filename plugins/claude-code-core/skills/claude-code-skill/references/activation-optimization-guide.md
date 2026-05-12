@@ -5,6 +5,7 @@ Practical guide for optimizing skill activation descriptions based on real failu
 ## Case Study: skill-manager Activation Failure
 
 ### Problem
+
 **User request**: "necesito que analices si el @skills/command-manager/ cumple con los estándares correctos"
 
 **Result**: Skill did NOT activate
@@ -18,6 +19,7 @@ Practical guide for optimizing skill activation descriptions based on real failu
 ### Solution Applied
 
 **Before** (295 chars):
+
 ```yaml
 Creates, improves, validates, and audits Claude Code skills for standards
 compliance. REQUIRED when creating skills, analyzing skill quality, validating
@@ -26,6 +28,7 @@ Handles skill ecosystems only, NOT application code.
 ```
 
 **After** (340 chars):
+
 ```yaml
 Analyzes, creates, improves, validates, and audits Claude Code skill ecosystems
 for standards compliance and quality. Use when analyzing skills, checking compliance,
@@ -43,11 +46,11 @@ readiness, or working with skill files in .claude/skills/* or ~/.claude/skills/*
 
 ### Impact
 
-| Metric | Before | After | Change |
-|--------|--------|-------|--------|
-| Trigger match | ~35% | ~85% | +143% |
-| Path coverage | 50% | 100% | +100% |
-| Verb matching | Weak | Strong | +300% |
+| Metric        | Before | After  | Change |
+| ------------- | ------ | ------ | ------ |
+| Trigger match | ~35%   | ~85%   | +143%  |
+| Path coverage | 50%    | 100%   | +100%  |
+| Verb matching | Weak   | Strong | +300%  |
 
 ---
 
@@ -56,31 +59,37 @@ readiness, or working with skill files in .claude/skills/* or ~/.claude/skills/*
 Use for ANY skill description:
 
 ### 1. Verb Priority
+
 - [ ] Most common action = FIRST verb
 - [ ] If analyzing is primary → "Analyzes" first
 - [ ] If creating is primary → "Creates" first
 
 ### 2. Path Patterns
+
 - [ ] Project-level: `.claude/[type]/*`
 - [ ] Global-level: `~/.claude/[type]/*`
 - [ ] Generic: "[type] files" (covers @mentions)
 
 ### 3. Action Triggers
+
 - [ ] Use verb phrases: "checking X", "reviewing Y"
 - [ ] Avoid lone nouns: "compliance" → "checking compliance"
 - [ ] List 5-8 common actions users say
 
 ### 4. Scope Definition
+
 - [ ] Positive scope: "skill ecosystems", "command structures"
 - [ ] NO negative mentions: Avoid "NOT X, Y, Z" (creates noise)
 - [ ] Let path patterns define boundaries
 
 ### 5. Length
+
 - [ ] Target: 200-500 chars
 - [ ] Under 200: Too vague
 - [ ] Over 500: Diluted triggers
 
 ### 6. Validation
+
 - [ ] Test with real user requests
 - [ ] Check trigger matching for primary use cases
 - [ ] Verify path patterns cover user syntax
@@ -121,15 +130,15 @@ Queries like `"Validate this X"`, `"Audit my Y"`, `"Refactor my Z — its frontm
 
 Tested across 5 meta-skill corpora (claude-code-{skill, slash-command, sub-agent, plugin, hook}), May 2026:
 
-| Query pattern | Routing rate |
-|---|---:|
-| `"Create / Scaffold / Build / Design a new X"` | ~95% |
-| `"Help me build a X" / "Design a X for Y"` | ~95% |
-| `"Walk me through the X workflow"` | ~95% |
-| `"Validate this X"` (no path) | ~30% (verifies first) |
-| `"Audit my X for production readiness"` | ~30% (asks which) |
-| `"Refactor my X — it has problem Y"` (no path) | ~50% (mixed) |
-| `"Convert this X to a Y"` (cross-domain) | ~40% (routes to destination skill instead) |
+| Query pattern                                  |                               Routing rate |
+| ---------------------------------------------- | -----------------------------------------: |
+| `"Create / Scaffold / Build / Design a new X"` |                                       ~95% |
+| `"Help me build a X" / "Design a X for Y"`     |                                       ~95% |
+| `"Walk me through the X workflow"`             |                                       ~95% |
+| `"Validate this X"` (no path)                  |                      ~30% (verifies first) |
+| `"Audit my X for production readiness"`        |                          ~30% (asks which) |
+| `"Refactor my X — it has problem Y"` (no path) |                               ~50% (mixed) |
+| `"Convert this X to a Y"` (cross-domain)       | ~40% (routes to destination skill instead) |
 
 ### Rule
 
@@ -167,11 +176,11 @@ The shift: from "do X to my existing Y" → to "design / generate / walk me thro
 
 Across 3 rewrite attempts on 3 skills:
 
-| Skill | Long description (~900 chars) | Short description (~600 chars) |
-|---|---:|---:|
-| claude-code-sub-agent | 0.737 → 0.842 | +0.105 |
-| claude-code-plugin | 0.895 → 0.842 | −0.053 |
-| claude-code-slash-command | 0.789 → 0.684 | −0.105 |
+| Skill                     | Long description (~900 chars) | Short description (~600 chars) |
+| ------------------------- | ----------------------------: | -----------------------------: |
+| claude-code-sub-agent     |                 0.737 → 0.842 |                         +0.105 |
+| claude-code-plugin        |                 0.895 → 0.842 |                         −0.053 |
+| claude-code-slash-command |                 0.789 → 0.684 |                         −0.105 |
 
 Net: description rewriting falls inside the LLM run-to-run variance (~0.05–0.10 stdev). Don't over-tune description text — the corpus quality matters more.
 
@@ -180,33 +189,43 @@ Net: description rewriting falls inside the LLM run-to-run variance (~0.05–0.1
 ## Common Pitfalls
 
 ### ❌ Pitfall 1: Wrong verb order
+
 ```yaml
 Creates and analyzes skills...
 ```
+
 If users mostly ANALYZE (not create), this weakens matching.
 
 ### ❌ Pitfall 2: Single path pattern
+
 ```yaml
 working with .claude/skills/* directories
 ```
+
 Misses `~/.claude/skills/*` (global) and `@skills/*` (mentions).
 
 ### ❌ Pitfall 3: Negative mentions
+
 ```yaml
 Handles skills, NOT commands or agents
 ```
+
 Introduces "commands" and "agents" keywords → noise.
 
 ### ❌ Pitfall 4: Noun-heavy
+
 ```yaml
 for compliance and structure validation
 ```
+
 Weaker than: "checking compliance, validating structure"
 
 ### ❌ Pitfall 5: Implementation details
+
 ```yaml
 Uses SKILL.md files and YAML frontmatter
 ```
+
 Focus on WHEN to activate, not HOW it works.
 
 ---
@@ -216,6 +235,7 @@ Focus on WHEN to activate, not HOW it works.
 ### Should Activate (Positive Tests)
 
 Test your actual use cases:
+
 1. "analyze the skill X for compliance"
 2. "check if @skills/foo meets standards"
 3. "review skill at ~/.claude/skills/bar"
@@ -225,6 +245,7 @@ Test your actual use cases:
 ### Should NOT Activate (Negative Tests)
 
 Test scope boundaries:
+
 1. "analyze command X" (should hit the slash-command meta-skill, not this one)
 2. "review application code" (should not activate any meta-skill — that's app code)
 3. "check agent setup" (should hit the sub-agent meta-skill, not this one)
@@ -232,6 +253,7 @@ Test scope boundaries:
 ### Confidence Check
 
 After changes, verify:
+
 - Primary use case: >80% match confidence
 - Secondary use cases: >60% match confidence
 - Negative tests: <30% match confidence
@@ -242,12 +264,12 @@ After changes, verify:
 
 ### Path Patterns by Type
 
-| Type | Project | Global | Generic |
-|------|---------|--------|---------|
-| Skills | `.claude/skills/*` | `~/.claude/skills/*` | `skill files` |
-| Commands | `.claude/commands/*` | `~/.claude/commands/*` | `command files` |
-| Agents | `.claude/agents/*` | `~/.claude/agents/*` | `agent files` |
-| Hooks | `settings.json hooks` | N/A | `hook config` |
+| Type     | Project               | Global                 | Generic         |
+| -------- | --------------------- | ---------------------- | --------------- |
+| Skills   | `.claude/skills/*`    | `~/.claude/skills/*`   | `skill files`   |
+| Commands | `.claude/commands/*`  | `~/.claude/commands/*` | `command files` |
+| Agents   | `.claude/agents/*`    | `~/.claude/agents/*`   | `agent files`   |
+| Hooks    | `settings.json hooks` | N/A                    | `hook config`   |
 
 ### Action Verb Categories
 
@@ -276,6 +298,7 @@ description: >
 ```
 
 Fill in:
+
 - `[Primary-verb]`: Most common action (Analyzes, Creates, etc.)
 - `[domain-noun]`: What you work with (skills, commands, agents)
 - `[domain-scope]`: Qualifier (ecosystems, structures, configurations)
@@ -294,6 +317,7 @@ python scripts/validate_skill.py /path/to/skill/
 ```
 
 Expected output:
+
 - ✓ Description length: [chars]/1024
 - ✓ Description uses third person
 - ✓ No warnings about description

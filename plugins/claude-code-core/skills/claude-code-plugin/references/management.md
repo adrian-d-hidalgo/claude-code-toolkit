@@ -48,6 +48,7 @@ Load `references/troubleshooting-guide.md` if plugin doesn't load.
 **2. Edit Configuration**
 
 Read plugin.json:
+
 ```bash
 Read: ~/.claude/plugins/plugin-name/.claude-plugin/plugin.json
 ```
@@ -55,6 +56,7 @@ Read: ~/.claude/plugins/plugin-name/.claude-plugin/plugin.json
 **3. Modify**
 
 Common modifications:
+
 - Add component: Update `commands`, `agents`, or `mcpServers` arrays
 - Change version: Update `version` field
 - Add environment variable: Add to `env` object in MCP server config
@@ -91,6 +93,7 @@ claude mcp add postgres --env DATABASE_URL=$URL -- npx -y @modelcontextprotocol/
 ```
 
 **Scopes**:
+
 - `local` - Current project only (not shared)
 - `project` - Shared via .mcp.json
 - `user` - All projects for user
@@ -119,6 +122,7 @@ claude mcp get server-name
 **2. Edit**
 
 Read current config:
+
 ```bash
 Read: .mcp.json  # or ~/.claude.json
 ```
@@ -126,6 +130,7 @@ Read: .mcp.json  # or ~/.claude.json
 **3. Modify**
 
 Common changes:
+
 - Update arguments
 - Add environment variables
 - Change command path
@@ -158,6 +163,7 @@ View available tools, resources, and prompts.
 **3. Test Tools**
 
 Request Claude to use a specific tool:
+
 ```
 Use the [tool-name] tool with [parameters]
 ```
@@ -173,4 +179,3 @@ claude --debug
 ```
 
 Load `references/mcp-testing-guide.md` for comprehensive testing strategies.
-

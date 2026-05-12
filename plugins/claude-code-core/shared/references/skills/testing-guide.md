@@ -92,9 +92,25 @@ Corpora rewritten following this guide hit **routing 0.947–1.000** across 6 me
   "snapshot_date": "YYYY-MM-DD",
   "notes": "Optional — capture what changed between versions",
   "cases": [
-    {"id": "pos-01", "query": "...", "should_trigger": true,  "category": "positive-direct"},
-    {"id": "neg-01", "query": "...", "should_trigger": false, "category": "negative-sibling"},
-    {"id": "edge-01","query": "...", "should_trigger": true,  "category": "edge-ambiguous", "notes": "Why this is edge."}
+    {
+      "id": "pos-01",
+      "query": "...",
+      "should_trigger": true,
+      "category": "positive-direct"
+    },
+    {
+      "id": "neg-01",
+      "query": "...",
+      "should_trigger": false,
+      "category": "negative-sibling"
+    },
+    {
+      "id": "edge-01",
+      "query": "...",
+      "should_trigger": true,
+      "category": "edge-ambiguous",
+      "notes": "Why this is edge."
+    }
   ]
 }
 ```
@@ -103,12 +119,12 @@ Target: ≥8 positives, ≥8 negatives, ≥3 edge cases per skill.
 
 ---
 
-
 ## Testing Philosophy
 
 **Build evaluations first**: Create test scenarios before extensive documentation.
 
 Test with:
+
 - All target models (Haiku, Sonnet, Opus)
 - Real usage scenarios (not isolated cases)
 - Team feedback from actual usage patterns
@@ -122,6 +138,7 @@ Verify skill triggers correctly.
 **Minimum 3 evaluations required**:
 
 **Positive triggers** (should activate):
+
 ```
 Test what phrases SHOULD trigger skill based on description
 
@@ -134,6 +151,7 @@ Examples for PDF processing skill:
 ```
 
 **Negative triggers** (should NOT activate):
+
 ```
 Test what phrases SHOULD NOT trigger skill
 
@@ -145,6 +163,7 @@ Examples for PDF processing skill:
 ```
 
 **Edge cases**:
+
 ```
 Ambiguous or partial matches
 
@@ -155,6 +174,7 @@ Examples:
 ```
 
 **Using debug mode**:
+
 ```bash
 claude --debug
 
@@ -169,6 +189,7 @@ claude --debug
 Test core workflows end-to-end.
 
 **Test structure**:
+
 ```
 For each primary use case:
 1. Define input
@@ -179,12 +200,14 @@ For each primary use case:
 ```
 
 **Example test case**:
+
 ```markdown
 Test: PDF Rotation
 
 Input: "Rotate document.pdf 90 degrees clockwise"
 
 Expected workflow:
+
 1. Skill activates (verify in debug mode)
 2. Validates file exists
 3. Executes scripts/rotate_pdf.py
@@ -192,12 +215,14 @@ Expected workflow:
 5. Reports success
 
 Success criteria:
+
 - Output file exists
 - Output file is valid PDF
 - Rotation angle correct
 - Original file unchanged (if preserve=true)
 
 Error scenarios:
+
 - File doesn't exist → Clear error message
 - Invalid angle → Validation error
 - Corrupted PDF → Graceful failure with details
@@ -208,18 +233,21 @@ Error scenarios:
 Test multi-skill coordination (if applicable).
 
 **Scenarios**:
+
 ```markdown
 Test: Skill coordinates with research-specialist
 
 Input: "Process this PDF using best practices"
 
 Expected workflow:
+
 1. Primary skill activates
 2. Delegates to research-specialist for best practices
 3. Applies recommended approach
 4. Returns coordinated result
 
 Validation:
+
 - Both skills activated appropriately
 - Information passed correctly between skills
 - Final output incorporates best practices
@@ -235,6 +263,7 @@ Validation:
 Target: 90%+
 
 Calculate:
+
 ```
 True Positives / (True Positives + False Negatives)
 ```
@@ -244,6 +273,7 @@ True Positives / (True Positives + False Negatives)
 Target: <5%
 
 Calculate:
+
 ```
 False Positives / (False Positives + True Negatives)
 ```
@@ -267,6 +297,7 @@ Measure: Percentage of test scenarios completed successfully
 Target: 40-50% reduction
 
 Measure:
+
 ```
 (Baseline Tokens - Skill Tokens) / Baseline Tokens × 100%
 ```
@@ -302,15 +333,18 @@ Iterative testing methodology:
 ## Test Documentation
 
 **Test suite structure**:
+
 ```
 skill-name/tests/
-├── activation-tests.md       # Positive/negative/edge case triggers
+├── activation-evals.json     # CANONICAL — positive/negative/edge triggers; consumed by the repo-level run_activation_evals.py runner
+├── activation-tests.md       # OPTIONAL — human-readable pointer to the JSON corpus
 ├── functionality-tests.md    # Core workflow validation
 ├── edge-cases.md             # Error handling scenarios
 └── integration-tests.md      # Multi-skill coordination
 ```
 
 **Test case template**:
+
 ```markdown
 ## Test: [Test Name]
 
@@ -319,11 +353,13 @@ skill-name/tests/
 **Input**: [User request or trigger phrase]
 
 **Expected Behavior**:
+
 1. [Step 1]
 2. [Step 2]
 3. [Step 3]
 
 **Success Criteria**:
+
 - [Criterion 1]
 - [Criterion 2]
 
@@ -339,16 +375,19 @@ Test across model tiers for consistency.
 **Model-specific considerations**:
 
 **Haiku** (fastest, most efficient):
+
 - Verify skill still triggers (less context tolerance)
 - Check if simplified instructions needed
 - Validate token efficiency gains
 
 **Sonnet** (balanced):
+
 - Primary testing target
 - Full feature validation
 - Performance baseline
 
 **Opus** (most capable):
+
 - Complex scenario testing
 - Edge case handling
 - Multi-step workflow validation
@@ -358,8 +397,10 @@ Test across model tiers for consistency.
 Incorporate real usage patterns.
 
 **Feedback collection**:
+
 ```markdown
 After deployment, gather:
+
 - Which triggers worked/failed in practice
 - Unexpected activations (false positives)
 - Missed activations (false negatives)
@@ -369,6 +410,7 @@ After deployment, gather:
 ```
 
 **Iteration based on feedback**:
+
 ```
 Weekly: Review activation logs and user reports
 Monthly: Analyze metrics trends
@@ -380,6 +422,7 @@ Quarterly: Comprehensive test suite re-run
 Prevent breaking changes.
 
 **Before updates**:
+
 ```
 1. Run full test suite on current version
 2. Document baseline metrics
@@ -400,20 +443,24 @@ Prevent breaking changes.
 Compare against baselines.
 
 **Benchmark tests**:
+
 ```markdown
 Test: Token efficiency
 
 Baseline: General Claude without skill
+
 - Run scenario
 - Record tokens used
 - Record completion time
 
 With Skill: Same scenario
+
 - Run scenario
 - Record tokens used
 - Record completion time
 
 Calculate:
+
 - Token reduction: (Baseline - Skill) / Baseline × 100%
 - Speed improvement: (Baseline Time - Skill Time) / Baseline Time × 100%
 
@@ -425,6 +472,7 @@ Target: 40-50% token reduction, comparable or faster speed
 ### Skill Not Activating
 
 **Debug steps**:
+
 1. Run with `claude --debug` to see activation decisions
 2. Check if description too vague or generic
 3. Test if trigger phrases match description keywords
@@ -434,6 +482,7 @@ Target: 40-50% token reduction, comparable or faster speed
 ### False Positives
 
 **Debug steps**:
+
 1. Review description for overly broad keywords
 2. Make description more domain-specific
 3. Add specific technologies/file types to description
@@ -443,6 +492,7 @@ Target: 40-50% token reduction, comparable or faster speed
 ### Inconsistent Behavior
 
 **Debug steps**:
+
 1. Test across multiple models (Haiku, Sonnet, Opus)
 2. Check for time-sensitive content in SKILL.md
 3. Verify no randomness in core logic

@@ -2,8 +2,8 @@
 
 This file maps every section of this skill to its authoritative upstream source. Refresh when the upstream docs change.
 
-**Snapshot date:** 2026-05-11
-**Anthropic docs version:** Claude Code v2.1.x (May 2026)
+**Snapshot date:** 2026-05-16
+**Anthropic docs version:** Claude Code v2.1.140+ (May 2026)
 
 ## Primary sources
 
@@ -41,3 +41,5 @@ Frontmatter: `name`, `description`, `when_to_use`, `argument-hint`, `arguments`,
 String substitutions: `$ARGUMENTS`, `$ARGUMENTS[N]`, `$N`, `$name`, `${CLAUDE_SESSION_ID}`, `${CLAUDE_EFFORT}`, `${CLAUDE_SKILL_DIR}`, `${CLAUDE_PLUGIN_ROOT}`.
 
 Directory layout: `SKILL.md`, `README.md`, `references/`, `assets/templates/`, `scripts/`, `tests/`.
+
+Routing & operational facts: description budget (1% / 8K-char fallback / ~100 tokens/skill / LRU eviction), runtime re-attachment budget (25,000 tokens, MRU fill), sub-agent `skills:` preload semantics, hot-reload (v2.1.0), telemetry event (`claude_code.skill_activated`), permission deny syntax (`Skill(name)` / `Skill(name *)`), built-in bundled skills.

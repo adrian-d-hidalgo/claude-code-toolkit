@@ -16,14 +16,16 @@ Every field below appears between `---` markers at the top of `SKILL.md`. Only `
 - **Required?** — Optional. If omitted, the directory name is used.
 - **Allowed values** — Lowercase letters, digits, hyphens. Max 64 characters.
 - **What to put in it** — Same string as the directory name, kebab-case. Example: `name: claude-code-skill`.
-- **What NOT to put in it** — Spaces, uppercase, underscores, emoji, version suffixes. Don't name a skill after its implementation (`skill-python-runner`); name it after the user intent (`run-python`).
+- **What NOT to put in it** — Spaces, uppercase, underscores, emoji, version suffixes, XML tags, reserved words. Don't name a skill after its implementation (`skill-python-runner`); name it after the user intent (`run-python`).
 - **When to set it explicitly** — Always set it explicitly, even though it's optional. Defaulting to directory name silently breaks if the folder is renamed.
+- **Naming pattern for activity skills** — Use gerund form (verb + `-ing`) when the skill describes an activity (`reviewing-prs`, `generating-commits`). Use a noun when the skill describes a domain or reference (`api-conventions`, `domain-glossary`).
 
 ### `description`
 
 - **Purpose** — **Routing trigger.** Claude reads this to decide WHEN to activate the skill. It is matched against user intent.
 - **Required?** — Strongly recommended. If omitted, Claude falls back to the first paragraph of the markdown body, which is rarely a good trigger.
-- **Allowed values** — Plain prose. Combined `description + when_to_use` is truncated at 1024 characters in the skill listing.
+- **Allowed values** — Plain prose. Must be **non-empty** and contain no XML tags. Combined `description + when_to_use` is truncated at 1024 characters in the skill listing.
+- **Voice** — Third person. Inconsistent point-of-view between description and body causes discovery failures (Anthropic best practices, May 2026).
 - **What to put in it** — Action verbs + domain noun + "Use when…" / "Use proactively when…" phrasing. Include trigger phrases users actually say (synonyms count: create / scaffold / build / design all mean "create").
 - **What NOT to put in it** —
   - Internal mechanism ("uses Python scripts to validate…").
@@ -76,6 +78,8 @@ Every field below appears between `---` markers at the top of `SKILL.md`. Only `
 - **Allowed values** — `true` / `false`.
 - **What to put in it** — `true` for workflows with side effects you want to gate behind explicit invocation (deploy, send-message, commit).
 - **When to set it** — When auto-activation could harm the user (sends external messages, deploys, mutates remote state). Leave `false` for everything else.
+- **Additional scope** — Also blocks preload into sub-agents via the `skills:` frontmatter field. A sub-agent declaring `skills: [my-skill]` will silently skip a skill marked `disable-model-invocation: true`.
+- **Known gap in plugin context** — Plugin-bundled skills historically did not respect `disable-model-invocation` the same way user/project skills do (issue [#22345](https://github.com/anthropics/claude-code/issues/22345), open as of May 2026). Treat it as best-effort when shipping inside a plugin.
 
 ### `user-invocable`
 
@@ -84,6 +88,8 @@ Every field below appears between `---` markers at the top of `SKILL.md`. Only `
 - **Allowed values** — `true` / `false`.
 - **What to put in it** — `false` for background knowledge that isn't a meaningful user-issued action (e.g. a `legacy-system-context` skill).
 - **When to set it** — When the skill is reference-only knowledge Claude should consult but the user wouldn't run as a command.
+- **Orthogonal to `disable-model-invocation`** — `user-invocable: false` hides the skill from the `/` menu but Claude can still auto-invoke it. `disable-model-invocation: true` blocks Claude from invoking but the user can still type `/<name>`. The two fields compose independently; set both if you want a skill that neither side can launch.
+- **Canonical spelling** — `user-invocable` (not `user-invokable`); the typo variant is rejected (issue [#23723](https://github.com/anthropics/claude-code/issues/23723)).
 
 ### `allowed-tools`
 
@@ -228,6 +234,63 @@ my-skill/
 
 ---
 
+## Part D.1 — Routing Budgets, Lifecycle, and Operational Facts
+
+These are not authoring decisions but they constrain authoring choices. Internalize before writing the description and the body.
+
+### Routing budget (description side)
+
+- Every loaded skill's `description` is injected into the system prompt with a routing budget of **1% of the model's context window** (fallback **8,000 chars**). Descriptions count ~**100 tokens each**.
+- When the budget overflows, the **least-recently-invoked** skill descriptions are dropped first. A skill whose description has been dropped is effectively invisible to Claude until invoked manually.
+- Practical consequence: in a session with many installed skills, terse + high-signal descriptions survive longer than verbose ones.
+
+### Runtime re-attachment budget (body side)
+
+- When a skill is loaded via the `Skill` tool at runtime, its body re-attaches to the conversation against a shared budget of **25,000 tokens** across all runtime-invoked skills in the session.
+- Filled most-recently-first; older skills drop after context compaction if many have been invoked.
+- Once attached, the skill body stays for the remainder of the session unless evicted.
+
+### Preload behavior in sub-agents (`skills:` field)
+
+- A sub-agent declaring `skills: [a, b]` gets each skill's **full body** injected into its system prompt at startup — not the description only.
+- `skills: "all"` injects every discovered skill. `skills: []` blocks all preload. Omitting the field keeps runtime discovery via the `Skill` tool available.
+- Cross-plugin skill references are **not currently supported** (issue [#15944](https://github.com/anthropics/claude-code/issues/15944)) — a sub-agent inside plugin A cannot preload a skill from plugin B by namespaced name.
+- Plugin skill namespacing: `<plugin-name>:<skill-name>` (e.g. `claude-code-shared:adr`).
+- Missing skill behavior is silent — the sub-agent starts without the skill and emits no error.
+
+### Hot-reload (since v2.1.0, Jan 7 2026)
+
+- Changes under `~/.claude/skills/` and `.claude/skills/` are picked up **without restarting the session**. New skills appear in `/` autocomplete on the next turn; edits to existing skill bodies are reflected on the next invocation.
+- Plugin-bundled skills require a plugin reload (`/reload-plugins`) to pick up changes.
+
+### Telemetry
+
+- Emits `claude_code.skill_activated` OpenTelemetry event when a skill activates. Includes `invocation_trigger` (`user` | `model`). Use for adoption metrics and unused-skill audits.
+
+### Permission scoping for the `Skill` tool
+
+Skills can be denied or allowed via the standard permission rules:
+
+```
+Skill(deploy)        # exact match deny/allow
+Skill(deploy *)      # prefix match deny/allow
+Skill                # deny the Skill tool entirely — blocks all model-initiated skill invocations
+```
+
+This is how an operator opts out of auto-invocation without editing every skill's `disable-model-invocation` field.
+
+### Built-in bundled skills (always present)
+
+Anthropic ships these skills in every Claude Code session — names to avoid for new authoring:
+
+- `/simplify` — refactor for readability.
+- `/batch` — run a prompt over many inputs.
+- `/debug` — guided debugging workflow.
+- `/loop` — recurring task on an interval (also exposed as the `loop` slash command).
+- `/claude-api` — guidance for building against the Anthropic SDK.
+
+---
+
 ## Part F — Best Practices (May 2026)
 
 Distilled from the official Anthropic docs and high-signal community repos. Each item: rule, reason, exception (if any), source.
@@ -276,6 +339,26 @@ Source: <https://alexop.dev/posts/understanding-claude-code-full-stack/>.
 If body content exceeds ~500 lines, split into `references/<topic>.md` referenced from the body — the body acts as an index, not an encyclopedia.
 Reason: skill content stays in context across turns, so every line is a recurring token cost.
 Source: <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices>; Anthropic engineering, _Effective context engineering for AI agents_.
+
+### F.8 — Gerund-form names for activity skills
+
+When the skill describes an activity, name it as gerund: `reviewing-prs`, `generating-commits`, `validating-schemas`. When the skill describes a domain or reference, use a noun: `api-conventions`, `domain-glossary`.
+Reason: Anthropic's own bundled skills follow this convention; consistent grammatical shape helps Claude pattern-match between user intent ("review the PR") and skill identity.
+Source: <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices>.
+
+### F.9 — Compose `disable-model-invocation` with `user-invocable` deliberately
+
+Decide the two flags independently. Common combinations:
+
+| `disable-model-invocation` | `user-invocable` | Result                                                                             |
+| -------------------------- | ---------------- | ---------------------------------------------------------------------------------- |
+| `false` (default)          | `true` (default) | Claude auto-invokes; user sees it in `/` menu. The default.                        |
+| `true`                     | `true` (default) | User can run `/<name>`; Claude won't auto-invoke. Use for side-effecting commands. |
+| `false` (default)          | `false`          | Background knowledge: Claude pulls it when relevant; user doesn't see it.          |
+| `true`                     | `false`          | Locked: nobody can invoke. Rare; typically a deprecation half-step before removal. |
+
+Reason: the two flags are orthogonal and the wrong combination silently breaks intent (e.g., a deploy skill with only `user-invocable: false` is still auto-invokable by Claude — exactly the failure mode the author was trying to prevent).
+Source: <https://github.com/anthropics/claude-code/blob/main/plugins/plugin-dev/skills/command-development/references/frontmatter-reference.md>; issue [#19141](https://github.com/anthropics/claude-code/issues/19141).
 
 ---
 

@@ -1,7 +1,7 @@
 # Current Docs Index — claude-code-sub-agent
 
-**Snapshot date:** 2026-05-11
-**Anthropic docs version:** Claude Code v2.1.x (May 2026)
+**Snapshot date:** 2026-05-16
+**Anthropic docs version:** Claude Code v2.1.140+ (May 2026)
 
 ## Primary sources
 

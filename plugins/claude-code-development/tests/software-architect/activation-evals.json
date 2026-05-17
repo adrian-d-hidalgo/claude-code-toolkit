@@ -1,0 +1,152 @@
+{
+  "kind": "subagent",
+  "agent": "software-architect",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-16",
+  "notes": "Positive: prompts where the user asks for system-level design, NFRs, ADRs, C4, modernization strategy, or technology choice WITHOUT requesting implementation. Negative: implementation-only, code review, test strategy, security-only, infra provisioning, or meta-skill component edits. Edge: ambiguous between design and implementation, or where the user asks 'how should I' without naming code.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Design the architecture for a multi-tenant SaaS billing engine — bounded contexts, data model at the conceptual level, API boundaries, NFRs with concrete targets, and ADRs for the major decisions",
+      "should_trigger": true,
+      "category": "positive-new-system"
+    },
+    {
+      "id": "pos-02",
+      "query": "We have a monolith we want to break up — evaluate strangler-fig vs branch-by-abstraction vs big rewrite, identify the bounded-context seams, and propose a phased migration with rollback at each phase",
+      "should_trigger": true,
+      "category": "positive-modernization"
+    },
+    {
+      "id": "pos-03",
+      "query": "Should we use Postgres or DynamoDB for the orders service? Walk me through the trade-offs against our NFRs (p95 < 80 ms at 5k RPS, strong consistency on the order line items, multi-region read traffic)",
+      "should_trigger": true,
+      "category": "positive-data-store-choice"
+    },
+    {
+      "id": "pos-04",
+      "query": "Draw the C4 Context and Container diagrams for our checkout pipeline and propose ADRs for the asynchronous integration with the warehouse system",
+      "should_trigger": true,
+      "category": "positive-c4-and-adr"
+    },
+    {
+      "id": "pos-05",
+      "query": "Define the NFRs (latency, availability, durability, recoverability, cost) for the new fraud-detection service so the team can start engineering against concrete targets",
+      "should_trigger": true,
+      "category": "positive-nfr-definition"
+    },
+    {
+      "id": "pos-06",
+      "query": "Compare REST vs gRPC vs GraphQL for our public partner API given the consumer profile (six SaaS partners, mostly read-heavy, occasional bulk export). Recommend with the trade-off, not the conclusion",
+      "should_trigger": true,
+      "category": "positive-api-style-choice"
+    },
+    {
+      "id": "pos-07",
+      "query": "We want to add event-driven flows between order, inventory, and shipping — propose the integration pattern (saga vs choreography vs outbox), data ownership boundaries, and how we keep things idempotent",
+      "should_trigger": true,
+      "category": "positive-integration-pattern"
+    },
+    {
+      "id": "pos-08",
+      "query": "Define fitness functions for our service so the architecture does not drift: performance, modularity (dependency direction), maintainability (complexity), and cost per transaction",
+      "should_trigger": true,
+      "category": "positive-fitness-functions"
+    },
+    {
+      "id": "pos-09",
+      "query": "Write the ADR for our decision to move from Kafka to NATS JetStream — context, decision, consequences (positive and negative), and the rollback we accept",
+      "should_trigger": true,
+      "category": "positive-adr"
+    },
+    {
+      "id": "pos-10",
+      "query": "How should we structure a modular monolith for our marketplace product so we can extract services later when bounded contexts stabilize — propose module boundaries, dependency rules, and the seam strategy",
+      "should_trigger": true,
+      "category": "positive-modular-monolith"
+    },
+    {
+      "id": "neg-01",
+      "query": "Implement the order-cancellation endpoint in our Express service",
+      "should_trigger": false,
+      "category": "negative-implementation",
+      "notes": "Pure coding work."
+    },
+    {
+      "id": "neg-02",
+      "query": "Review this PR and tell me if it looks safe to merge",
+      "should_trigger": false,
+      "category": "negative-code-review"
+    },
+    {
+      "id": "neg-03",
+      "query": "Design the test pyramid for our payments service",
+      "should_trigger": false,
+      "category": "negative-test-strategy"
+    },
+    {
+      "id": "neg-04",
+      "query": "Threat-model the checkout service using STRIDE",
+      "should_trigger": false,
+      "category": "negative-security",
+      "notes": "Threat modeling is security work, not architecture work."
+    },
+    {
+      "id": "neg-05",
+      "query": "Set up the AWS VPC, subnets, and IAM roles for the new environment",
+      "should_trigger": false,
+      "category": "negative-cloud-infra"
+    },
+    {
+      "id": "neg-06",
+      "query": "Build the CI pipeline that runs lint, test, and deploys to staging",
+      "should_trigger": false,
+      "category": "negative-cicd"
+    },
+    {
+      "id": "neg-07",
+      "query": "What's the SLO and error budget for our search endpoint and how do we wire the alerts",
+      "should_trigger": false,
+      "category": "negative-sre"
+    },
+    {
+      "id": "neg-08",
+      "query": "Create a new Claude Code slash command that drafts ADRs",
+      "should_trigger": false,
+      "category": "negative-meta-command"
+    },
+    {
+      "id": "neg-09",
+      "query": "Fix the bug where pagination drops the last page of results",
+      "should_trigger": false,
+      "category": "negative-debug-coding"
+    },
+    {
+      "id": "neg-10",
+      "query": "What's the latest version of Postgres available on AWS RDS",
+      "should_trigger": false,
+      "category": "negative-research"
+    },
+    {
+      "id": "edge-01",
+      "query": "We're starting a new product and need to decide stack, data architecture, deployment shape, and team boundaries — guide us through the decisions before we write code",
+      "should_trigger": true,
+      "category": "edge-new-product-discovery",
+      "notes": "Discovery-shaped but clearly architecture; should activate."
+    },
+    {
+      "id": "edge-02",
+      "query": "Document the existing system as it is today — components, data flows, integration points — so the new team can onboard",
+      "should_trigger": true,
+      "category": "edge-as-is-documentation",
+      "notes": "AS-IS architecture documentation is in scope; should activate."
+    },
+    {
+      "id": "edge-03",
+      "query": "Decide whether to split this module into a service now or keep it inside the monolith for another quarter",
+      "should_trigger": true,
+      "category": "edge-extraction-decision",
+      "ambiguous": true
+    }
+  ]
+}

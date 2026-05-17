@@ -5,6 +5,8 @@ Authoritative per-field reference for every Claude Code slash command setting.
 Slash commands live at `.claude/commands/<name>.md` (project), `~/.claude/commands/<name>.md` (user), or `<plugin>/commands/<name>.md` (plugin). They are YAML frontmatter + markdown body.
 
 > **Important context.** Slash commands and skills have **merged** in Claude Code 2.x. A skill at `.claude/skills/<name>/SKILL.md` automatically exposes `/<name>`. Slash commands at `.claude/commands/<name>.md` still work and accept the same frontmatter as skills. For new work, prefer a skill — you get the supporting-files capability for free. See `command-vs-skill.md` for the decision guide.
+>
+> **Precedence under name collision.** When a skill and a command share the same name, the **skill wins** (shipped in Claude Code v2.1.101, April 2026). Treat `.claude/commands/<name>.md` as legacy for new authoring.
 
 Mirrors the official docs at <https://code.claude.com/docs/en/commands> + the skills page (they share frontmatter). Snapshot date: see `CURRENT-DOCS-INDEX.md`.
 
@@ -24,7 +26,7 @@ Slash command frontmatter is a strict subset of the skill frontmatter. All field
 
 ### `description`
 
-- **Purpose** — **UX label** shown in the `/` menu when the user types `/`. **Not** a routing trigger — the slash itself is the trigger.
+- **Purpose** — **UX label** shown in the `/` menu when the user types `/`. Also loaded into context so Claude can auto-invoke (unless `disable-model-invocation: true`).
 - **Required?** — Strongly recommended.
 - **Allowed values** — Plain prose.
 - **What to put in it** — A short **imperative phrase** describing what running the command will do.
@@ -33,6 +35,7 @@ Slash command frontmatter is a strict subset of the skill frontmatter. All field
   - References to other commands or skills.
   - Long sentences (under 20 words).
   - Internal mechanism.
+- **Length / budget** — Combined description budget across all installed commands and skills is **1% of the model's context window** (fallback **8,000 characters**). When overflow occurs, descriptions for least-recently-invoked entries are dropped first — and a dropped description means Claude can no longer auto-invoke the command. Keep each description concise.
 - **Good example**: `description: Generate a Conventional Commits message from staged changes.`
 - **Bad example**: `description: This command should be used instead of the commit-message skill when you want to run it manually. It reads git diff and applies Pope/Beams rules.`
   Why bad: cross-reference + implementation detail; the user already chose to run it.
@@ -75,6 +78,7 @@ Slash command frontmatter is a strict subset of the skill frontmatter. All field
 - **Allowed values** — `true` / `false`.
 - **What to put in it** — `true` for commands with external side effects (deploy, send-message, commit).
 - **When to set it** — When you want the workflow strictly user-driven.
+- **Canonical spelling** — `disable-model-invocation` paired with `user-invocable` (not `user-invokable` — that typo is silently rejected per issue [#23723](https://github.com/anthropics/claude-code/issues/23723)). The two flags are orthogonal: `user-invocable: false` only hides from the `/` menu, `disable-model-invocation: true` only blocks Claude auto-invocation.
 
 ### `context`
 
@@ -99,16 +103,18 @@ Same shape and semantics as skill frontmatter — see the skill `section-guide.m
 
 The body is plain markdown with substitutions applied before Claude reads it:
 
-| Token                   | Expands to                                                                            |
-| ----------------------- | ------------------------------------------------------------------------------------- |
-| `$ARGUMENTS`            | All arguments as one string.                                                          |
-| `$N` / `$ARGUMENTS[N]`  | Nth positional argument.                                                              |
-| `$name`                 | Named argument from the `arguments:` frontmatter list.                                |
-| `${CLAUDE_SESSION_ID}`  | Current session ID.                                                                   |
-| `${CLAUDE_SKILL_DIR}`   | The command's directory (yes, named "skill" even for commands — historical artifact). |
-| `${CLAUDE_PLUGIN_ROOT}` | Plugin root when applicable.                                                          |
+| Token                   | Expands to                                                                                                                                                                                                                                          |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `$ARGUMENTS`            | All arguments as one string. **The only reliably-implemented substitution** — use this.                                                                                                                                                             |
+| `$N` / `$ARGUMENTS[N]`  | Nth positional argument. **Documented but currently not implemented** (issue [#16163](https://github.com/anthropics/claude-code/issues/16163), open as of May 2026). Treat as broken; prefer named arguments or parse `$ARGUMENTS` inside the body. |
+| `$name`                 | Named argument from the `arguments:` frontmatter list. Works when declared.                                                                                                                                                                         |
+| `${CLAUDE_SESSION_ID}`  | Current session ID.                                                                                                                                                                                                                                 |
+| `${CLAUDE_SKILL_DIR}`   | The command's directory (yes, named "skill" even for commands — historical artifact).                                                                                                                                                               |
+| `${CLAUDE_PLUGIN_ROOT}` | Plugin root when applicable.                                                                                                                                                                                                                        |
 
 Dynamic context injection: `` !`<command>` `` (inline) and ` ```! ` blocks run shell commands **before** Claude sees the body, replacing the token with stdout. Disable globally via `disableSkillShellExecution: true`.
+
+**Critical security note.** When `$ARGUMENTS` is used inside a `!` shell substitution (e.g. `` !`some-tool $ARGUMENTS` ``), user input is passed to the shell **without escaping** (open issue [#16163](https://github.com/anthropics/claude-code/issues/16163)). A user typing `; rm -rf .` as the argument executes that shell. Mitigations: avoid `$ARGUMENTS` in `!` blocks entirely; or quote with single quotes (`!'tool $ARGUMENTS'` is still vulnerable to single-quote escape — there is no fully safe quoting); or validate / route through a wrapper script that performs its own escaping. Until the bug is fixed, treat any `!`shell$ARGUMENTS`` pattern as a sandbox escape.
 
 ---
 
@@ -176,6 +182,12 @@ Source: <https://www.mindstudio.ai/blog/claude-code-skills-vs-slash-commands>.
 A `/deploy` command in plugin A silently shadows the same name in plugin B (or vice versa). Inside a plugin, the `name` field becomes the namespace, and users can disambiguate with `/<plugin-name>:deploy`.
 Reason: name collisions across installed plugins are silent failures.
 Source: <https://code.claude.com/docs/en/plugins-reference>.
+
+### F.4.1 — Subdirectory namespacing for local commands
+
+Inside `.claude/commands/`, subdirectories create namespaces: `.claude/commands/git/commit.md` is invoked as `/git:commit`. Combine with file naming to organise large local command sets without polluting the top-level `/` menu.
+Reason: flat layouts at scale collide on common verbs (`deploy`, `commit`, `review`); subdirectory namespaces keep them disambiguated locally.
+Source: <https://code.claude.com/docs/en/slash-commands>.
 
 ### F.5 — Default to a skill, not a command, for new authoring work
 

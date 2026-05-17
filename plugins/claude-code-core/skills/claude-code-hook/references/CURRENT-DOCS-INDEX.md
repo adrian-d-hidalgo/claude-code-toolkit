@@ -1,7 +1,15 @@
 # Current Docs Index — claude-code-hook
 
-**Snapshot date:** 2026-05-11
-**Anthropic docs version:** Claude Code v2.1.x (May 2026)
+**Snapshot date:** 2026-05-16
+**Anthropic docs version:** Claude Code v2.1.140+ (May 2026)
+
+## Local references
+
+- [`section-guide.md`](./section-guide.md) — per-field reference (matcher, hooks[], type, command, timeout, shell) + placement + script conventions + best practices.
+- [`events-catalog.md`](./events-catalog.md) — full catalog of 31 lifecycle events.
+- [`handler-types.md`](./handler-types.md) — 5 handler types (command, http, mcp_tool, prompt, agent) with schema.
+- [`json-contract.md`](./json-contract.md) — stdin / stdout JSON shapes, exit codes, worked patterns.
+- [`anti-patterns.md`](./anti-patterns.md), [`best-practices.md`](./best-practices.md), [`security-checklist.md`](./security-checklist.md), [`troubleshooting.md`](./troubleshooting.md), [`validation-checklist.md`](./validation-checklist.md).
 
 ## Primary sources
 

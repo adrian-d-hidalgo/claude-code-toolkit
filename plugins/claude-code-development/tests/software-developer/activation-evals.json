@@ -145,6 +145,34 @@
       "query": "Build a Python data-validation library from scratch: declarative schema syntax, full type-stub support, 100% test coverage, README, and a docs/ directory with 5 tutorial pages \u2014 every public function gets a doc-block with Errors and Examples sections",
       "should_trigger": true,
       "category": "edge-large-scope"
+    },
+    {
+      "id": "pos-11",
+      "query": "Migrate our service from Express 4 to Fastify across the whole repo \u2014 ~40 route handlers, middlewares, error handlers, logging, OpenAPI annotations, tests \u2014 keep behavior identical, no breaking changes for clients, full test suite stays green throughout",
+      "should_trigger": true,
+      "category": "positive-large-migration",
+      "notes": "Should trigger large-change protocol: migration, >10 files, >500 LoC."
+    },
+    {
+      "id": "pos-12",
+      "query": "Rename the `Account` aggregate to `Customer` across the entire backend \u2014 domain model, persistence, API layer, message contracts, tests, and database column names with a backwards-compatible migration; every call site updated, history preserved",
+      "should_trigger": true,
+      "category": "positive-cross-package-rename",
+      "notes": "Should trigger large-change protocol: rename across modules; protocol must order mechanical (rename) before semantic batches."
+    },
+    {
+      "id": "pos-13",
+      "query": "Extract the billing logic from the monolith into a standalone module using branch-by-abstraction \u2014 introduce the seam interface, migrate all 28 call sites to it, then move the implementation into `packages/billing/`, keeping the monolith green at every step",
+      "should_trigger": true,
+      "category": "positive-extraction-refactor",
+      "notes": "Explicit branch-by-abstraction request; large-change protocol must declare strategy + batch plan."
+    },
+    {
+      "id": "edge-04",
+      "query": "Port these three utility files from JavaScript to TypeScript with strict types and update the importers \u2014 the diff is around 600 lines but mostly mechanical",
+      "should_trigger": true,
+      "category": "edge-borderline-large",
+      "notes": "Borderline scope (~600 LoC, mechanical). Protocol should activate; first batch should be the port itself, second batch the importer updates."
     }
   ]
 }

@@ -1,0 +1,143 @@
+{
+  "kind": "skill",
+  "skill": "mermaid",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-16",
+  "notes": "Positive: explicit Mermaid requests, named diagram types (flowchart / sequence / ER / state / class / C4 / journey / Gantt / mindmap / timeline / sankey / quadrant / architecture / gitGraph), 'create a diagram' / 'visualize' / 'draw' phrasings in any language. Negative: architecture design decisions (architect agent), code-analysis-to-derive-a-diagram (Explore first), high-fidelity UI mockups (Figma), full UML deployment diagrams (PlantUML). Edge: requests where Mermaid is suboptimal — skill should still trigger and recommend the alternative.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Draw a flowchart of our CI/CD pipeline",
+      "should_trigger": true,
+      "category": "positive-flowchart"
+    },
+    {
+      "id": "pos-02",
+      "query": "Create a sequence diagram for our OAuth login flow",
+      "should_trigger": true,
+      "category": "positive-sequence"
+    },
+    {
+      "id": "pos-03",
+      "query": "Diagrama de secuencia para el flujo de checkout",
+      "should_trigger": true,
+      "category": "positive-spanish-sequence"
+    },
+    {
+      "id": "pos-04",
+      "query": "Generate an ER diagram for our orders schema with Crow's Foot cardinality",
+      "should_trigger": true,
+      "category": "positive-er-diagram"
+    },
+    {
+      "id": "pos-05",
+      "query": "Build a C4 Container diagram for our marketplace system",
+      "should_trigger": true,
+      "category": "positive-c4"
+    },
+    {
+      "id": "pos-06",
+      "query": "Visualize the project timeline as a Gantt chart with dependencies and milestones",
+      "should_trigger": true,
+      "category": "positive-gantt"
+    },
+    {
+      "id": "pos-07",
+      "query": "Draw a state machine for the order lifecycle (pending → confirmed → shipped → delivered, with cancellation paths)",
+      "should_trigger": true,
+      "category": "positive-state-machine"
+    },
+    {
+      "id": "pos-08",
+      "query": "Haz un mindmap de los features del backlog",
+      "should_trigger": true,
+      "category": "positive-mindmap-spanish"
+    },
+    {
+      "id": "pos-09",
+      "query": "Sankey diagram of the signup funnel from landing page to activated user",
+      "should_trigger": true,
+      "category": "positive-sankey"
+    },
+    {
+      "id": "pos-10",
+      "query": "Quadrant chart for our Q3 features by impact and effort",
+      "should_trigger": true,
+      "category": "positive-quadrant"
+    },
+    {
+      "id": "neg-01",
+      "query": "Design the architecture for the new fraud-detection service",
+      "should_trigger": false,
+      "category": "negative-architecture-design",
+      "notes": "Design decisions are architect agent's job; mermaid only draws once decisions are made."
+    },
+    {
+      "id": "neg-02",
+      "query": "Analyze the codebase to find how the auth module connects to the rest",
+      "should_trigger": false,
+      "category": "negative-code-analysis",
+      "notes": "Explore-then-draw workflow; this is the explore phase."
+    },
+    {
+      "id": "neg-03",
+      "query": "Build a high-fidelity mockup of the new dashboard",
+      "should_trigger": false,
+      "category": "negative-ui-mockup",
+      "notes": "High-fi UI = Figma, not Mermaid."
+    },
+    {
+      "id": "neg-04",
+      "query": "Write the test plan for the new release",
+      "should_trigger": false,
+      "category": "negative-test-plan"
+    },
+    {
+      "id": "neg-05",
+      "query": "Implement the user signup flow",
+      "should_trigger": false,
+      "category": "negative-implementation"
+    },
+    {
+      "id": "neg-06",
+      "query": "What is the difference between C4 Container and Component levels",
+      "should_trigger": false,
+      "category": "negative-knowledge-question",
+      "notes": "Conceptual question about C4, not a draw request."
+    },
+    {
+      "id": "neg-07",
+      "query": "Draw the network topology with Cisco vendor icons and per-interface bandwidth",
+      "should_trigger": false,
+      "category": "negative-vendor-icons",
+      "notes": "Mermaid does not support vendor icon libraries; skill recommends draw.io but does not draw it."
+    },
+    {
+      "id": "neg-08",
+      "query": "Write an ADR for choosing event sourcing",
+      "should_trigger": false,
+      "category": "negative-adr"
+    },
+    {
+      "id": "edge-01",
+      "query": "We need a diagram of our auth flow",
+      "should_trigger": true,
+      "category": "edge-ambiguous-type",
+      "notes": "Skill triggers and asks one disambiguating question (sequence vs flowchart vs state)."
+    },
+    {
+      "id": "edge-02",
+      "query": "Draw the deployment topology of our Kubernetes cluster with pod, service, and ingress per namespace, plus vendor icons",
+      "should_trigger": true,
+      "category": "edge-suboptimal-for-mermaid",
+      "notes": "Mermaid can draw a simplified version via architecture-beta; skill should still trigger AND recommend draw.io for full fidelity."
+    },
+    {
+      "id": "edge-03",
+      "query": "Visualize how our event flows from producer through Kafka into 3 consumers",
+      "should_trigger": true,
+      "category": "edge-flow-or-sankey",
+      "notes": "Could be flowchart (process) or sankey (quantities). Skill picks based on whether quantities matter."
+    }
+  ]
+}

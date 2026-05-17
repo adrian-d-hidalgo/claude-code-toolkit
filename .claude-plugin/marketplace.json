@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "name": "claude-code-toolkit",
-  "description": "Personal toolkit for Claude Code. Bundles a core meta-toolkit for authoring skills, sub-agents, slash commands, plugins, hooks, and CLAUDE.md memory files, plus a development plugin shipping an opinionated senior software-developer sub-agent.",
+  "description": "Personal toolkit for Claude Code. Bundles a core meta-toolkit for authoring skills, sub-agents, slash commands, plugins, hooks, and CLAUDE.md memory files, plus a development plugin shipping an opinionated senior engineering team (software-developer, software-architect, code-reviewer, quality-engineer, security-engineer) with methodology-anchored skills (adr, test-plan, git-commit, mermaid) wired to the right agents.",
   "owner": {
     "name": "Adrián Darío Hidalgo Flores",
     "url": "https://github.com/adrian-d-hidalgo/claude-code-toolkit"
@@ -12,14 +12,37 @@
       "source": "./plugins/claude-code-core",
       "description": "Meta-skills for authoring Claude Code extensions: scaffold, validate, and audit skills, sub-agents, slash commands, plugins, hooks, and CLAUDE.md memory files against the latest official conventions.",
       "category": "development",
-      "tags": ["meta", "skills", "agents", "commands", "plugins", "hooks", "claude-md", "scaffolding", "validation"]
+      "tags": [
+        "meta",
+        "skills",
+        "agents",
+        "commands",
+        "plugins",
+        "hooks",
+        "claude-md",
+        "scaffolding",
+        "validation"
+      ]
     },
     {
       "name": "claude-code-development",
       "source": "./plugins/claude-code-development",
-      "description": "Opinionated senior software-developer sub-agent that enforces Think-Before-Coding, Simplicity-First, Surgical-Changes, and Goal-Driven Execution rules for any coding task.",
+      "description": "Opinionated senior engineering team for Claude Code: software-developer (with a large-change batching protocol), software-architect, code-reviewer, quality-engineer, and security-engineer — plus methodology-anchored skills (adr, test-plan, git-commit, mermaid) wired to the right agents. Single-responsibility scope, least-privilege tooling.",
       "category": "development",
-      "tags": ["coding", "implementation", "engineering", "senior-developer", "agent"]
+      "tags": [
+        "engineering-team",
+        "software-developer",
+        "software-architect",
+        "code-reviewer",
+        "quality-engineer",
+        "security-engineer",
+        "adr",
+        "test-plan",
+        "git-commit",
+        "mermaid",
+        "iso-29119",
+        "conventional-commits"
+      ]
     }
   ]
 }

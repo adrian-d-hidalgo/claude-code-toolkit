@@ -1,0 +1,150 @@
+{
+  "kind": "subagent",
+  "agent": "security-engineer",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-16",
+  "notes": "Positive: threat modeling (STRIDE), AuthN/AuthZ design, OWASP review (web/API/LLM/Agentic), encryption + key management strategy, secret-management policy, compliance scoping (SOC2/GDPR/HIPAA/PCI/EU AI Act), vulnerability response and VEX drafting, security review of code, AI/LLM security. Negative: implementing the mitigation, CI pipeline plumbing, cloud-account/IAM provisioning, runtime SIEM ops, physical/HR security, or meta-component edits. Edge: code review with a security focus; LLM features that mix product + security.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Threat-model our checkout service using STRIDE — per-component decomposition, mitigations mapped to controls, residual risk scored",
+      "should_trigger": true,
+      "category": "positive-stride"
+    },
+    {
+      "id": "pos-02",
+      "query": "Design authentication and authorization for our new partner API — token lifetimes, mTLS or JWT, refresh and rotation, and the authorization model",
+      "should_trigger": true,
+      "category": "positive-authn-authz-design"
+    },
+    {
+      "id": "pos-03",
+      "query": "Apply OWASP LLM Top 10 and Agentic Top 10 to our new chat assistant feature — prompt injection direct + indirect, output handling, tool privilege, model exfil",
+      "should_trigger": true,
+      "category": "positive-llm-security"
+    },
+    {
+      "id": "pos-04",
+      "query": "Scope what we need for SOC 2 Type II — controls in/out, gap analysis against our current posture, remediation roadmap with owners",
+      "should_trigger": true,
+      "category": "positive-compliance-soc2"
+    },
+    {
+      "id": "pos-05",
+      "query": "Define the encryption and key-management strategy for the PHI we'll process — in-transit, at-rest, field-level for PII columns, key rotation",
+      "should_trigger": true,
+      "category": "positive-encryption-strategy"
+    },
+    {
+      "id": "pos-06",
+      "query": "Triage this CVE in lodash 4.x — exploitability in our context, draft the VEX statement, and recommend whether to patch now or accept the risk",
+      "should_trigger": true,
+      "category": "positive-vex-cve"
+    },
+    {
+      "id": "pos-07",
+      "query": "Review this code for security findings — input validation, output escaping, secret leakage, authn/authz checks, CWE-anchored severity",
+      "should_trigger": true,
+      "category": "positive-security-code-review"
+    },
+    {
+      "id": "pos-08",
+      "query": "Design the secrets-management strategy — central vault, dynamic credentials, CI federation, rotation cadence, and the migration path away from .env files",
+      "should_trigger": true,
+      "category": "positive-secrets-strategy"
+    },
+    {
+      "id": "pos-09",
+      "query": "We process EU personal data — scope the GDPR work: lawful basis, retention, DSAR handling, processor agreements, breach notification policy",
+      "should_trigger": true,
+      "category": "positive-compliance-gdpr"
+    },
+    {
+      "id": "pos-10",
+      "query": "Plan our post-quantum migration — inventory TLS endpoints and signing keys, prioritize critical surfaces, propose a phased PQC adoption",
+      "should_trigger": true,
+      "category": "positive-pqc-plan"
+    },
+    {
+      "id": "neg-01",
+      "query": "Implement the rate-limiter middleware to mitigate the brute-force finding",
+      "should_trigger": false,
+      "category": "negative-mitigation-implementation",
+      "notes": "Mitigation implementation is coding work."
+    },
+    {
+      "id": "neg-02",
+      "query": "Review this PR for general code quality and complexity",
+      "should_trigger": false,
+      "category": "negative-general-code-review"
+    },
+    {
+      "id": "neg-03",
+      "query": "Design the test strategy for the auth flow",
+      "should_trigger": false,
+      "category": "negative-test-strategy"
+    },
+    {
+      "id": "neg-04",
+      "query": "Provision the AWS IAM roles and the OIDC federation for our CI runners",
+      "should_trigger": false,
+      "category": "negative-cloud-iam"
+    },
+    {
+      "id": "neg-05",
+      "query": "Set up Falco runtime detection in our Kubernetes cluster and route alerts to PagerDuty",
+      "should_trigger": false,
+      "category": "negative-runtime-soc"
+    },
+    {
+      "id": "neg-06",
+      "query": "Design the system architecture for the new orders service",
+      "should_trigger": false,
+      "category": "negative-architecture"
+    },
+    {
+      "id": "neg-07",
+      "query": "Wire Trivy and gitleaks into the CI pipeline",
+      "should_trigger": false,
+      "category": "negative-cicd",
+      "notes": "Pipeline plumbing is release-engineering work; the agent advises on which tools matter but does not own the pipeline."
+    },
+    {
+      "id": "neg-08",
+      "query": "Edit the security-engineer agent definition to grant the Edit tool",
+      "should_trigger": false,
+      "category": "negative-meta-subagent"
+    },
+    {
+      "id": "neg-09",
+      "query": "What's the latest OWASP LLM Top 10 release date",
+      "should_trigger": false,
+      "category": "negative-research"
+    },
+    {
+      "id": "neg-10",
+      "query": "Implement the OAuth 2.1 client credentials handler in our service",
+      "should_trigger": false,
+      "category": "negative-implementation"
+    },
+    {
+      "id": "edge-01",
+      "query": "Review this LLM feature end-to-end for security — prompt injection paths, output sinks, tool privilege — and surface concrete findings",
+      "should_trigger": true,
+      "category": "edge-llm-feature-review"
+    },
+    {
+      "id": "edge-02",
+      "query": "We just had a customer report a token leak — guide the incident response and the postmortem",
+      "should_trigger": true,
+      "category": "edge-incident-response"
+    },
+    {
+      "id": "edge-03",
+      "query": "Tell me whether storing JWTs in localStorage is acceptable for our app given our threat model",
+      "should_trigger": true,
+      "category": "edge-architectural-security-question",
+      "ambiguous": true
+    }
+  ]
+}

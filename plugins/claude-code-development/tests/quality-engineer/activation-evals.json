@@ -1,0 +1,152 @@
+{
+  "kind": "subagent",
+  "agent": "quality-engineer",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-16",
+  "notes": "Positive: prompts asking to design test strategy, plan layers (pyramid/trophy), plan E2E, contract tests, performance tests, chaos experiments, quality gates, traceability of acceptance criteria. Negative: implement routine unit tests for app code, do PR review, security threat model, CI pipeline plumbing, runtime SLO ops, or edit meta-component files. Edge: prompts that overlap with implementation or with SRE.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Design the test strategy for our new payment service — what to test at each layer, which tools, and which acceptance criteria need traceability",
+      "should_trigger": true,
+      "category": "positive-test-strategy"
+    },
+    {
+      "id": "pos-02",
+      "query": "Plan the Playwright E2E suite for the checkout flow — which journeys are critical, what to keep at integration, what to leave to smoke",
+      "should_trigger": true,
+      "category": "positive-e2e-plan"
+    },
+    {
+      "id": "pos-03",
+      "query": "Define the contract tests between the orders service and the inventory service using Pact — consumer-driven, with the contract lifecycle in CI",
+      "should_trigger": true,
+      "category": "positive-contract-testing"
+    },
+    {
+      "id": "pos-04",
+      "query": "Design the load and stress tests for our search endpoint with k6 — smoke, load at expected RPS, stress to find the knee, and the gate thresholds",
+      "should_trigger": true,
+      "category": "positive-performance-plan"
+    },
+    {
+      "id": "pos-05",
+      "query": "Audit our test suite — flake rate, pyramid balance, mutation score on critical paths, and a remediation plan ranked by impact",
+      "should_trigger": true,
+      "category": "positive-suite-audit"
+    },
+    {
+      "id": "pos-06",
+      "query": "Define the quality gates for our pipeline — what blocks PR, what blocks staging, what blocks prod, with thresholds and rationale",
+      "should_trigger": true,
+      "category": "positive-quality-gates"
+    },
+    {
+      "id": "pos-07",
+      "query": "Plan a chaos experiment for the order-fulfillment workflow — failure modes, blast-radius limits, success criteria, abort conditions",
+      "should_trigger": true,
+      "category": "positive-chaos-plan"
+    },
+    {
+      "id": "pos-08",
+      "query": "Build the traceability matrix that maps every acceptance criterion in this PRD to a test at a chosen layer with an ID",
+      "should_trigger": true,
+      "category": "positive-traceability"
+    },
+    {
+      "id": "pos-09",
+      "query": "What's the right test layer split for this codebase — Testing Trophy or classic Pyramid — and how do I justify the choice with risk and ISO 25010",
+      "should_trigger": true,
+      "category": "positive-layer-decision"
+    },
+    {
+      "id": "pos-10",
+      "query": "Plan how we measure escaped defects, MTTD, and change failure rate so we can show quality is improving release over release",
+      "should_trigger": true,
+      "category": "positive-quality-metrics"
+    },
+    {
+      "id": "neg-01",
+      "query": "Write a Jest unit test for this debounce helper",
+      "should_trigger": false,
+      "category": "negative-routine-unit-test",
+      "notes": "Routine unit test implementation = implementer's job, not QE."
+    },
+    {
+      "id": "neg-02",
+      "query": "Review this PR and tell me what's blocking",
+      "should_trigger": false,
+      "category": "negative-pr-review"
+    },
+    {
+      "id": "neg-03",
+      "query": "Threat-model the new LLM-backed feature",
+      "should_trigger": false,
+      "category": "negative-security"
+    },
+    {
+      "id": "neg-04",
+      "query": "Wire the Playwright tests into the GitHub Actions matrix and parallelize across shards",
+      "should_trigger": false,
+      "category": "negative-cicd-plumbing"
+    },
+    {
+      "id": "neg-05",
+      "query": "Design the system architecture for the new search service",
+      "should_trigger": false,
+      "category": "negative-architecture"
+    },
+    {
+      "id": "neg-06",
+      "query": "Set up the on-call rotation and the burn-rate alerts for our SLO",
+      "should_trigger": false,
+      "category": "negative-sre"
+    },
+    {
+      "id": "neg-07",
+      "query": "Implement the checkout flow end-to-end with tests as you go",
+      "should_trigger": false,
+      "category": "negative-implementation",
+      "notes": "Implementation including its own tests is the implementer's job."
+    },
+    {
+      "id": "neg-08",
+      "query": "Edit the activation-evals.json corpus for the software-developer agent",
+      "should_trigger": false,
+      "category": "negative-meta-subagent"
+    },
+    {
+      "id": "neg-09",
+      "query": "What's the latest Playwright version",
+      "should_trigger": false,
+      "category": "negative-research"
+    },
+    {
+      "id": "neg-10",
+      "query": "Add a missing test for the edge case where the cart is empty",
+      "should_trigger": false,
+      "category": "negative-single-test-implementation",
+      "notes": "Single specific test for app code is implementation, not strategy."
+    },
+    {
+      "id": "edge-01",
+      "query": "Design and demonstrate the contract test for one consumer relationship as a worked example, so the team can replicate it",
+      "should_trigger": true,
+      "category": "edge-strategy-with-example",
+      "notes": "Mostly strategy + a demonstrative test; in scope."
+    },
+    {
+      "id": "edge-02",
+      "query": "Why are our E2E tests flaky and what should we change in the strategy",
+      "should_trigger": true,
+      "category": "edge-flakiness-strategy"
+    },
+    {
+      "id": "edge-03",
+      "query": "We need to lift coverage from 40% to something we can defend in audit — propose the target by component with rationale",
+      "should_trigger": true,
+      "category": "edge-coverage-strategy",
+      "ambiguous": true
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "kind": "skill",
+  "skill": "test-plan",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-16",
+  "notes": "Positive: explicit test plan requests, QA plans, release test plans, scoped test approach docs per ISO 29119-3. Negative: org-level test strategy (quality-engineer agent), test implementation (developer), code review, single-test additions. Edge: lite plans, release readiness checklists, regulated-environment test plans.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Write the test plan for the new payment-service release",
+      "should_trigger": true,
+      "category": "positive-release-test-plan"
+    },
+    {
+      "id": "pos-02",
+      "query": "Necesito un plan de pruebas para el feature de checkout v2",
+      "should_trigger": true,
+      "category": "positive-spanish-plan"
+    },
+    {
+      "id": "pos-03",
+      "query": "Draft a QA plan for the orders refactor covering scope, risk, entry/exit criteria, and sign-off",
+      "should_trigger": true,
+      "category": "positive-qa-plan-explicit"
+    },
+    {
+      "id": "pos-04",
+      "query": "What do we test for the upcoming 2.4 release — give me a structured plan",
+      "should_trigger": true,
+      "category": "positive-what-to-test"
+    },
+    {
+      "id": "pos-05",
+      "query": "Write a release test plan following ISO 29119-3 for the auth-flow change",
+      "should_trigger": true,
+      "category": "positive-iso-29119-explicit"
+    },
+    {
+      "id": "pos-06",
+      "query": "I need a test approach doc for the GDPR data-deletion feature — risk-based with explicit exit criteria",
+      "should_trigger": true,
+      "category": "positive-test-approach"
+    },
+    {
+      "id": "pos-07",
+      "query": "Build a release readiness checklist for v2.5 — same structure as a test plan but condensed for go/no-go",
+      "should_trigger": true,
+      "category": "positive-readiness-checklist",
+      "notes": "Doc explicitly says the skill produces this variant."
+    },
+    {
+      "id": "pos-08",
+      "query": "Write the test plan for our medical-device software per IEC 62304 — Safety Class B",
+      "should_trigger": true,
+      "category": "positive-regulated-environment"
+    },
+    {
+      "id": "neg-01",
+      "query": "Design the test strategy at the org level — pyramid choice, framework selection, CI gates",
+      "should_trigger": false,
+      "category": "negative-org-strategy",
+      "notes": "Org-level strategy = quality-engineer agent territory; the skill produces scoped plans."
+    },
+    {
+      "id": "neg-02",
+      "query": "Write a unit test for the discount helper",
+      "should_trigger": false,
+      "category": "negative-single-test"
+    },
+    {
+      "id": "neg-03",
+      "query": "Implement the integration test suite for the orders service",
+      "should_trigger": false,
+      "category": "negative-test-implementation"
+    },
+    {
+      "id": "neg-04",
+      "query": "Review this PR for missing tests",
+      "should_trigger": false,
+      "category": "negative-pr-review"
+    },
+    {
+      "id": "neg-05",
+      "query": "Why are our E2E tests flaky",
+      "should_trigger": false,
+      "category": "negative-flakiness-diagnosis",
+      "notes": "Diagnostic question; not a plan request."
+    },
+    {
+      "id": "neg-06",
+      "query": "Plan a chaos experiment for the order-fulfillment workflow",
+      "should_trigger": false,
+      "category": "negative-chaos-experiment",
+      "notes": "Quality-engineer agent territory; chaos plan is not an ISO 29119-3 test plan."
+    },
+    {
+      "id": "neg-07",
+      "query": "Configure the test runner in CI",
+      "should_trigger": false,
+      "category": "negative-cicd"
+    },
+    {
+      "id": "neg-08",
+      "query": "What's the latest version of Playwright",
+      "should_trigger": false,
+      "category": "negative-research"
+    },
+    {
+      "id": "edge-01",
+      "query": "Write a lite test plan for the copy change on the marketing page",
+      "should_trigger": true,
+      "category": "edge-lite-plan",
+      "notes": "Skill explicitly produces a lite variant for low-risk changes."
+    },
+    {
+      "id": "edge-02",
+      "query": "Document scope, risk, entry and exit criteria for the upcoming sprint demo",
+      "should_trigger": true,
+      "category": "edge-scope-risk-entry-exit"
+    },
+    {
+      "id": "edge-03",
+      "query": "Plan the validation activities for the FDA submission of our SaMD",
+      "should_trigger": true,
+      "category": "edge-regulated-fda",
+      "notes": "Regulated environment with FDA QSR mapping covered in references/regulated-environments.md."
+    }
+  ]
+}

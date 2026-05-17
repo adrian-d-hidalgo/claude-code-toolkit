@@ -25,7 +25,11 @@ CLAUDE.md is **not a document**. It is part of an _instruction surface_: a root 
 
 ### AGENTS.md as adjacent convention
 
-AGENTS.md is the cross-tool open standard (Linux Foundation / Agentic AI Foundation; OpenAI, Cursor, Codex, Copilot, Devin natively support it). Claude Code does not natively read AGENTS.md (feature request open). If a project ships both CLAUDE.md and AGENTS.md:
+AGENTS.md is the cross-tool open standard recognized by Claude Code, Cursor, GitHub Copilot, Gemini CLI, Windsurf, Aider, Zed, Warp, RooCode, OpenAI Codex, and Devin (60k+ public repos as of May 2026; Linux Foundation / Agentic AI Foundation).
+
+**Current Claude Code behavior** (verified May 2026): when `/init` runs in a repo that already has an `AGENTS.md`, Claude reads it and **incorporates relevant content into the generated `CLAUDE.md`**. The two files are not auto-merged at session start — Claude Code reads CLAUDE.md as its native surface; AGENTS.md exists for cross-tool portability. No documented automatic precedence rule when both files exist simultaneously.
+
+If a project ships both:
 
 - Keep them aligned in content; differing rules confuse multi-tool workflows.
 - Author the canonical version in one file; the other is a copy or symlink with one line at top: "Authoritative source: CLAUDE.md."
@@ -188,12 +192,14 @@ Claude Code loads CLAUDE.md by walking from cwd up to project root, then loading
 
 - **Directory adds to, does not replace, project.** Do not repeat project-level rules in subdirectory files.
 - **Concatenation, not override.** Inheritance is additive only. To "override" you must author a _more specific_ rule in the lower scope.
+- **Subdirectory CLAUDE.md is lazy-loaded** — it is **not** loaded at session start. It is injected when Claude reads a file in that subdirectory.
+- **Subdirectory CLAUDE.md does NOT survive `/compact`.** Only the project-root CLAUDE.md is re-injected after compaction; subdirectory files must re-trigger their lazy load. If a critical invariant lives only in a subdirectory CLAUDE.md, a long session may execute past compaction without it. Promote truly critical invariants to the project-root file.
 - **`@import` syntax** lets a single CLAUDE.md decompose into focused includes:
   ```
   ## Style
   @docs/style-guide.md
   ```
-  The imported file inlines at the import site at load time. Known issue (May 2026): global-path imports `@~/.claude/file.md` have reliability bugs ([anthropics/claude-code #8765](https://github.com/anthropics/claude-code/issues/8765)). Prefer project-relative paths.
+  The imported file inlines at the import site **at session start, eagerly**. Splitting via `@imports` **does not save tokens** — every import is loaded just like inline content. The split is organizational only; it reduces editing friction, not context cost. Known issue (May 2026): global-path imports `@~/.claude/file.md` have reliability bugs ([anthropics/claude-code #8765](https://github.com/anthropics/claude-code/issues/8765)). Prefer project-relative paths.
 
 ### Scope discipline = token savings
 
@@ -222,6 +228,13 @@ The file grows by failure post-mortem, not upfront planning. It also **shrinks**
 1. **Human-maintained, git-versioned.** Baseline. Treat as production config: PR review, changelog entry, rollback capability.
 2. **Agent-assisted, human-approved.** Claude proposes updates; user reviews and commits.
 3. **Autonomous (Anthropic "dreaming", May 6 2026).** Scheduled review of past sessions, pattern extraction, plain-text auto-update. Currently for _Managed Agents memory_, not project CLAUDE.md.
+
+### Commands and helpers
+
+- **`/init`** — bootstrap CLAUDE.md from the repo. Claude inspects the stack and generates a starter file. If `AGENTS.md` is already present, `/init` reads it and incorporates relevant content into the generated CLAUDE.md.
+- **`CLAUDE_CODE_NEW_INIT=1`** — environment variable that switches `/init` into an **interactive multi-phase flow**: a sub-agent inspects the repo, asks about gaps, and proposes a reviewable file before writing. Experimental as of May 2026.
+- **`/memory`** — lists currently loaded memory files (CLAUDE.md, AGENTS.md, subdirectory CLAUDE.md, auto-memory), opens them for direct editing, and accepts conversational additions ("remember that we always use TypeScript strict mode").
+- **`InstructionsLoaded` hook** — fires after Claude has loaded all instruction files for the session. Use to debug which CLAUDE.md / AGENTS.md / subdirectory files actually loaded, audit instruction footprint, and flag missing files. See the `claude-code-hook` meta-skill (`references/events-catalog.md`).
 
 ---
 
@@ -366,6 +379,28 @@ Before sign-off:
 
 - [ ] Canonical source identified (one file authoritative; the other a copy/symlink).
 - [ ] Content matches between files.
+
+---
+
+## Part H.1 — Sub-Agent Memory vs. CLAUDE.md
+
+The `memory:` frontmatter field in a sub-agent's `.md` file is a **distinct** per-agent persistence mechanism. Do not confuse with CLAUDE.md.
+
+| Mechanism                   | Scope                                  | Storage                                        | Load behavior                                                            |
+| --------------------------- | -------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------ |
+| CLAUDE.md (project)         | Project-wide, session-wide             | `./CLAUDE.md`                                  | Concatenated into every session's context at start                       |
+| CLAUDE.md (subdir)          | Working directory + below              | `<subdir>/CLAUDE.md`                           | Lazy-loaded when Claude reads a file in that subdir                      |
+| Auto-memory                 | Per-repo, Claude-written               | `.claude/memory/`                              | Loaded automatically; managed by Claude Code                             |
+| Sub-agent `memory: user`    | Per-agent, all projects                | `~/.claude/agent-memory/<agent>/MEMORY.md`     | First **200 lines or 25 KB** injected into the sub-agent's system prompt |
+| Sub-agent `memory: project` | Per-agent, current project             | `.claude/agent-memory/<agent>/MEMORY.md`       | Same as above; committed to git if you want it shared                    |
+| Sub-agent `memory: local`   | Per-agent, current project, gitignored | `.claude/agent-memory-local/<agent>/MEMORY.md` | Same as above                                                            |
+
+**Key behaviors of sub-agent memory:**
+
+- The sub-agent's system prompt is augmented with read/write instructions for the memory directory plus the head of `MEMORY.md` (200 lines or 25 KB, whichever fires first), plus an instruction to curate the file when it exceeds the limit.
+- Setting any `memory:` scope **force-enables `Read`, `Write`, `Edit`** on the sub-agent (the agent cannot maintain memory without them).
+- **Sub-agents do not share memory with each other or with the main agent.** A `code-reviewer` agent's MEMORY.md is invisible to a `security-engineer` agent. If shared knowledge is needed, put it in CLAUDE.md (project) or auto-memory, not per-agent memory.
+- Memory and CLAUDE.md are complementary: CLAUDE.md carries universal operative rules; sub-agent memory carries patterns the agent learns about its own domain across sessions.
 
 ---
 

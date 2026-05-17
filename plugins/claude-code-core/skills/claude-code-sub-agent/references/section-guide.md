@@ -6,6 +6,12 @@ Mirrors the official docs at <https://code.claude.com/docs/en/sub-agents>. Snaps
 
 A sub-agent file lives at `.claude/agents/<name>.md` (project), `~/.claude/agents/<name>.md` (user), or `<plugin>/agents/<name>.md` (plugin). The file is YAML frontmatter + markdown body.
 
+**Isolation contract.** A sub-agent gets a **fresh context window**: it inherits **none** of the parent conversation's history, tool calls, or other sub-agents' outputs. The only channel from parent to sub-agent is the `prompt` string passed via the `Agent` / Task tool. Anything the sub-agent needs — file paths, prior decisions, error messages — must be included explicitly there. Only the sub-agent's **final message** returns to the parent; every intermediate tool call stays in the sub-agent's window.
+
+**Name-collision resolution (highest to lowest precedence):** CLI flag (`--agent <name>` in the session) → `.claude/agents/` (project) → `~/.claude/agents/` (user) → plugin-bundled agents.
+
+**Built-in sub-agents** ship with Claude Code and can be invoked or referenced without authoring: `Explore` (read-only file discovery, defaults to Haiku for speed), `Plan` (gathers context during plan mode), `general-purpose` (multi-step exploration + action).
+
 ---
 
 ## Part A — Frontmatter Fields
@@ -49,6 +55,7 @@ Only `name` and `description` are required.
 - **Purpose** — Whitelist of tools the agent may use. If omitted, the agent inherits all tools from the parent.
 - **Required?** — Optional.
 - **Allowed values** — Comma-separated string or YAML list. Tool names from the [tools reference](https://code.claude.com/docs/en/tools-reference). Patterns like `Bash(git *)` and `Agent(worker, researcher)` work.
+- **Current built-in tool catalogue** (May 2026) — `Read`, `Write`, `Edit`, `MultiEdit`, `Glob`, `Grep`, `Bash`, `WebFetch`, `WebSearch`, `Task`, `TaskOutput`, `NotebookEdit`, `TodoWrite`, `KillShell`, `AskUserQuestion`. Plus the `Skill` tool (routed via the dedicated `skills` field, not listed here) and `Agent` (rarely granted to sub-agents — sub-agents generally cannot spawn further sub-agents).
 - **What to put in it** — The minimum tools the agent needs. Least privilege.
 - **What NOT to put in it** — `Skill` in this list — to preload skills, use the dedicated `skills` field instead. Don't list tools the agent never uses.
 - **When to set it** — Almost always. Default inheritance is too broad for a focused agent.
@@ -78,7 +85,8 @@ If both `tools` and `disallowedTools` are set, `disallowedTools` applies first, 
 - **Allowed values** — `default`, `acceptEdits`, `auto`, `dontAsk`, `bypassPermissions`, `plan`.
 - **What to put in it** — `default` for interactive work; `acceptEdits` for trusted agents that edit files unattended in a known workspace; `plan` for research-only agents.
 - **What NOT to put in it** — `bypassPermissions` in a checked-in or distributed agent. It removes guardrails and can write to `.git`, `.claude`, and other sensitive paths.
-- **Note** — If the parent runs in `bypassPermissions` or `acceptEdits`, that takes precedence. If parent runs in `auto`, the sub-agent inherits auto regardless of its setting.
+- **Parent-mode precedence** — If the parent runs in `bypassPermissions` or `acceptEdits`, that takes precedence. If parent runs in `auto`, the sub-agent inherits auto regardless of its setting.
+- **Plugin restriction** — **Ignored when the sub-agent is shipped inside a plugin.** Workaround: copy the agent file into `.claude/agents/` (project) or `~/.claude/agents/` (user) for the field to take effect.
 
 ### `maxTurns`
 
@@ -87,15 +95,28 @@ If both `tools` and `disallowedTools` are set, `disallowedTools` applies first, 
 - **Allowed values** — Integer.
 - **What to put in it** — A reasonable upper bound for the agent's workflow (e.g. 20 for a code-reviewer, 50 for a debugger).
 - **When to set it** — When you want defense against runaway loops in long-running agents.
+- **Enforcement caveat** — Reports indicate `maxTurns` is **not reliably enforced** (issue [#41143](https://github.com/anthropics/claude-code/issues/41143), open as of May 2026). Treat as defense-in-depth, not as a hard contract.
 
 ### `skills`
 
-- **Purpose** — Skills preloaded into the agent's context at start. Full skill body is injected, not just the description.
+- **Purpose** — Skills preloaded into the agent's context at start. The **full skill body** is injected into the sub-agent's system prompt, not just the description.
 - **Required?** — Optional.
-- **Allowed values** — YAML list of skill names.
+- **Allowed values** — YAML list of skill names; or the string `"all"` to preload every discovered skill; or `[]` to disable all preloading. Omitting the field leaves runtime discovery via the `Skill` tool available (the sub-agent can still load skills mid-run if it has the tool).
+- **Namespacing for plugin skills** — Reference plugin-bundled skills as `<plugin-name>:<skill-name>` (e.g. `claude-code-shared:adr`). Non-plugin skills resolve by bare name across the precedence order: enterprise → user → project.
 - **What to put in it** — Domain conventions, style guides, or playbooks the agent must apply on every invocation.
-- **What NOT to put in it** — Skills with `disable-model-invocation: true` (won't preload). Skills the agent only sometimes needs (it can discover via the Skill tool at runtime instead).
+- **What NOT to put in it** — Skills with `disable-model-invocation: true` (won't preload). Skills the agent only sometimes needs (use runtime discovery via the `Skill` tool instead — preload pays the body's context cost on every invocation).
 - **When to set it** — When the agent's quality is sensitive to specific conventions you want guaranteed in context.
+- **Cross-plugin gotcha** — Cross-plugin skill references are **not currently supported** (issue [#15944](https://github.com/anthropics/claude-code/issues/15944)). A sub-agent inside plugin A cannot preload a skill bundled in plugin B even with the namespaced form. Bundle co-dependent skills with the agent that needs them, or keep them user-level.
+- **Missing-skill behavior** — If a name in the list does not resolve, the sub-agent starts **silently** without that skill — no error is raised. Validate the list at authoring time.
+
+**Preload vs runtime decision matrix:**
+
+| Axis             | Preload via `skills:`        | Runtime via `Skill` tool                             |
+| ---------------- | ---------------------------- | ---------------------------------------------------- |
+| Frequency of use | Every invocation             | Some invocations                                     |
+| Context cost     | Paid on every run            | Paid only when invoked                               |
+| Load guarantee   | Deterministic at startup     | Depends on the agent invoking it                     |
+| Typical example  | `software-architect` + `adr` | `software-architect` + `mermaid` (only when drawing) |
 
 ### `mcpServers`
 
@@ -110,9 +131,10 @@ If both `tools` and `disallowedTools` are set, `disallowedTools` applies first, 
 
 - **Purpose** — Lifecycle hooks scoped to the agent.
 - **Required?** — Optional.
-- **Allowed values** — Same shape as `hooks.json` entries (`PreToolUse`, `PostToolUse`, `Stop` → matchers → commands).
+- **Allowed values** — Same shape as `hooks.json` entries (event → matchers → commands). All hook events are supported within a sub-agent definition.
 - **What to put in it** — Validators (read-only enforcement, lint runs, etc.) tied to this agent's invocations.
-- **Ignored for** — Plugin sub-agents.
+- **`Stop` auto-conversion** — A `Stop` hook declared in a sub-agent's frontmatter is **automatically converted to `SubagentStop`** at load time, so it fires when this sub-agent finishes (not the session). Authoring it as `Stop` is fine; understand the rewrite when debugging.
+- **Ignored for** — Plugin sub-agents (security restriction). Move the agent to `.claude/agents/` or `~/.claude/agents/` if hooks are required.
 
 ### `memory`
 
@@ -147,6 +169,11 @@ If both `tools` and `disallowedTools` are set, `disallowedTools` applies first, 
 - **Required?** — Optional. Default: none.
 - **Allowed values** — `worktree`.
 - **When to set it** — When the agent edits files and you want the changes contained until you've reviewed them. Worktree is auto-cleaned if no changes are made.
+- **Known open bugs (May 2026)** — Treat the worktree as best-effort; check the working directory before merging an agent's output:
+  - Silent failure: agent can run in main repo instead of worktree without raising ([#39886](https://github.com/anthropics/claude-code/issues/39886)).
+  - Branch-name collision: derived from an 8-hex agent-id prefix; stale branch from a prior session is silently reused ([#51596](https://github.com/anthropics/claude-code/issues/51596)).
+  - Wrong base commit: worktree branches from `origin/main` instead of current HEAD ([#43535](https://github.com/anthropics/claude-code/issues/43535)).
+  - Nested worktrees: context compaction can drift the orchestrator CWD into a prior worktree path, causing subsequent dispatches to nest and potentially commit to main ([#27881](https://github.com/anthropics/claude-code/issues/27881)).
 
 ### `color`
 

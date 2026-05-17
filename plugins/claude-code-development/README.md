@@ -1,58 +1,70 @@
 # claude-code-development
 
-Opinionated senior software-developer sub-agent for Claude Code. Encodes four core rules, fifteen tech-agnostic engineering practices, and twelve comment-philosophy rules so that every coding task — across any language or framework — is handled with the discipline of a strong staff engineer.
+Opinionated senior **engineering team** for Claude Code. Five role-specific sub-agents (developer, architect, code reviewer, quality engineer, security engineer) plus four methodology-anchored skills (ADR, test plan, git commit messages, Mermaid diagrams) — wired together so the right artifact shows up at the right moment.
 
 ## What it ships
 
-| Component            | Type      | Auto-trigger                                                                     |
-| -------------------- | --------- | -------------------------------------------------------------------------------- |
-| `software-developer` | sub-agent | Whenever the user asks to write, modify, refactor, debug, implement, or fix code |
+### Sub-agents
 
-## The four core rules
+| Agent                | Auto-trigger                                                                                                                                                                                                                                                                       |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `software-developer` | The user asks to write, modify, refactor, debug, implement, or fix code. Includes a large-change batching protocol for migrations, cross-module refactors, and rewrites.                                                                                                           |
+| `software-architect` | The user asks to design a new system, evaluate architectural shapes (monolith / modular-monolith / microservices / serverless), choose data store or API protocol, draw C4, plan modernization (strangler-fig, branch-by-abstraction, parallel-run), define NFRs, or produce ADRs. |
+| `code-reviewer`      | The user asks to review, audit, evaluate, assess, or check existing code or a PR; identify tech debt; scrutinize AI-generated code. Runs analyzers before forming an opinion; uses Conventional Comments severity.                                                                 |
+| `quality-engineer`   | The user asks for a test strategy, layer plan, E2E plan with Playwright, contract tests with Pact, performance with k6, chaos plan, quality gates, AC traceability matrix. Anchors to ISO 25010 attributes; reasons in risk, not coverage %.                                       |
+| `security-engineer`  | The user asks for threat modeling (STRIDE), AuthN/AuthZ design, OWASP review (web / API / LLM / Agentic), encryption + key management, compliance scoping (SOC2 / GDPR / HIPAA / PCI / EU AI Act), VEX drafting, security code review.                                             |
+
+### Skills (methodology-anchored, bundled in this plugin)
+
+| Skill        | Methodology anchor                                                                                                                                    | When it fires                                                                                                                                                                                                       |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `adr`        | Michael Nygard's canonical ADR (2011) + MADR 3.0 extension                                                                                            | "write an ADR", "decision record", "RFC for [decision]". **Preloaded** in `software-architect`.                                                                                                                     |
+| `test-plan`  | ISO/IEC/IEEE 29119-3:2021 + ISTQB FL 4.0 risk-based testing + ISO 25010:2023 quality attributes                                                       | "test plan", "QA plan", "release test plan", "plan de pruebas". **Preloaded** in `quality-engineer`.                                                                                                                |
+| `git-commit` | Conventional Commits 1.0.0 + diff-first + log-first protocol + repo-aware format detection                                                            | "commit message", "commit msg please", "draft a commit subject", squash-mode for collapsing a branch. **Runtime discovery** — not preloaded.                                                                        |
+| `mermaid`    | Mermaid syntax with per-type notation anchors (C4 by Simon Brown; UML 2.5.1; ER Chen + Crow's Foot; BPMN; etc.). 17 per-diagram-type reference files. | "draw / visualize / create a diagram", named types (flowchart, sequence, ER, state, class, C4, journey, gantt, mindmap, timeline, sankey, quadrant, gitgraph, architecture). **Preloaded** in `software-architect`. |
+
+### Skill wiring (preload vs runtime)
+
+| Agent                | Preloaded skills | Runtime-only skills                                       |
+| -------------------- | ---------------- | --------------------------------------------------------- |
+| `software-architect` | `adr`, `mermaid` | —                                                         |
+| `quality-engineer`   | `test-plan`      | —                                                         |
+| `software-developer` | —                | `git-commit` (used when committing — on-demand by design) |
+| `code-reviewer`      | —                | —                                                         |
+| `security-engineer`  | —                | —                                                         |
+
+Preload injects the full skill body into the agent's system prompt at startup (deterministic, paid every invocation). Runtime discovery loads via the `Skill` tool only when the agent decides to invoke it (paid only when used). The choice follows the "always vs sometimes" rule documented in `claude-code-core/skills/claude-code-skill/references/section-guide.md`.
+
+## How the agents stay disciplined
+
+### Single-responsibility scope
+
+Each agent declines work that has no component for its role:
+
+- `software-architect` declines pure code implementation, deep code review, or runtime SLO operation.
+- `code-reviewer` declines net-new feature authoring, test strategy design, threat modeling.
+- `quality-engineer` declines routine unit-test implementation (developer does it once the strategy is set).
+- `security-engineer` declines mitigation implementation, runtime SOC operation, foundational cloud-account / IAM provisioning.
+- `software-developer` declines pure architecture, code review of someone else's PR, organization-level test strategy, security audits with no implementation step.
+
+### `software-developer` core principles
+
+Four core rules + fifteen tech-agnostic engineering practices + twelve comment-philosophy rules:
 
 1. **Think Before Coding** — state assumptions, surface tradeoffs, push back when simpler exists.
 2. **Simplicity First** — minimum code that solves the problem; no speculative features.
 3. **Surgical Changes** — touch only what the task requires; match existing style.
 4. **Goal-Driven Execution** — define success criteria; loop until verified.
 
-Each is stated with a _reason_ and (where applicable) an _exception_ so the model can generalise to edge cases rather than overfit to the rule's wording.
+Each is stated with a _reason_ and (where applicable) an _exception_ so the model generalises rather than overfits to the rule's wording.
 
-## Engineering rules (tech-agnostic)
+Highlights of the engineering rules: read first, blast-radius / reversibility, rule of three (not premature abstraction), YAGNI, bounded Boy Scout, Conventional Commits, enumerated failure modes, idempotency by default, log-level contract, config as data + secrets out of source, failing test first, fail-fast in libraries vs degrade gracefully in user-facing services, self-review before claiming done, measure before optimising, surface risks at the start.
 
-Fifteen practices applied uniformly across languages and frameworks. Highlights:
+Sources cited inline: _Software Engineering at Google_, _Site Reliability Engineering_, _The Pragmatic Programmer_, _Code Complete 2_, _Clean Code_, 12factor.net, Conventional Commits 1.0.0, _The Staff Engineer's Path_ (Tanya Reilly).
 
-- Read code and tests before editing.
-- Estimate blast radius; prefer reversible changes.
-- Rule of three (not premature abstraction).
-- YAGNI and bounded Boy Scout cleanups.
-- Conventional Commits with Problem → Solution → Impact body.
-- Enumerate failure modes (empty / huge / malformed / concurrent / partial-failure).
-- Idempotency by default for retryable operations.
-- Log-level contract (debug / info / warn / error / fatal).
-- Config as data; secrets out of source.
-- Failing test first.
-- Fail-fast in libraries; degrade gracefully in user-facing services.
-- Self-review the diff before claiming done.
-- Measure before optimising.
-- Surface risks at the start, not at the deadline.
+### Large-change protocol
 
-Sources cited inline in the agent body: _Software Engineering at Google_, _Site Reliability Engineering_, _The Pragmatic Programmer_, _Code Complete 2_, _Clean Code_, 12factor.net, Conventional Commits 1.0.0, _The Staff Engineer's Path_ (Tanya Reilly).
-
-## Comment philosophy
-
-Twelve rules favouring self-documenting code. Highlights:
-
-- Explain _why_, not _what_.
-- Prefer a better identifier over a comment.
-- Delete commented-out code on sight.
-- Skip doc-blocks on trivial internal helpers; require them on public API surface.
-- Structured TODOs only (owner + ticket + trigger).
-- No tombstone comments (PR numbers, dates, in-source changelogs).
-- Inline comments signal a function that should be decomposed.
-- Comments must survive a refactor — or do not write them.
-- For AI-assisted workflows, comment _invariants_ (concurrency, security, performance budgets), not narration.
-
-Sources cited inline: Linux Kernel Coding Style, _Clean Code_, Rust API Guidelines, PEP 257/8, Google Documentation Best Practices, Addy Osmani's 2026 LLM coding workflow.
+When work exceeds ~500 net LoC, >10 files, or >3 modules, `software-developer` switches to a batching discipline: declare the change strategy (strangler-fig / parallel-change / branch-by-abstraction / big-bang), plan batches ≤300 LoC each ordered mechanical → semantic, enforce invariants (build green / tests green / types valid / lints clean) between batches, commit per batch with Conventional Commits, respect a context budget (≤20 files per turn), report progress per batch.
 
 ## Install
 
@@ -63,34 +75,34 @@ claude plugin marketplace add github:adrian-d-hidalgo/claude-code-toolkit
 claude plugin install claude-code-development@claude-code-toolkit
 ```
 
-Once installed, the agent appears as `claude-code-development:software-developer` in `/agents` and auto-invokes when the user requests coding work. Explicit invocation also works:
+Once installed, the agents appear under the `claude-code-development:` prefix in `/agents`. Bundled skills appear under the same prefix in `/skills`. Both auto-invoke based on user intent matched against each component's `description`.
+
+Explicit invocation also works:
 
 ```text
-@"software-developer (agent)" implement function X
+@"software-architect (agent)" design the architecture for the new fraud-detection service
+/claude-code-development:adr write the decision record for picking Postgres over DynamoDB
 ```
-
-## When NOT to invoke this agent
-
-The agent self-declines work that has no coding component:
-
-- Pure architecture or technology selection with no code change.
-- Code review of someone else's pull request when no change is requested.
-- Release- or organisation-level test strategy.
-- Security audit or threat model with no implementation step.
-
-If a dedicated framework- or language-specific agent is installed alongside this plugin, prefer that for deep framework-specific work — never assume one exists.
 
 ## Activation evaluation
 
-A test corpus lives at [`tests/software-developer/activation-evals.json`](./tests/software-developer/activation-evals.json). Run it against your local `claude` binary:
+Each agent and skill ships an activation-test corpus under `tests/<name>/activation-evals.json`:
+
+- `tests/software-developer/`, `tests/software-architect/`, `tests/code-reviewer/`, `tests/quality-engineer/`, `tests/security-engineer/` — 23-27 cases each (positive / negative / edge).
+- `tests/adr/`, `tests/test-plan/`, `tests/git-commit/`, `tests/mermaid/` — 19 cases each (8 positive / 8 negative / 3 edge).
+
+Run all corpora against your local `claude` binary:
 
 ```bash
-python3 scripts/run_activation_evals.py \
-  --agent agents/software-developer.md --live --judge
+python3 scripts/run_activation_evals.py --all plugins/claude-code-development --live --judge
 ```
 
-Sub-agents are evaluated on **outcome quality** (LLM-as-judge), not routing accuracy. Claude rationally chooses not to delegate to a sub-agent for small coding tasks in `--print` mode (it answers directly because the delegation overhead is not worth it). The judge scores `understood_intent`, `action_appropriate`, and `meta_skill_was_correct_route` per case; the pass gate is the aggregate outcome. A separate `delegation_rate` field reports how often Claude did delegate for positive cases (informational).
+Reports land in `.eval-runs/`. Sub-agents are evaluated on **outcome quality** (LLM-as-judge), not routing accuracy — Claude rationally chooses not to delegate for small tasks. The judge scores `understood_intent`, `action_appropriate`, and `meta_skill_was_correct_route` per case; the aggregate outcome is the pass gate. `delegation_rate` is reported as informational.
 
-## Full system prompt
+## Where to look next
 
-See [`agents/software-developer.md`](./agents/software-developer.md) for the complete rule set, hard rules, anti-patterns, workflow, and reporting format.
+- Agents: [`agents/`](./agents/) — full system prompt per agent.
+- Skills: [`skills/`](./skills/) — SKILL.md + references per skill.
+- Tests: [`tests/`](./tests/) — activation-eval corpora.
+
+To author or modify any component, invoke the matching meta-skill in `claude-code-core` (`claude-code-skill`, `claude-code-sub-agent`, `claude-code-slash-command`, `claude-code-plugin`, `claude-code-hook`, `claude-code-claude-md`). Those own the conventions and validators for their component type.

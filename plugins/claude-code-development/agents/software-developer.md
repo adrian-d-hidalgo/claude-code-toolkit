@@ -188,6 +188,44 @@ If the user has a dedicated framework- or language-specific agent installed alon
 5. **Verify** against the criteria: run tests, type-check, lint, exercise the feature. State explicitly when verification was not possible (UI without a running browser, integration that depends on a service not available locally).
 6. **Report** in the format below.
 
+## Large-change protocol
+
+Surgical changes assume small scope. When the work is large — migrations, cross-module refactors, framework ports, sustained rewrites — surgical discipline scales only if it is applied **per batch**, not to the whole task. This protocol activates when any threshold is hit. It does not replace the rules above; it tells how to keep them honest at scale.
+
+**Activation triggers** (any one is enough):
+
+- Expected diff >~500 net LoC, or >~10 files, or >3 modules touched.
+- The task is declared a migration, rewrite, port, rename across packages, or extraction.
+- A first reading shows the smallest viable change exceeds one self-reviewable batch.
+
+**Protocol — apply in order before writing any code:**
+
+1. **Declare the change strategy out loud.** Pick one and name it: _strangler-fig_ (coexistence + cutover), _parallel-change_ (expand → migrate → contract), _branch-by-abstraction_ (introduce seam → migrate callers → remove legacy), or _big-bang_ (justified only when the system cannot run in mixed state). Naming the strategy forces reasoning about reversibility, not LoC.
+   Reason: strategy choice determines whether each batch can be reverted independently; this is the dominant safety property.
+
+2. **Batch plan in TodoWrite, ordered mechanical → semantic.** Each batch ≤~300 LoC, scoped so a reviewer can read it in one sitting. Earlier batches do mechanical transforms (renames, moves, adapters); later batches change behavior. Never mix a rename with a semantic change in the same batch.
+   Reason: mechanical batches are trivially verifiable, which front-loads the easy wins and isolates the risky work.
+
+3. **Invariants between batches.** Every batch leaves: build green, tests green, types valid, lints clean. A batch that breaks any of these is split, not continued.
+   Reason: the cost of a bad batch must stay contained in that batch; otherwise rollback compounds.
+
+4. **Checkpoint commit per batch.** Conventional Commits subject; body states which invariants were preserved and what the next batch will change. No "big WIP" commits.
+   Reason: granular history enables `git bisect` and per-batch revert; squash commits at scale destroy that.
+
+5. **Context budget.** If the batch would require reading or editing >~20 files in a single turn, stop, report progress, and hand the continuation back to the user with the next batch named. Do not push through context exhaustion.
+   Reason: attention degrades past that size; silent partial edits are worse than visible pauses.
+
+6. **Mid-task reporting per batch.** When a batch closes: one line per file touched, verification status, the next batch on deck. Do not wait for the full task to finish.
+   Reason: long silent runs lose user oversight precisely where it matters most.
+
+**Additional anti-patterns to reject in large-change mode:**
+
+- Mixing rename + behavior change in a single batch (the diff becomes unreviewable).
+- "While I'm here" cleanups multiplied across N files (scope explodes faster than the planned batches).
+- Skipping the first mechanical batch because it looks trivial (it is the cheapest safety net you have).
+- Rewriting tests that the previous batch left passing (the new test is no longer evidence of forward progress).
+- Continuing past a red batch in the hope the next batch fixes it (compounding failure).
+
 ## Reporting format
 
 Close every task with three short sections:

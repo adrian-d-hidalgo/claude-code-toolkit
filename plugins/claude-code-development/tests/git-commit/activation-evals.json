@@ -1,0 +1,128 @@
+{
+  "kind": "skill",
+  "skill": "git-commit",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-16",
+  "notes": "Positive: explicit or elliptical requests for commit message text (subject, body, draft, improve, rewrite). Includes hypothetical requests and squash-mode triggers. Negative: requests for staging, executing the commit, rebasing, splitting commits, or non-commit git operations. Edge: combined intents (draft and commit) — skill only produces text, not execution; squash for a branch — different protocol but same skill.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "What should the commit message say for the changes I just staged",
+      "should_trigger": true,
+      "category": "positive-explicit-question"
+    },
+    {
+      "id": "pos-02",
+      "query": "Draft a commit subject and body for this diff",
+      "should_trigger": true,
+      "category": "positive-draft-explicit"
+    },
+    {
+      "id": "pos-03",
+      "query": "Improve this commit message — it is too vague",
+      "should_trigger": true,
+      "category": "positive-improve"
+    },
+    {
+      "id": "pos-04",
+      "query": "Genera un commit message para los cambios staged",
+      "should_trigger": true,
+      "category": "positive-spanish"
+    },
+    {
+      "id": "pos-05",
+      "query": "Commit msg please",
+      "should_trigger": true,
+      "category": "positive-elliptical"
+    },
+    {
+      "id": "pos-06",
+      "query": "Rewrite this commit subject to match Conventional Commits",
+      "should_trigger": true,
+      "category": "positive-rewrite-conventional"
+    },
+    {
+      "id": "pos-07",
+      "query": "Mensaje para el squash de esta branch vs main",
+      "should_trigger": true,
+      "category": "positive-squash-mode",
+      "notes": "Squash workflow — different protocol but same skill (see references/squash-mode.md)."
+    },
+    {
+      "id": "pos-08",
+      "query": "Critique my commit message and propose improvements",
+      "should_trigger": true,
+      "category": "positive-critique"
+    },
+    {
+      "id": "neg-01",
+      "query": "Run git commit -am 'fix typo' for me",
+      "should_trigger": false,
+      "category": "negative-execute-commit",
+      "notes": "Skill produces text only; never executes the commit."
+    },
+    {
+      "id": "neg-02",
+      "query": "Stage these files for commit",
+      "should_trigger": false,
+      "category": "negative-staging"
+    },
+    {
+      "id": "neg-03",
+      "query": "Rebase this branch onto main",
+      "should_trigger": false,
+      "category": "negative-rebase"
+    },
+    {
+      "id": "neg-04",
+      "query": "Split this commit into three smaller ones",
+      "should_trigger": false,
+      "category": "negative-split"
+    },
+    {
+      "id": "neg-05",
+      "query": "Resolve this merge conflict",
+      "should_trigger": false,
+      "category": "negative-merge-conflict"
+    },
+    {
+      "id": "neg-06",
+      "query": "Show me the diff of the last commit",
+      "should_trigger": false,
+      "category": "negative-show-diff"
+    },
+    {
+      "id": "neg-07",
+      "query": "Configure my git user.name globally",
+      "should_trigger": false,
+      "category": "negative-git-config"
+    },
+    {
+      "id": "neg-08",
+      "query": "What does Conventional Commits 1.0.0 specify",
+      "should_trigger": false,
+      "category": "negative-knowledge-question",
+      "notes": "Knowledge question, not a message-authoring request."
+    },
+    {
+      "id": "edge-01",
+      "query": "Draft a commit message and then run git commit for me",
+      "should_trigger": true,
+      "category": "edge-combined-intent",
+      "notes": "Skill produces the text; the commit execution part is out of scope and should be deferred to the user."
+    },
+    {
+      "id": "edge-02",
+      "query": "I will not stage anything yet, but hypothetically what would the message look like for fixing a session race in auth?",
+      "should_trigger": true,
+      "category": "edge-hypothetical",
+      "notes": "Hypothetical request still triggers the skill — explicitly noted in the skill's description."
+    },
+    {
+      "id": "edge-03",
+      "query": "Commit subject for the change I am about to make to the rate limiter",
+      "should_trigger": true,
+      "category": "edge-prospective"
+    }
+  ]
+}

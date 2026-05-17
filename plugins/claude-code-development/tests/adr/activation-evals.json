@@ -1,0 +1,127 @@
+{
+  "kind": "skill",
+  "skill": "adr",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-16",
+  "notes": "Positive: explicit requests for ADRs, decision records, or RFC-style decision documentation. Negative: open-ended architecture exploration (architect agent), PRDs, tech-specs, code implementation. Edge: ambiguous wording where 'decision document' could be misread as a long design doc.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Write an ADR for our decision to use Postgres for transactional state",
+      "should_trigger": true,
+      "category": "positive-explicit-adr"
+    },
+    {
+      "id": "pos-02",
+      "query": "Document this architecture decision: we are dropping the Kafka cluster in favor of NATS JetStream",
+      "should_trigger": true,
+      "category": "positive-document-decision"
+    },
+    {
+      "id": "pos-03",
+      "query": "Necesito un registro de decisión para el cambio de monolito a modular monolith",
+      "should_trigger": true,
+      "category": "positive-spanish-registro"
+    },
+    {
+      "id": "pos-04",
+      "query": "Create a decision record for using OAuth 2.1 client credentials for our partner API",
+      "should_trigger": true,
+      "category": "positive-decision-record"
+    },
+    {
+      "id": "pos-05",
+      "query": "Draft the ADR superseding ADR-0014 — we are moving from REST to gRPC for internal service-to-service",
+      "should_trigger": true,
+      "category": "positive-supersede-adr"
+    },
+    {
+      "id": "pos-06",
+      "query": "Write an RFC for the architecture change to introduce a feature-flag service",
+      "should_trigger": true,
+      "category": "positive-rfc-decision"
+    },
+    {
+      "id": "pos-07",
+      "query": "Add an ADR to docs/adr/ documenting why we chose Argon2id over bcrypt for password hashing",
+      "should_trigger": true,
+      "category": "positive-adr-with-path"
+    },
+    {
+      "id": "pos-08",
+      "query": "Capture the decision to deprecate the v1 API and move all clients to v2 by Q4 — needs an ADR",
+      "should_trigger": true,
+      "category": "positive-deprecation-adr"
+    },
+    {
+      "id": "neg-01",
+      "query": "Design the architecture for the new fraud-detection service",
+      "should_trigger": false,
+      "category": "negative-design-not-decision"
+    },
+    {
+      "id": "neg-02",
+      "query": "Write a PRD for the new checkout flow",
+      "should_trigger": false,
+      "category": "negative-prd"
+    },
+    {
+      "id": "neg-03",
+      "query": "Implement the Postgres connection pool in our service",
+      "should_trigger": false,
+      "category": "negative-implementation"
+    },
+    {
+      "id": "neg-04",
+      "query": "Write a tech-spec for the payment service rewrite",
+      "should_trigger": false,
+      "category": "negative-tech-spec"
+    },
+    {
+      "id": "neg-05",
+      "query": "What database should we use?",
+      "should_trigger": false,
+      "category": "negative-exploration",
+      "notes": "Exploration, not a decision yet. An RFC fits; ADR comes after the decision."
+    },
+    {
+      "id": "neg-06",
+      "query": "Review the architecture of our orders service",
+      "should_trigger": false,
+      "category": "negative-architecture-review"
+    },
+    {
+      "id": "neg-07",
+      "query": "Create a runbook for the orders service",
+      "should_trigger": false,
+      "category": "negative-runbook"
+    },
+    {
+      "id": "neg-08",
+      "query": "Write the team charter for the platform team",
+      "should_trigger": false,
+      "category": "negative-org-doc"
+    },
+    {
+      "id": "edge-01",
+      "query": "Use MADR format for the decision to migrate from JWT to opaque session tokens",
+      "should_trigger": true,
+      "category": "edge-madr-variant",
+      "notes": "MADR is a documented ADR variant; the skill handles it via references/madr-extension.md."
+    },
+    {
+      "id": "edge-02",
+      "query": "We need a one-pager explaining why we picked event sourcing for the ledger — and we want future teammates to find it",
+      "should_trigger": true,
+      "category": "edge-decision-document",
+      "notes": "Conceptually an ADR even if the user did not say 'ADR'."
+    },
+    {
+      "id": "edge-03",
+      "query": "Make an architecture proposal for adopting service mesh",
+      "should_trigger": false,
+      "category": "edge-proposal-vs-decision",
+      "notes": "A proposal is exploration; an ADR records the decision once taken. Architect agent fits; this skill does not."
+    }
+  ]
+}

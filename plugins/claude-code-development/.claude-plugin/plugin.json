@@ -1,7 +1,7 @@
 {
   "name": "claude-code-development",
-  "version": "1.0.1",
-  "description": "Opinionated senior software-developer sub-agent that enforces Think-Before-Coding, Simplicity-First, Surgical-Changes, and Goal-Driven Execution rules for any coding task.",
+  "version": "1.1.0",
+  "description": "Opinionated senior engineering team for Claude Code: software-developer (with a large-change batching protocol), software-architect, code-reviewer, quality-engineer, and security-engineer — plus methodology-anchored skills (adr, test-plan, git-commit, mermaid) bundled in the same plugin and wired to the right agents. Single-responsibility scope, least-privilege tooling.",
   "author": {
     "name": "Adrián Darío Hidalgo Flores"
   },
@@ -11,9 +11,22 @@
   "keywords": [
     "claude-code",
     "agent",
+    "skill",
+    "engineering-team",
     "software-developer",
-    "senior-engineer",
-    "implementation",
-    "coding"
+    "software-architect",
+    "code-reviewer",
+    "quality-engineer",
+    "security-engineer",
+    "adr",
+    "test-plan",
+    "git-commit",
+    "mermaid",
+    "iso-29119",
+    "conventional-commits",
+    "architecture",
+    "review",
+    "testing",
+    "security"
   ]
 }

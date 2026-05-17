@@ -2,76 +2,42 @@
 
 Authoritative per-field reference for Claude Code hooks.
 
-Hooks have **no description field**. The schema is shape-only: events → matchers → command entries. Documentation lives in surrounding files (README, plugin.json), never inside hook entries (comment fields are silently ignored).
+Hooks have **no description field**. The schema is shape-only: events → matchers → handler entries. Documentation lives in surrounding files (README, plugin.json), never inside hook entries (comment fields are silently ignored).
 
 Mirrors the official docs at <https://code.claude.com/docs/en/hooks>. Snapshot date: see `CURRENT-DOCS-INDEX.md`.
 
+**Companion references in this directory:**
+
+- [`events-catalog.md`](./events-catalog.md) — every lifecycle event (31 total), grouped by stage, with when-fires / matcher / stdin / stdout per event.
+- [`handler-types.md`](./handler-types.md) — the five handler types (`command`, `http`, `mcp_tool`, `prompt`, `agent`) with schema and selection guidance.
+- [`json-contract.md`](./json-contract.md) — full stdin / structured-stdout JSON shapes, exit-code semantics, and worked patterns.
+
 ---
 
-## Part A — Hook Events
+## Part A — Hook Events (Summary)
 
-Top-level keys under `"hooks": { … }`. Each maps to an array of matcher → command configurations.
+Claude Code documents **31 lifecycle events** as of May 2026. The full catalog with stdin/stdout details, matchers, and use-cases per event lives in [`events-catalog.md`](./events-catalog.md). The table below is a quick orientation; use the catalog for authoring.
 
-### `PreToolUse`
+| Event                                                  | Matcher?              | Can block?                                                  | Typical use                                                         |
+| ------------------------------------------------------ | --------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------- |
+| `SessionStart` / `Setup` / `SessionEnd`                | No                    | No                                                          | Lifecycle setup / teardown; `SessionStart` stdout injects to Claude |
+| `UserPromptSubmit` / `UserPromptExpansion`             | No                    | Yes (exit 2 or `decision: block`)                           | Auto-context injection; prompt guardrails                           |
+| `PreToolUse`                                           | `tool_name` regex     | Yes (or rewrite via `permissionDecision` + `modifiedInput`) | Validation; sanitization; policy enforcement                        |
+| `PermissionRequest` / `PermissionDenied`               | tool / rule           | Yes                                                         | ABAC; auto-allow signed users; audit log                            |
+| `PostToolUse` / `PostToolUseFailure` / `PostToolBatch` | `tool_name` regex     | Yes (blocks next turn)                                      | Linting; formatting; indexing; failure logging                      |
+| `Notification`                                         | Notification type     | No                                                          | Custom routing (Slack, sound)                                       |
+| `InstructionsLoaded`                                   | No                    | No                                                          | Debug which CLAUDE.md / AGENTS.md / files loaded                    |
+| `ConfigChange`                                         | optional              | Yes                                                         | Policy on settings changes                                          |
+| `SubagentStart` / `SubagentStop`                       | Sub-agent `name`      | Yes (on Stop)                                               | Per-agent setup / cleanup                                           |
+| `TeammateIdle`                                         | Teammate name         | No                                                          | Detect stuck teammates                                              |
+| `TaskCreated` / `TaskCompleted`                        | Task type / ID        | No                                                          | External task tracker mirroring                                     |
+| `Stop` / `StopFailure`                                 | No                    | Yes (`Stop` only)                                           | End-of-turn notifications / cleanup                                 |
+| `CwdChanged` / `FileChanged`                           | Path glob             | No                                                          | Reload config; re-typecheck on change                               |
+| `WorktreeCreate` / `WorktreeRemove`                    | Agent name            | No                                                          | Worktree setup / teardown                                           |
+| `PreCompact` / `PostCompact`                           | No                    | Yes (on `PreCompact`)                                       | Snapshot before / restore after compaction                          |
+| `Elicitation` / `ElicitationResult`                    | Elicitation type / ID | No                                                          | Auto-answer prompts; log responses                                  |
 
-- **When it fires** — Before Claude executes a tool call.
-- **Matcher** — Tool name (`Bash`, `Edit`, `Write`, etc.) or pattern.
-- **Stdin to script** — `{ tool_name, tool_input: { … }, session_id, transcript_path, cwd }`.
-- **Exit 0** — Continue tool call.
-- **Exit 2** — **Block** the tool call. stderr is shown to Claude as the reason.
-- **Other exit** — Non-blocking error; logged.
-- **Use for** — Validation (read-only DB queries only, no `rm -rf`, etc.).
-
-### `PostToolUse`
-
-- **When it fires** — After Claude executes a tool call.
-- **Matcher** — Tool name or pattern.
-- **Stdin to script** — `{ tool_name, tool_input, tool_response, session_id, transcript_path, cwd }`.
-- **Exit codes** — Same semantics as `PreToolUse` (exit 2 blocks the _next_ Claude turn).
-- **Use for** — Linting, formatting, logging, follow-up actions.
-
-### `UserPromptSubmit`
-
-- **When it fires** — Before Claude sees the user's typed prompt.
-- **Matcher** — None.
-- **Stdin to script** — `{ prompt, session_id, transcript_path, cwd }`.
-- **stdout** — If non-empty, **appended to the user prompt** before Claude sees it.
-- **Exit 2** — Reject the prompt entirely.
-- **Use for** — Auto-injecting context (current branch, env state); guard rails.
-
-### `Stop`
-
-- **When it fires** — When Claude finishes its turn.
-- **Matcher** — None.
-- **Use for** — End-of-turn notifications, sound effects, telemetry.
-- **Note** — In a sub-agent's frontmatter `hooks:`, `Stop` is auto-converted to `SubagentStop`.
-
-### `SubagentStop`
-
-- **When it fires** — When a sub-agent finishes.
-- **Matcher** — Sub-agent `name`.
-- **Use for** — Per-agent post-processing, cleanup.
-
-### `SubagentStart`
-
-- **When it fires** — When a sub-agent starts.
-- **Matcher** — Sub-agent `name`.
-- **Use for** — Setup specific to an agent (open DB connection, etc.).
-
-### `Notification`
-
-- **When it fires** — When Claude Code surfaces a notification.
-- **Use for** — Custom notification handling (e.g., macOS `osascript` sound).
-
-### `SessionStart` / `SessionEnd`
-
-- **When it fires** — At session lifecycle boundaries.
-- **Use for** — Setup / teardown.
-
-### `PreCompact`
-
-- **When it fires** — Before Claude Code auto-compacts the conversation.
-- **Use for** — Snapshotting state before it's summarized.
+**Frontmatter rewrite rule**: a `Stop` hook declared inside a sub-agent's `hooks:` frontmatter is automatically rewritten to `SubagentStop` at load time. Author as `Stop`; understand the rewrite when debugging.
 
 ---
 
@@ -107,12 +73,22 @@ Array of command entries. Each:
 
 #### `type`
 
-- **Required.** Currently only `"command"` is supported.
+- **Required.** Picks the handler type. Five options as of May 2026:
+
+  | Type       | Runs                     | Use for                               |
+  | ---------- | ------------------------ | ------------------------------------- |
+  | `command`  | Shell command            | Default; most flexible                |
+  | `http`     | POST to URL              | Remote policy service                 |
+  | `mcp_tool` | MCP server tool          | Policy logic already in an MCP server |
+  | `prompt`   | Single-turn LLM          | Judgmental decisions (Haiku-class)    |
+  | `agent`    | Sub-agent (experimental) | Genuinely agentic decisions           |
+
+  Schema and trade-offs per type live in [`handler-types.md`](./handler-types.md). Most events accept all five; `SessionStart` and `Setup` are restricted to `command` and `mcp_tool`.
 
 #### `command`
 
-- **Purpose** — Shell command to execute.
-- **Required?** — Yes.
+- **Purpose** — Shell command to execute. Applies when `type: "command"`.
+- **Required?** — Yes (when `type: "command"`).
 - **What to put in it** — Path to a script, or an inline command. Use `${CLAUDE_PLUGIN_ROOT}` for portability.
 - **What NOT to put in it** — `chmod 777`, `curl … | bash`, anything that mutates state outside the workspace, anything that prints secrets to stdout.
 
@@ -133,7 +109,7 @@ Array of command entries. Each:
 
 ## Part C — Script Conventions
 
-Hook scripts receive JSON on stdin and respond via exit code + stderr/stdout.
+Hook scripts receive JSON on stdin and respond via exit code + stderr/stdout. The **full JSON stdin/stdout contract** (universal fields, per-event additions, structured `decision` / `hookSpecificOutput`, `permissionDecision` rewrites) lives in [`json-contract.md`](./json-contract.md). This section covers the conventions that apply to all hook scripts.
 
 ### Reading stdin
 
@@ -152,18 +128,22 @@ data = json.load(sys.stdin)
 command = data.get("tool_input", {}).get("command", "")
 ```
 
+Always handle missing fields. Schema changes between minor versions; stdin should be treated as schema-versioned untrusted input.
+
 ### Exit codes
 
-| Code  | Meaning                                                                             |
-| ----- | ----------------------------------------------------------------------------------- |
-| 0     | Continue. stdout printed (and for `UserPromptSubmit`, appended to the user prompt). |
-| 2     | **Block.** stderr shown to Claude as the reason for blocking.                       |
-| Other | Non-blocking error; logged.                                                         |
+| Code  | Meaning                                                                                                     |
+| ----- | ----------------------------------------------------------------------------------------------------------- |
+| 0     | Continue. stdout parsed as JSON contract (or plain text for `UserPromptSubmit` / `SessionStart` injection). |
+| 2     | **Block.** stderr shown to Claude as the reason for blocking. stdout is ignored.                            |
+| Other | Non-blocking error; logged. Does NOT block.                                                                 |
+
+**Critical**: `exit 1` does **not** block ([#24327](https://github.com/anthropics/claude-code/issues/24327), [#34600](https://github.com/anthropics/claude-code/issues/34600)). Only `exit 2` halts execution. Prefer **exit 0 with JSON stdout** for structured control (more expressive, more debuggable than stderr).
 
 ### What to write where
 
-- **stdout** — For `UserPromptSubmit`: content to inject. For other events: typically empty.
-- **stderr** — User-visible messages (errors, warnings). Required for exit 2 to be useful.
+- **stdout** — Structured JSON when applying a `decision`, `permissionDecision`, `modifiedInput`, or injecting context via `hookSpecificOutput.additionalContext`. Plain text for `UserPromptSubmit` / `SessionStart` simple injection. Empty for most informational hooks.
+- **stderr** — User-visible messages (errors, warnings). **Required** for `exit 2` to surface a reason to Claude.
 
 ### Portability
 
@@ -231,6 +211,18 @@ Source: <https://github.com/disler/claude-code-hooks-mastery>.
 The hook entry schema is `{ matcher, hooks: [{ type, command, timeout, shell }] }`. Anything else is silently ignored or rejected, depending on the parser.
 Reason: there is no documented annotation field — the surrounding README is the place for documentation.
 Source: <https://code.claude.com/docs/en/hooks>.
+
+### F.8 — Prefer JSON stdout over `exit 2` for control flow
+
+When a hook needs to block, rewrite tool input, inject additional context, or apply a permission rule, prefer **exit 0 with structured JSON stdout** (`decision`, `hookSpecificOutput`, `permissionDecision`, `modifiedInput`) over `exit 2` + stderr. The JSON contract is more expressive: it can rewrite the tool input, persist a permission rule, ask for confirmation, or inject context — none of which `exit 2` can do. `exit 2` remains correct for one-line "no, halt" decisions with a stderr reason.
+Reason: structured stdout is the modern Claude Code control surface; `exit 2` is the legacy fallback.
+Source: <https://code.claude.com/docs/en/hooks>; see `json-contract.md`.
+
+### F.9 — Persistent-config injection (GHSA-ff64-7w26-62rf) is a real threat
+
+A malicious `settings.json` can inject arbitrary hook payloads that execute on every session start, with full user privilege. Validate the settings files committed in repos before merging — especially in monorepos with many contributors. Treat `hooks` in `settings.json` like CI configuration: review, code-own, sign if possible.
+Reason: hooks run shell commands with no sandbox. The supply-chain surface is the entire settings tree.
+Source: <https://github.com/anthropics/claude-code/security/advisories/GHSA-ff64-7w26-62rf>.
 
 ---
 

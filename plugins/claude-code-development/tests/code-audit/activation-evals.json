@@ -1,0 +1,127 @@
+{
+  "kind": "skill",
+  "skill": "code-audit",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-17",
+  "notes": "Positive: full-codebase or scoped-module audit requests, tech-debt analysis, refactor prioritization. Negative: per-PR review (→ code-review-checklist), implementation, architecture design, single-bug RCA. Edge: SQALE-rigorous audit request; targeted module audit.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Audit our orders/ module for tech debt — prioritise by impact × effort",
+      "should_trigger": true,
+      "category": "positive-scoped-audit"
+    },
+    {
+      "id": "pos-02",
+      "query": "Tech-debt analysis on the payments service — where should we invest in refactoring?",
+      "should_trigger": true,
+      "category": "positive-tech-debt"
+    },
+    {
+      "id": "pos-03",
+      "query": "Where should we refactor first? Run a code audit and rank by ROI",
+      "should_trigger": true,
+      "category": "positive-roi-rank"
+    },
+    {
+      "id": "pos-04",
+      "query": "Find code smells in src/checkout/ and propose refactor plan with Fowler techniques",
+      "should_trigger": true,
+      "category": "positive-fowler-smells"
+    },
+    {
+      "id": "pos-05",
+      "query": "SQALE assessment of our backend — total debt, ratio, by-characteristic breakdown",
+      "should_trigger": true,
+      "category": "positive-sqale"
+    },
+    {
+      "id": "pos-06",
+      "query": "Audita el código del módulo de inventario — necesito un reporte de deuda técnica",
+      "should_trigger": true,
+      "category": "positive-spanish"
+    },
+    {
+      "id": "pos-07",
+      "query": "What's blocking maintainability in our codebase? Audit and prioritise",
+      "should_trigger": true,
+      "category": "positive-maintainability"
+    },
+    {
+      "id": "pos-08",
+      "query": "Identify hotspots — high-churn, high-complexity files. Use git history",
+      "should_trigger": true,
+      "category": "positive-hotspots"
+    },
+    {
+      "id": "neg-01",
+      "query": "Review this PR for code quality — is it safe to merge?",
+      "should_trigger": false,
+      "category": "negative-pr-review",
+      "notes": "Per-PR = code-review-checklist."
+    },
+    {
+      "id": "neg-02",
+      "query": "Implement the refactor — extract OrdersController into 3 classes",
+      "should_trigger": false,
+      "category": "negative-implementation"
+    },
+    {
+      "id": "neg-03",
+      "query": "Design a new architecture for the payments domain",
+      "should_trigger": false,
+      "category": "negative-architecture"
+    },
+    {
+      "id": "neg-04",
+      "query": "Why is our checkout slow today? Investigate",
+      "should_trigger": false,
+      "category": "negative-debugging",
+      "notes": "Live debugging = debugging-protocol."
+    },
+    {
+      "id": "neg-05",
+      "query": "Run a security audit and threat-model the auth flow",
+      "should_trigger": false,
+      "category": "negative-threat-model",
+      "notes": "Threat model = threat-model skill."
+    },
+    {
+      "id": "neg-06",
+      "query": "Write the test plan for the upcoming release",
+      "should_trigger": false,
+      "category": "negative-test-plan"
+    },
+    {
+      "id": "neg-07",
+      "query": "Split this big task into smaller pieces",
+      "should_trigger": false,
+      "category": "negative-work-splitting"
+    },
+    {
+      "id": "neg-08",
+      "query": "Write an ADR for the proposed extraction of payments as a bounded context",
+      "should_trigger": false,
+      "category": "negative-adr",
+      "notes": "ADR authoring = adr skill (audit may recommend authoring, but doesn't author)."
+    },
+    {
+      "id": "edge-01",
+      "query": "Audit the full backend codebase — give me the SonarQube-aligned SQALE rating",
+      "should_trigger": true,
+      "category": "edge-full-sqale"
+    },
+    {
+      "id": "edge-02",
+      "query": "I just want a quick scan for obvious smells in src/api/, nothing rigorous",
+      "should_trigger": true,
+      "category": "edge-light-scan"
+    },
+    {
+      "id": "edge-03",
+      "query": "Compare our codebase complexity against last quarter's audit baseline",
+      "should_trigger": true,
+      "category": "edge-comparative-audit"
+    }
+  ]
+}

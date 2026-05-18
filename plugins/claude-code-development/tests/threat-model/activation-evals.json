@@ -1,0 +1,129 @@
+{
+  "kind": "skill",
+  "skill": "threat-model",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-17",
+  "notes": "Positive: explicit threat-modelling requests, STRIDE/PASTA invocations, 'where can this be attacked', Spanish triggers. Negative: implement mitigation, security incident RCA, code review for security issues without modelling, full architecture, compliance certification. Edge: re-review request; threat model for a feature still in design (no code yet to ground in).",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Threat-model the new payment service before it goes live",
+      "should_trigger": true,
+      "category": "positive-explicit-modelling"
+    },
+    {
+      "id": "pos-02",
+      "query": "STRIDE on the auth flow — focus on the OAuth callback handler",
+      "should_trigger": true,
+      "category": "positive-stride"
+    },
+    {
+      "id": "pos-03",
+      "query": "Run a PASTA analysis on the checkout system, all 7 stages",
+      "should_trigger": true,
+      "category": "positive-pasta-full"
+    },
+    {
+      "id": "pos-04",
+      "query": "Where can this API be attacked? Enumerate threats with mitigations",
+      "should_trigger": true,
+      "category": "positive-attack-surface"
+    },
+    {
+      "id": "pos-05",
+      "query": "Modelo de amenazas para el nuevo endpoint de transferencias",
+      "should_trigger": true,
+      "category": "positive-spanish"
+    },
+    {
+      "id": "pos-06",
+      "query": "Build an attack tree for an attacker trying to exfiltrate PII",
+      "should_trigger": true,
+      "category": "positive-attack-tree"
+    },
+    {
+      "id": "pos-07",
+      "query": "What are the security threats on the new webhook receiver?",
+      "should_trigger": true,
+      "category": "positive-threat-enum"
+    },
+    {
+      "id": "pos-08",
+      "query": "Identify trust boundaries and the threats at each crossing for our multi-tenant API",
+      "should_trigger": true,
+      "category": "positive-trust-boundaries"
+    },
+    {
+      "id": "neg-01",
+      "query": "Implement the rate-limit middleware we discussed",
+      "should_trigger": false,
+      "category": "negative-implementation"
+    },
+    {
+      "id": "neg-02",
+      "query": "Why did our credentials leak in the logs yesterday? Root cause analysis",
+      "should_trigger": false,
+      "category": "negative-bug-analysis"
+    },
+    {
+      "id": "neg-03",
+      "query": "Review this PR — does the code introduce security issues?",
+      "should_trigger": false,
+      "category": "negative-pr-security-review",
+      "notes": "Per-PR security review = code-reviewer with security focus or security-engineer ad-hoc; threat-model fires for surface-level analysis, not diff review."
+    },
+    {
+      "id": "neg-04",
+      "query": "Design the full architecture for our new identity service",
+      "should_trigger": false,
+      "category": "negative-architecture"
+    },
+    {
+      "id": "neg-05",
+      "query": "Get us SOC 2 ready — what's the compliance gap?",
+      "should_trigger": false,
+      "category": "negative-compliance",
+      "notes": "Compliance certification = security-engineer agent broader scope; threat-model is a component of it."
+    },
+    {
+      "id": "neg-06",
+      "query": "Write the PRD for the new authentication feature",
+      "should_trigger": false,
+      "category": "negative-prd"
+    },
+    {
+      "id": "neg-07",
+      "query": "Pen-test this endpoint",
+      "should_trigger": false,
+      "category": "negative-pentest",
+      "notes": "Active exploitation out of scope."
+    },
+    {
+      "id": "neg-08",
+      "query": "Split this auth feature into smaller stories",
+      "should_trigger": false,
+      "category": "negative-work-splitting"
+    },
+    {
+      "id": "edge-01",
+      "query": "Re-review the threat model for the payments service — it was done 18 months ago",
+      "should_trigger": true,
+      "category": "edge-re-review",
+      "notes": "Re-review is in scope; produces an updated model + diff vs prior."
+    },
+    {
+      "id": "edge-02",
+      "query": "Threat model for a feature still in design — there's no code yet, only the spec",
+      "should_trigger": true,
+      "category": "edge-design-stage",
+      "notes": "Skill fires; output explicitly notes 'no code-grounded reading possible; mitigations are proposed, not verified existing'."
+    },
+    {
+      "id": "edge-03",
+      "query": "Draft a VEX statement for CVE-2024-1234 in our dependency",
+      "should_trigger": false,
+      "category": "edge-vex",
+      "notes": "VEX is security-engineer agent territory, not threat-model skill."
+    }
+  ]
+}

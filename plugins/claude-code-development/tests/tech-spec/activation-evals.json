@@ -1,0 +1,129 @@
+{
+  "kind": "skill",
+  "skill": "tech-spec",
+  "version": "1.1.0",
+  "snapshot_date": "2026-05-17",
+  "notes": "Positive: tech-spec / design-doc / RFC / documento técnico requests for a specific feature/system. Negative: PRD authoring, code implementation, ADR (single decision), test plan, code review, full dev plan / sub-task breakdown. Edge: lite spec; spec without PRD (pure-platform work).",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Write the tech spec for the new discount-redeem-v2 feature — PRD is approved",
+      "should_trigger": true,
+      "category": "positive-explicit-spec"
+    },
+    {
+      "id": "pos-02",
+      "query": "Necesito el documento técnico para el módulo de pagos",
+      "should_trigger": true,
+      "category": "positive-spanish"
+    },
+    {
+      "id": "pos-03",
+      "query": "Draft a design doc for the migration to event sourcing",
+      "should_trigger": true,
+      "category": "positive-design-doc"
+    },
+    {
+      "id": "pos-04",
+      "query": "RFC for upgrading Postgres from 14 to 16 — platform-only work, no PRD",
+      "should_trigger": true,
+      "category": "positive-platform-rfc"
+    },
+    {
+      "id": "pos-05",
+      "query": "Diseño técnico para el feature de búsqueda con pgvector",
+      "should_trigger": true,
+      "category": "positive-spanish-design"
+    },
+    {
+      "id": "pos-06",
+      "query": "Translate this PRD into engineering reality — full tech spec please",
+      "should_trigger": true,
+      "category": "positive-prd-to-spec"
+    },
+    {
+      "id": "pos-07",
+      "query": "Lite tech spec for adding the new `is_redeemable` column — minimal sections only",
+      "should_trigger": true,
+      "category": "positive-lite-spec"
+    },
+    {
+      "id": "pos-08",
+      "query": "Engineering design doc for the new fraud-detection service",
+      "should_trigger": true,
+      "category": "positive-engineering-design"
+    },
+    {
+      "id": "neg-01",
+      "query": "Write the PRD for the new payment-experience initiative",
+      "should_trigger": false,
+      "category": "negative-prd-authoring"
+    },
+    {
+      "id": "neg-02",
+      "query": "Implement the discount-redeem-v2 service in TypeScript",
+      "should_trigger": false,
+      "category": "negative-implementation"
+    },
+    {
+      "id": "neg-03",
+      "query": "Write an ADR for choosing Postgres over DynamoDB",
+      "should_trigger": false,
+      "category": "negative-single-adr",
+      "notes": "Single decision = ADR skill; spec assembles many ADRs."
+    },
+    {
+      "id": "neg-04",
+      "query": "Build the test plan for the v2.5 release",
+      "should_trigger": false,
+      "category": "negative-test-plan"
+    },
+    {
+      "id": "neg-05",
+      "query": "Review this PR for code quality issues",
+      "should_trigger": false,
+      "category": "negative-pr-review"
+    },
+    {
+      "id": "neg-06",
+      "query": "Give me a development plan: triage + plan + sub-tasks",
+      "should_trigger": false,
+      "category": "negative-development-plan",
+      "notes": "Dev plan = development-plan skill / tech-lead agent."
+    },
+    {
+      "id": "neg-07",
+      "query": "Draft the threat model for the new external API",
+      "should_trigger": false,
+      "category": "negative-threat-model",
+      "notes": "Threat model skill; spec might reference it but doesn't author."
+    },
+    {
+      "id": "neg-08",
+      "query": "Create a mermaid C4 container diagram for our auth service",
+      "should_trigger": false,
+      "category": "negative-mermaid-only",
+      "notes": "Just a diagram = mermaid skill."
+    },
+    {
+      "id": "edge-01",
+      "query": "Lite tech spec — just summary, architecture, contracts, rollout, and risks. Nothing else.",
+      "should_trigger": true,
+      "category": "edge-lite-explicit"
+    },
+    {
+      "id": "edge-02",
+      "query": "Tech spec for a platform upgrade (Postgres 14 → 16) — there's no PRD because it's pure infrastructure",
+      "should_trigger": true,
+      "category": "edge-no-prd-platform",
+      "notes": "Allowed for pure-platform; spec should explicitly flag the absence of PRD."
+    },
+    {
+      "id": "edge-03",
+      "query": "Spec for a feature where the PRD is still in draft — can you draft alongside?",
+      "should_trigger": true,
+      "category": "edge-prd-in-draft",
+      "notes": "Fires, but the skill should explicitly flag risk of drafting without final PRD."
+    }
+  ]
+}

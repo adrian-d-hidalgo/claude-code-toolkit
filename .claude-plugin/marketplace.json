@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "name": "claude-code-toolkit",
-  "description": "Personal toolkit for Claude Code. Bundles a core meta-toolkit for authoring skills, sub-agents, slash commands, plugins, hooks, and CLAUDE.md memory files, plus a development plugin shipping an opinionated senior engineering team (software-developer, software-architect, code-reviewer, quality-engineer, security-engineer) with methodology-anchored skills (adr, test-plan, git-commit, mermaid) wired to the right agents.",
+  "description": "Personal toolkit for Claude Code. Bundles a core meta-toolkit for authoring skills, sub-agents, slash commands, plugins, hooks, and CLAUDE.md memory files, plus a development plugin shipping an opinionated senior engineering team (software-developer, software-architect, tech-lead, code-reviewer, quality-engineer, security-engineer) — composable LEGO pieces with transversal practices (evidence levels, code-grounded analysis, no-silent-drift, outputs-as-content) — and twelve methodology-anchored skills (adr, test-plan, development-plan, work-splitting, bug-analysis, threat-model, tech-spec, debugging-protocol, code-audit, code-review-checklist, git-commit, mermaid).",
   "owner": {
     "name": "Adrián Darío Hidalgo Flores",
     "url": "https://github.com/adrian-d-hidalgo/claude-code-toolkit"
@@ -27,21 +27,37 @@
     {
       "name": "claude-code-development",
       "source": "./plugins/claude-code-development",
-      "description": "Opinionated senior engineering team for Claude Code: software-developer (with a large-change batching protocol), software-architect, code-reviewer, quality-engineer, and security-engineer — plus methodology-anchored skills (adr, test-plan, git-commit, mermaid) wired to the right agents. Single-responsibility scope, least-privilege tooling.",
+      "description": "Opinionated senior engineering team for Claude Code: developer, architect, tech-lead, reviewer, QE, security-eng — composable pieces with transversal practices (evidence levels, code-grounded analysis, no-silent-drift, outputs-as-content). Twelve methodology-anchored bundled skills covering ADR (Nygard), test plan (ISO 29119-3), development plan (spec-kit + SAFe), work-splitting (Lawrence / SPIDR / Hamburger / Carpaccio), bug-analysis (5 Whys / Ishikawa / FTA / blameless postmortem), threat-model (STRIDE / PASTA), tech-spec (C4 / arc42), debugging-protocol (Zeller / git-bisect / observability-first), code-audit (SQALE / Fowler), code-review-checklist (Google / Wiegers / OWASP), git-commit (Conventional Commits), mermaid. Least-privilege tooling, no orchestration baked in.",
       "category": "development",
       "tags": [
         "engineering-team",
         "software-developer",
         "software-architect",
+        "tech-lead",
         "code-reviewer",
         "quality-engineer",
         "security-engineer",
         "adr",
         "test-plan",
+        "development-plan",
+        "work-splitting",
+        "bug-analysis",
+        "threat-model",
+        "tech-spec",
+        "debugging-protocol",
+        "code-audit",
+        "code-review-checklist",
         "git-commit",
         "mermaid",
+        "spec-kit",
+        "safe",
+        "invest",
+        "stride",
+        "5-whys",
         "iso-29119",
-        "conventional-commits"
+        "iso-25010",
+        "conventional-commits",
+        "conventional-comments"
       ]
     }
   ]

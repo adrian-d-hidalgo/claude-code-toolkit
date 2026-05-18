@@ -1,0 +1,133 @@
+{
+  "kind": "skill",
+  "skill": "code-review-checklist",
+  "version": "1.1.0",
+  "snapshot_date": "2026-05-17",
+  "notes": "Routing model: the skill is **preloaded on the `code-reviewer` sub-agent**; generic 'review this PR' intents route to the agent (which loads the skill's content via preload), not directly to the skill. The skill fires as a top-level Skill tool call only when the caller invokes it explicitly (mentions the methodology, the 10-category walk, Conventional Comments severity, Google/Wiegers/OWASP style, or asks for a no-agent direct walkthrough). Positives below are skill-explicit invocations. Generic PR-review prompts that should route to the code-reviewer agent are marked negative here.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Walk the code-review checklist on this diff — all 10 categories",
+      "should_trigger": true,
+      "category": "positive-explicit-checklist-walk"
+    },
+    {
+      "id": "pos-02",
+      "query": "Review this diff using Google's Engineering Practices code-review guide — give me severity-tagged findings",
+      "should_trigger": true,
+      "category": "positive-google-guide-explicit"
+    },
+    {
+      "id": "pos-03",
+      "query": "Apply Conventional Comments severity (blocking / required / suggestion / nitpick) to this PR's findings",
+      "should_trigger": true,
+      "category": "positive-conventional-comments"
+    },
+    {
+      "id": "pos-04",
+      "query": "Run a Wiegers-style peer review on this diff — categories + severity + verdict",
+      "should_trigger": true,
+      "category": "positive-wiegers-style"
+    },
+    {
+      "id": "pos-05",
+      "query": "Apply the OWASP code-review-guide checklist (security categories) to this diff",
+      "should_trigger": true,
+      "category": "positive-owasp-checklist"
+    },
+    {
+      "id": "pos-06",
+      "query": "Per-PR review categories on this change — correctness, tests, security, readability, performance",
+      "should_trigger": true,
+      "category": "positive-explicit-categories"
+    },
+    {
+      "id": "pos-07",
+      "query": "I don't want to use the code-reviewer agent — just walk me through the review checklist directly",
+      "should_trigger": true,
+      "category": "positive-skill-direct-no-agent"
+    },
+    {
+      "id": "pos-08",
+      "query": "Give me a 10-category structured review of this PR with explicit severity tags per finding",
+      "should_trigger": true,
+      "category": "positive-10-category-structured"
+    },
+    {
+      "id": "neg-01",
+      "query": "Review this PR — is it safe to merge?",
+      "should_trigger": false,
+      "category": "negative-generic-pr-review-routes-to-agent",
+      "notes": "Generic PR review intent — routes to the code-reviewer sub-agent (which preloads this skill)."
+    },
+    {
+      "id": "neg-02",
+      "query": "Code review for the discount-redeem-v2 diff",
+      "should_trigger": false,
+      "category": "negative-generic-code-review-routes-to-agent",
+      "notes": "Routes to code-reviewer agent."
+    },
+    {
+      "id": "neg-03",
+      "query": "Is this PR ready to merge?",
+      "should_trigger": false,
+      "category": "negative-pr-merge-readiness-routes-to-agent"
+    },
+    {
+      "id": "neg-04",
+      "query": "Revisa este PR — busca issues de seguridad y tests",
+      "should_trigger": false,
+      "category": "negative-spanish-generic-pr-review-routes-to-agent"
+    },
+    {
+      "id": "neg-05",
+      "query": "Audit our entire backend codebase for tech debt",
+      "should_trigger": false,
+      "category": "negative-codebase-audit",
+      "notes": "Routes to code-audit skill."
+    },
+    {
+      "id": "neg-06",
+      "query": "Implement the suggested refactor — extract OrderController",
+      "should_trigger": false,
+      "category": "negative-implementation"
+    },
+    {
+      "id": "neg-07",
+      "query": "Design the architecture for the new fraud-detection service",
+      "should_trigger": false,
+      "category": "negative-architecture"
+    },
+    {
+      "id": "neg-08",
+      "query": "Write the test plan for v2.5 release",
+      "should_trigger": false,
+      "category": "negative-test-plan"
+    },
+    {
+      "id": "neg-09",
+      "query": "Threat-model the auth flow end-to-end",
+      "should_trigger": false,
+      "category": "negative-threat-model"
+    },
+    {
+      "id": "neg-10",
+      "query": "Split this PR into smaller pieces — it's too big",
+      "should_trigger": false,
+      "category": "negative-work-splitting"
+    },
+    {
+      "id": "edge-01",
+      "query": "Compare this PR against the Google code-review developer guide — what would they flag?",
+      "should_trigger": true,
+      "category": "edge-methodology-comparison",
+      "notes": "Named methodology → skill directly."
+    },
+    {
+      "id": "edge-02",
+      "query": "Walk all 10 review categories on this typo-fix PR — even if it's small, I want the structured output",
+      "should_trigger": true,
+      "category": "edge-explicit-walk-trivial-pr"
+    }
+  ]
+}

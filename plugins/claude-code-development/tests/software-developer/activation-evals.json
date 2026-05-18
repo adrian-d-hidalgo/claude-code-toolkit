@@ -1,7 +1,7 @@
 {
   "kind": "subagent",
   "agent": "software-developer",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "snapshot_date": "2026-05-12",
   "notes": "Positive: prompts where delegation is unambiguously preferable \u2014 multi-file deliverables, sustained refactors, or tasks where rule/style enforcement matters more than a one-shot answer. Negative: prompts that should route to a meta-skill or to no agent. Edge: ambiguous between application code and Claude Code component editing.",
   "cases": [
@@ -173,6 +173,18 @@
       "should_trigger": true,
       "category": "edge-borderline-large",
       "notes": "Borderline scope (~600 LoC, mechanical). Protocol should activate; first batch should be the port itself, second batch the importer updates."
+    },
+    {
+      "id": "pos-13",
+      "query": "I started implementing T-04 but the code in src/orders/ doesn't match what the spec assumes \u2014 pause and surface",
+      "should_trigger": true,
+      "category": "positive-no-silent-drift"
+    },
+    {
+      "id": "pos-14",
+      "query": "Just show me the diff plan for this fix \u2014 no code yet",
+      "should_trigger": true,
+      "category": "positive-output-shape-varies"
     }
   ]
 }

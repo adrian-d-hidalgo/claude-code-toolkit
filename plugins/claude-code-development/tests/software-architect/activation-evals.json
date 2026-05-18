@@ -1,7 +1,7 @@
 {
   "kind": "subagent",
   "agent": "software-architect",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "snapshot_date": "2026-05-16",
   "notes": "Positive: prompts where the user asks for system-level design, NFRs, ADRs, C4, modernization strategy, or technology choice WITHOUT requesting implementation. Negative: implementation-only, code review, test strategy, security-only, infra provisioning, or meta-skill component edits. Edge: ambiguous between design and implementation, or where the user asks 'how should I' without naming code.",
   "cases": [
@@ -147,6 +147,18 @@
       "should_trigger": true,
       "category": "edge-extraction-decision",
       "ambiguous": true
+    },
+    {
+      "id": "pos-11",
+      "query": "Just give me the trade-off between Postgres and DynamoDB for this workload — no full architecture, no ADR",
+      "should_trigger": true,
+      "category": "positive-output-shape-varies"
+    },
+    {
+      "id": "pos-12",
+      "query": "Read the auth module and tell me which contracts would change if we move to OIDC",
+      "should_trigger": true,
+      "category": "positive-code-grounded-analysis"
     }
   ]
 }

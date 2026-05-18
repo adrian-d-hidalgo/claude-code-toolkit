@@ -1,0 +1,135 @@
+{
+  "kind": "skill",
+  "skill": "development-plan",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-17",
+  "notes": "Positive: explicit requests to write a development plan / implementation plan / tasks.md from an approved spec; PR sequencing; spike identification; AC-to-task traceability; lite-plan when spec is partial. Negative: code implementation, PRD authoring, test-plan authoring, architecture design, code review, threat model, ADR authoring, cross-feature roadmap. Edge: lite plan variant, regulated-environment plan, plan where PRD is missing.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Write the development plan for the discount-redeem-v2 feature — I have the PRD and the tech-spec approved",
+      "should_trigger": true,
+      "category": "positive-full-plan"
+    },
+    {
+      "id": "pos-02",
+      "query": "Necesito el plan de desarrollo para el feature de checkout v2",
+      "should_trigger": true,
+      "category": "positive-spanish-plan"
+    },
+    {
+      "id": "pos-03",
+      "query": "Break this approved tech-spec into a tasks.md a developer can pick up",
+      "should_trigger": true,
+      "category": "positive-tasks-md"
+    },
+    {
+      "id": "pos-04",
+      "query": "Give me the implementation plan with plan.md + tasks.md following spec-kit format",
+      "should_trigger": true,
+      "category": "positive-spec-kit"
+    },
+    {
+      "id": "pos-05",
+      "query": "Build a WBS for the SOX-control migration — hierarchical work packages with dependencies",
+      "should_trigger": true,
+      "category": "positive-wbs"
+    },
+    {
+      "id": "pos-06",
+      "query": "Plan the PR sequence for the schema migration — expand-contract with a feature flag, rollback at each step",
+      "should_trigger": true,
+      "category": "positive-pr-sequencing"
+    },
+    {
+      "id": "pos-07",
+      "query": "How do I sequence the work for replacing our legacy auth — strangler-fig with rollback per slice",
+      "should_trigger": true,
+      "category": "positive-strangler-plan"
+    },
+    {
+      "id": "pos-08",
+      "query": "Story-map this onboarding feature into release slices",
+      "should_trigger": true,
+      "category": "positive-story-map"
+    },
+    {
+      "id": "pos-09",
+      "query": "I need a development plan but the PRD is still being finalised — give me a lite version with sequencing + spikes only",
+      "should_trigger": true,
+      "category": "positive-lite-plan"
+    },
+    {
+      "id": "neg-01",
+      "query": "Implement the discount-code redemption logic in Go",
+      "should_trigger": false,
+      "category": "negative-implementation",
+      "notes": "Coding = software-developer."
+    },
+    {
+      "id": "neg-02",
+      "query": "Write the PRD for our new payments feature",
+      "should_trigger": false,
+      "category": "negative-prd-authoring",
+      "notes": "PRD = prd-writer skill."
+    },
+    {
+      "id": "neg-03",
+      "query": "Write the test plan for the v2.5 release",
+      "should_trigger": false,
+      "category": "negative-test-plan",
+      "notes": "Test plan = test-plan skill / quality-engineer."
+    },
+    {
+      "id": "neg-04",
+      "query": "Design the architecture for the fraud-detection service",
+      "should_trigger": false,
+      "category": "negative-architecture"
+    },
+    {
+      "id": "neg-05",
+      "query": "Review this PR for code quality issues",
+      "should_trigger": false,
+      "category": "negative-pr-review"
+    },
+    {
+      "id": "neg-06",
+      "query": "Draft the threat model for the new external API",
+      "should_trigger": false,
+      "category": "negative-threat-model"
+    },
+    {
+      "id": "neg-07",
+      "query": "Write an ADR for choosing Postgres over DynamoDB",
+      "should_trigger": false,
+      "category": "negative-adr-authoring"
+    },
+    {
+      "id": "neg-08",
+      "query": "Plan our roadmap for the next quarter across five features",
+      "should_trigger": false,
+      "category": "negative-roadmap",
+      "notes": "Cross-feature quarterly roadmap = product / engineering management; this skill scopes one approved feature."
+    },
+    {
+      "id": "edge-01",
+      "query": "Build a release readiness plan for v2.5 — same structure as a dev plan but condensed for go/no-go",
+      "should_trigger": false,
+      "category": "edge-release-readiness",
+      "notes": "Release readiness checklist = test-plan skill variant, not development-plan."
+    },
+    {
+      "id": "edge-02",
+      "query": "Write the development plan for our medical-device feature per IEC 62304 — include traceability fields per the regulation",
+      "should_trigger": true,
+      "category": "edge-regulated"
+    },
+    {
+      "id": "edge-03",
+      "query": "I want a plan but I only have user stories, no tech-spec — can you still produce a development plan or do I need to wait?",
+      "should_trigger": true,
+      "category": "edge-missing-techspec",
+      "notes": "Skill should fire, state that tech-spec is required for full plan, propose lite-plan stub."
+    }
+  ]
+}

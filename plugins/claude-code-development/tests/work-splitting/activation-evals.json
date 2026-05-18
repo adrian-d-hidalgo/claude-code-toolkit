@@ -1,0 +1,134 @@
+{
+  "kind": "skill",
+  "skill": "work-splitting",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-17",
+  "notes": "Positive: explicit splitting requests across work-item types (story / task / bug / spike / chore / enabler), named techniques (SPIDR / Lawrence / Hamburger / Carpaccio), Spanish triggers. Negative: implement code, write the PRD, full development plan, code review, ADR authoring. Edge: spike-only task that should not be split further; story that already passes INVEST.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Split this story — it's too big for one sprint. Title: User completes multi-step checkout with discount codes and multiple payment methods",
+      "should_trigger": true,
+      "category": "positive-explicit-split"
+    },
+    {
+      "id": "pos-02",
+      "query": "Divide esta tarea en sub-tareas que cada una entregue valor",
+      "should_trigger": true,
+      "category": "positive-spanish"
+    },
+    {
+      "id": "pos-03",
+      "query": "Apply SPIDR to break down this work — there's an unknown about whether pgvector can handle our scale",
+      "should_trigger": true,
+      "category": "positive-spidr"
+    },
+    {
+      "id": "pos-04",
+      "query": "Use the hamburger method to slice this feature into vertical end-to-end increments",
+      "should_trigger": true,
+      "category": "positive-hamburger"
+    },
+    {
+      "id": "pos-05",
+      "query": "This bug fix is too big — split it into smaller deliverable pieces",
+      "should_trigger": true,
+      "category": "positive-bug-split"
+    },
+    {
+      "id": "pos-06",
+      "query": "Vertically slice this epic — each slice should ship something usable",
+      "should_trigger": true,
+      "category": "positive-vertical-slice"
+    },
+    {
+      "id": "pos-07",
+      "query": "Elephant carpaccio this work — I want 8 thin slices for tomorrow's demo",
+      "should_trigger": true,
+      "category": "positive-carpaccio"
+    },
+    {
+      "id": "pos-08",
+      "query": "Break this enabler into smaller pieces, each ≤ S estimate",
+      "should_trigger": true,
+      "category": "positive-enabler-split"
+    },
+    {
+      "id": "pos-09",
+      "query": "Aplicar Lawrence pattern para dividir esta historia — es un workflow de 5 pasos",
+      "should_trigger": true,
+      "category": "positive-lawrence-workflow"
+    },
+    {
+      "id": "neg-01",
+      "query": "Implement the discount-redeem logic in Go",
+      "should_trigger": false,
+      "category": "negative-implementation",
+      "notes": "Implementation = software-developer."
+    },
+    {
+      "id": "neg-02",
+      "query": "Write the PRD for the multi-step checkout feature",
+      "should_trigger": false,
+      "category": "negative-prd-authoring"
+    },
+    {
+      "id": "neg-03",
+      "query": "Give me the full development plan for this PRD — triage + plan + sub-tasks",
+      "should_trigger": false,
+      "category": "negative-full-plan",
+      "notes": "Full plan = development-plan + tech-lead; work-splitting fires only when an item is already known to be too big."
+    },
+    {
+      "id": "neg-04",
+      "query": "Review this PR and identify code quality issues",
+      "should_trigger": false,
+      "category": "negative-pr-review"
+    },
+    {
+      "id": "neg-05",
+      "query": "Write an ADR for choosing event-sourcing over CRUD",
+      "should_trigger": false,
+      "category": "negative-adr"
+    },
+    {
+      "id": "neg-06",
+      "query": "Analyse why our checkout is failing in production — root cause analysis",
+      "should_trigger": false,
+      "category": "negative-bug-analysis",
+      "notes": "RCA = bug-analysis skill. work-splitting fires AFTER the bug is understood and the fix is being decomposed."
+    },
+    {
+      "id": "neg-07",
+      "query": "Design the architecture for the new fraud-detection service",
+      "should_trigger": false,
+      "category": "negative-architecture"
+    },
+    {
+      "id": "neg-08",
+      "query": "Write the test plan for the upcoming release",
+      "should_trigger": false,
+      "category": "negative-test-plan"
+    },
+    {
+      "id": "edge-01",
+      "query": "Should I split this spike? It's a 2-day investigation",
+      "should_trigger": true,
+      "category": "edge-spike-already-small",
+      "notes": "Skill should fire, evaluate, and likely say 'no — this is already S and is a spike with an exit criterion; splitting adds overhead'."
+    },
+    {
+      "id": "edge-02",
+      "query": "This story passes INVEST and is sized S — but my PM wants 'smaller pieces'. Should I split anyway?",
+      "should_trigger": true,
+      "category": "edge-already-invest",
+      "notes": "Skill fires, validates against triggers, and pushes back if no trigger applies."
+    },
+    {
+      "id": "edge-03",
+      "query": "Help me decompose this large epic into smaller pieces using whichever technique fits",
+      "should_trigger": true,
+      "category": "edge-technique-agnostic"
+    }
+  ]
+}

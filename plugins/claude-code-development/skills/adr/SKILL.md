@@ -1,10 +1,8 @@
 ---
 name: adr
-description: Writes Architecture Decision Records (ADRs) following Michael Nygard's canonical 2011 format. Use when the user asks for "ADR", "architecture decision record", "decision record", "registro de decisión", "design decision doc", "RFC for [architecture change]", or wants to document a technical choice for future reference. Each ADR captures one decision with status, context, decision, and consequences. Numbers ADRs sequentially. Does not cover open-ended exploration (write an RFC first), requirement gathering, or PRDs — ADRs document decisions already taken or about to be taken.
+description: Use when the user asks to write, draft, capture, supersede, or document an Architecture Decision Record. Trigger phrases include "ADR", "architecture decision record", "decision record", "registro de decisión", "design decision doc", "RFC for [architecture change]", "document this decision", "supersede ADR-NNNN", "write the decision for [X]".
 allowed-tools:
   - Read
-  - Write
-  - Edit
   - Grep
   - Glob
   - Bash(ls *)
@@ -12,7 +10,7 @@ allowed-tools:
 
 # ADR skill
 
-Produces Architecture Decision Records using Michael Nygard's canonical format. Each ADR captures **one** architecturally significant decision in a way that survives team turnover and helps future readers understand why the system is the way it is.
+Produces Architecture Decision Record **content** using Michael Nygard's canonical format. Each ADR captures **one** architecturally significant decision in a way that survives team turnover and helps future readers understand why the system is the way it is. The output is content the caller persists wherever (a file under `docs/adr/`, a wiki page, an attachment to a design review). The skill does **not** write files — caller decides storage and naming.
 
 ## Methodology anchor
 

@@ -1,17 +1,15 @@
 ---
 name: test-plan
-description: Writes test plans following the ISO/IEC/IEEE 29119-3:2021 structure with risk-based prioritization anchored to ISO/IEC 25010:2023 quality attributes. Use when the user asks for "test plan", "plan de pruebas", "QA plan", "test strategy doc", "test approach", "test scope", "release test plan", or "what do we test for [feature/release]?". Covers test scope, approach, environments, schedule, deliverables, entry / exit criteria, and risk-based coverage. Produces a homologated, reusable structure across features and releases. Does not cover organization-level test strategy (test pyramid, framework choice, CI gates, mutation strategy) — those decisions live elsewhere; the plan references them. Also does not implement tests.
+description: Use when the user asks to write, draft, or scope a test plan for a specific feature, release, or system change. Trigger phrases include "test plan", "plan de pruebas", "QA plan", "test strategy doc", "test approach", "test scope", "release test plan", "what do we test for [feature/release]?", "lite test plan", "release readiness checklist".
 allowed-tools:
   - Read
-  - Write
-  - Edit
   - Grep
   - Glob
 ---
 
 # Test plan skill
 
-Produces test plans that are consistent in structure across features and releases. The structure is **ISO/IEC/IEEE 29119-3:2021** (Test plan documentation); risk-based prioritization follows the **ISTQB Foundation Level 4.0** body of knowledge; quality attributes come from **ISO/IEC 25010:2023**. Homologation matters: every test plan in the org should look the same so reviewers find what they need without hunting.
+Produces test plan **content** that is consistent in structure across features and releases. The structure is **ISO/IEC/IEEE 29119-3:2021** (Test plan documentation); risk-based prioritization follows the **ISTQB Foundation Level 4.0** body of knowledge; quality attributes come from **ISO/IEC 25010:2023**. Homologation matters: every test plan in the org should look the same so reviewers find what they need without hunting. Output is content the caller persists wherever (file, ticket, wiki). The skill does **not** write files — caller decides storage and naming.
 
 ## Methodology anchor
 

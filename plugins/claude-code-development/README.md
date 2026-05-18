@@ -1,6 +1,6 @@
 # claude-code-development
 
-Opinionated senior **engineering team** for Claude Code. Five role-specific sub-agents (developer, architect, code reviewer, quality engineer, security engineer) plus four methodology-anchored skills (ADR, test plan, git commit messages, Mermaid diagrams) — wired together so the right artifact shows up at the right moment.
+Opinionated senior **engineering team** for Claude Code. Six role-specific sub-agents (developer, architect, tech lead, code reviewer, quality engineer, security engineer) plus **twelve methodology-anchored skills** (ADR, test plan, development plan, work-splitting, bug-analysis, threat-model, tech-spec, debugging-protocol, code-audit, code-review-checklist, git-commit, Mermaid diagrams). The agents are **composable LEGO pieces** — they emit content, not files; they suggest consults, never invoke other agents; orchestration lives in the caller's `CLAUDE.md` / `AGENTS.md`. Single-responsibility scope, least-privilege tooling, no `Status:` fields imposed.
 
 ## What it ships
 
@@ -10,28 +10,52 @@ Opinionated senior **engineering team** for Claude Code. Five role-specific sub-
 | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `software-developer` | The user asks to write, modify, refactor, debug, implement, or fix code. Includes a large-change batching protocol for migrations, cross-module refactors, and rewrites.                                                                                                           |
 | `software-architect` | The user asks to design a new system, evaluate architectural shapes (monolith / modular-monolith / microservices / serverless), choose data store or API protocol, draw C4, plan modernization (strangler-fig, branch-by-abstraction, parallel-run), define NFRs, or produce ADRs. |
+| `tech-lead`          | The user asks to turn an approved PRD + tech-spec + ADRs into an executable development plan: ordered tasks with dependencies, PR sequencing, time-boxed spikes for unknowns, and a Definition of Done per task tied to acceptance criteria.                                       |
 | `code-reviewer`      | The user asks to review, audit, evaluate, assess, or check existing code or a PR; identify tech debt; scrutinize AI-generated code. Runs analyzers before forming an opinion; uses Conventional Comments severity.                                                                 |
 | `quality-engineer`   | The user asks for a test strategy, layer plan, E2E plan with Playwright, contract tests with Pact, performance with k6, chaos plan, quality gates, AC traceability matrix. Anchors to ISO 25010 attributes; reasons in risk, not coverage %.                                       |
 | `security-engineer`  | The user asks for threat modeling (STRIDE), AuthN/AuthZ design, OWASP review (web / API / LLM / Agentic), encryption + key management, compliance scoping (SOC2 / GDPR / HIPAA / PCI / EU AI Act), VEX drafting, security code review.                                             |
 
 ### Skills (methodology-anchored, bundled in this plugin)
 
-| Skill        | Methodology anchor                                                                                                                                    | When it fires                                                                                                                                                                                                       |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `adr`        | Michael Nygard's canonical ADR (2011) + MADR 3.0 extension                                                                                            | "write an ADR", "decision record", "RFC for [decision]". **Preloaded** in `software-architect`.                                                                                                                     |
-| `test-plan`  | ISO/IEC/IEEE 29119-3:2021 + ISTQB FL 4.0 risk-based testing + ISO 25010:2023 quality attributes                                                       | "test plan", "QA plan", "release test plan", "plan de pruebas". **Preloaded** in `quality-engineer`.                                                                                                                |
-| `git-commit` | Conventional Commits 1.0.0 + diff-first + log-first protocol + repo-aware format detection                                                            | "commit message", "commit msg please", "draft a commit subject", squash-mode for collapsing a branch. **Runtime discovery** — not preloaded.                                                                        |
-| `mermaid`    | Mermaid syntax with per-type notation anchors (C4 by Simon Brown; UML 2.5.1; ER Chen + Crow's Foot; BPMN; etc.). 17 per-diagram-type reference files. | "draw / visualize / create a diagram", named types (flowchart, sequence, ER, state, class, C4, journey, gantt, mindmap, timeline, sankey, quadrant, gitgraph, architecture). **Preloaded** in `software-architect`. |
+| Skill                   | Methodology anchor                                                                                                                                        | When it fires                                                                                                                                                         |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `adr`                   | Michael Nygard's canonical ADR (2011) + MADR 3.0 extension                                                                                                | "write an ADR", "decision record", "RFC for [decision]". **Preloaded** on `software-architect`.                                                                       |
+| `test-plan`             | ISO/IEC/IEEE 29119-3:2021 + ISTQB FL 4.0 risk-based testing + ISO 25010:2023 quality attributes                                                           | "test plan", "QA plan", "release test plan". **Preloaded** on `quality-engineer`.                                                                                     |
+| `development-plan`      | GitHub spec-kit + Story Mapping (Patton 2014) + Vertical Slicing (Cohn / INVEST) + WBS (PMBOK 7) + SAFe 6.0 (Direct Value vs Enabler) + expand–contract   | "development plan", "implementation plan", "plan de desarrollo", "break this spec into tasks". **Preloaded** on `tech-lead`.                                          |
+| `work-splitting`        | Lawrence patterns (2009) + Cohn SPIDR (~2017) + Adzic Hamburger Method (~2013) + Cockburn Elephant Carpaccio (~2013) + Denne MMF (2004) + Wake INVEST     | "split this story / task / bug", "this is too big", "vertical slice this", "SPIDR", "hamburger method", "elephant carpaccio". **Preloaded** on `tech-lead`.           |
+| `bug-analysis`          | 5 Whys (Toyoda / Ohno) + Ishikawa Fishbone (1968) + Fault Tree Analysis (Bell Labs 1962) + Blameless Postmortem (Allspaw 2012 + Google SRE 2016) + Pareto | "analyse this bug", "root cause", "post-mortem", "RCA", "5 whys", "fishbone". **Preloaded** on `tech-lead`; runtime on `software-developer` + `security-engineer`.    |
+| `threat-model`          | STRIDE (Howard & Lipner 2002) + PASTA (UcedaVelez 2015) + DREAD qualitative + Trust Boundaries (Shostack 2014) + Attack Trees (Schneier 1999)             | "threat model", "STRIDE", "PASTA", "attack tree", "modelo de amenazas". **Preloaded** on `security-engineer`; runtime on `software-architect` + `software-developer`. |
+| `tech-spec`             | C4 model (Brown) + arc42 + IEEE 1016-2009 + Google design-doc convention + RFC 2119 + Well-Architected pillars                                            | "tech spec", "design doc", "RFC for [system change]", "documento técnico". **Preloaded** on `software-architect`.                                                     |
+| `debugging-protocol`    | Hypothesis-driven debugging (Zeller 2009) + Delta Debugging (Zeller / Hildebrandt 1999) + git bisect + Observability-First (Majors 2022)                  | "debug this", "investigate the [perf/intermittent/mystery] issue", "find the regression", "git bisect this". **Runtime** on `software-developer`.                     |
+| `code-audit`            | Conventional Comments + Impact × Effort 2×2 + SQALE (Letouzey 2010) + Fowler code smells (2018) + Architecture Fitness Functions (Ford 2017)              | "audit our codebase", "tech-debt analysis", "code smells in", "SQALE assessment". **Preloaded** on `code-reviewer`.                                                   |
+| `code-review-checklist` | Google Engineering Practices Code Review (2019) + Wiegers Peer Reviews (2002) + OWASP Code Review Guide v2 (2017) + SmartBear empirical practice          | "review this PR", "code review", "is this safe to merge", "review the diff". **Preloaded** on `code-reviewer`.                                                        |
+| `git-commit`            | Conventional Commits 1.0.0 + diff-first + log-first protocol + repo-aware format detection                                                                | "commit message", "commit msg please", "draft a commit subject". **Runtime** on `software-developer`.                                                                 |
+| `mermaid`               | Mermaid syntax with per-type notation anchors (C4 by Brown; UML 2.5.1; ER Chen + Crow's Foot; etc.). 17 per-diagram-type references                       | "draw / visualize / create a diagram". **Preloaded** on `software-architect`.                                                                                         |
 
 ### Skill wiring (preload vs runtime)
 
-| Agent                | Preloaded skills | Runtime-only skills                                       |
-| -------------------- | ---------------- | --------------------------------------------------------- |
-| `software-architect` | `adr`, `mermaid` | —                                                         |
-| `quality-engineer`   | `test-plan`      | —                                                         |
-| `software-developer` | —                | `git-commit` (used when committing — on-demand by design) |
-| `code-reviewer`      | —                | —                                                         |
-| `security-engineer`  | —                | —                                                         |
+| Agent                | Preloaded skills                                     | Runtime-available skills                                           |
+| -------------------- | ---------------------------------------------------- | ------------------------------------------------------------------ |
+| `tech-lead`          | `development-plan`, `work-splitting`, `bug-analysis` | —                                                                  |
+| `software-architect` | `adr`, `mermaid`, `tech-spec`                        | `threat-model` (when designing security-sensitive surface)         |
+| `code-reviewer`      | `code-review-checklist`, `code-audit`                | —                                                                  |
+| `quality-engineer`   | `test-plan`                                          | `work-splitting`, `bug-analysis`                                   |
+| `security-engineer`  | `threat-model`                                       | `bug-analysis`, `work-splitting`                                   |
+| `software-developer` | —                                                    | `bug-analysis`, `debugging-protocol`, `threat-model`, `git-commit` |
+
+Preload injects the full skill body into the agent's system prompt at startup (deterministic, paid every invocation). Runtime invocation loads via the `Skill` tool only when the agent decides to use it (paid only when used). The choice follows the "always vs sometimes" rule documented in `claude-code-core/skills/claude-code-skill/references/section-guide.md`.
+
+### Transversal practices (apply to every agent in the team)
+
+These are baked into all six agents — no project's `CLAUDE.md` should have to re-specify them:
+
+- **Evidence levels** — every recommendation / finding / decision tagged `[Verified]` / `[Inference]` / `[Unverified]` with source citation. Convention: [`references/evidence-rule.md`](./references/evidence-rule.md).
+- **Code-grounded analysis** — agents read the actual repo before producing outputs. Every file / module / symbol named in the output exists in the repo or is tagged `to create`. No invented names.
+- **Output shape varies with the ask** — agents emit only what was asked. The "Reporting format" lists are the _maximal_ shape; one-section requests get one-section outputs.
+- **No silent drift** — when reality contradicts the spec / plan / prior decision, surface the contradiction; never paper over.
+- **Outputs are content, never files** — agents emit structured content the caller persists wherever (exception: `software-developer` writes code, which is its job). No filenames or paths imposed.
+- **No `Status:` fields** in any output — lifecycle tracking is the project's tracker (Jira / Linear / Notion), out of scope for the agents.
+- **No agent invokes another** — agents suggest consults; orchestration is the caller's `CLAUDE.md` / `AGENTS.md` job.
 
 Preload injects the full skill body into the agent's system prompt at startup (deterministic, paid every invocation). Runtime discovery loads via the `Skill` tool only when the agent decides to invoke it (paid only when used). The choice follows the "always vs sometimes" rule documented in `claude-code-core/skills/claude-code-skill/references/section-guide.md`.
 
@@ -42,6 +66,7 @@ Preload injects the full skill body into the agent's system prompt at startup (d
 Each agent declines work that has no component for its role:
 
 - `software-architect` declines pure code implementation, deep code review, or runtime SLO operation.
+- `tech-lead` declines product-requirements authoring, architecture decisions, implementation, test-plan authoring, threat modeling, code review, sprint capacity planning, and cross-feature roadmap work.
 - `code-reviewer` declines net-new feature authoring, test strategy design, threat modeling.
 - `quality-engineer` declines routine unit-test implementation (developer does it once the strategy is set).
 - `security-engineer` declines mitigation implementation, runtime SOC operation, foundational cloud-account / IAM provisioning.
@@ -88,8 +113,8 @@ Explicit invocation also works:
 
 Each agent and skill ships an activation-test corpus under `tests/<name>/activation-evals.json`:
 
-- `tests/software-developer/`, `tests/software-architect/`, `tests/code-reviewer/`, `tests/quality-engineer/`, `tests/security-engineer/` — 23-27 cases each (positive / negative / edge).
-- `tests/adr/`, `tests/test-plan/`, `tests/git-commit/`, `tests/mermaid/` — 19 cases each (8 positive / 8 negative / 3 edge).
+- **Agent corpora** (6): `tech-lead`, `software-architect`, `code-reviewer`, `quality-engineer`, `security-engineer`, `software-developer` — 19–27 cases each (positive / negative / edge).
+- **Skill corpora** (12): `adr`, `test-plan`, `development-plan`, `work-splitting`, `bug-analysis`, `threat-model`, `tech-spec`, `debugging-protocol`, `code-audit`, `code-review-checklist`, `git-commit`, `mermaid` — 19–21 cases each.
 
 Run all corpora against your local `claude` binary:
 

@@ -1,0 +1,125 @@
+{
+  "kind": "skill",
+  "skill": "debugging-protocol",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-17",
+  "notes": "Positive: in-the-moment investigation requests (perf issue, intermittent, mystery bug, regression). Negative: post-incident RCA (→ bug-analysis), implementation, code review, threat model. Edge: investigation where root cause is found mid-stream (→ hand to bug-analysis); flaky test debugging.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Why is our /checkout endpoint slow today? Investigate",
+      "should_trigger": true,
+      "category": "positive-perf-issue"
+    },
+    {
+      "id": "pos-02",
+      "query": "Debug this intermittent 504 — happens for ~3% of requests",
+      "should_trigger": true,
+      "category": "positive-intermittent"
+    },
+    {
+      "id": "pos-03",
+      "query": "Find the regression — auth-svc was working last week, broken now. Git bisect",
+      "should_trigger": true,
+      "category": "positive-git-bisect"
+    },
+    {
+      "id": "pos-04",
+      "query": "Mystery bug: works on my machine but fails in staging. Help me investigate",
+      "should_trigger": true,
+      "category": "positive-mystery"
+    },
+    {
+      "id": "pos-05",
+      "query": "Structured debugging on this race condition — hypothesis-driven approach please",
+      "should_trigger": true,
+      "category": "positive-hypothesis-driven"
+    },
+    {
+      "id": "pos-06",
+      "query": "Depura esto — el endpoint está fallando intermitentemente y no sé por qué",
+      "should_trigger": true,
+      "category": "positive-spanish"
+    },
+    {
+      "id": "pos-07",
+      "query": "I have a 50MB JSON file that crashes our parser — help me minimise it (delta debugging)",
+      "should_trigger": true,
+      "category": "positive-delta-debugging"
+    },
+    {
+      "id": "pos-08",
+      "query": "Performance regression after the v1.42 deploy — locate the commit and the cause",
+      "should_trigger": true,
+      "category": "positive-perf-regression"
+    },
+    {
+      "id": "neg-01",
+      "query": "Write the RCA for the outage we resolved yesterday — root cause is already known",
+      "should_trigger": false,
+      "category": "negative-post-incident-rca",
+      "notes": "Post-incident RCA = bug-analysis; debugging-protocol fires only while cause is unknown."
+    },
+    {
+      "id": "neg-02",
+      "query": "Implement the fix for the discount-leak bug",
+      "should_trigger": false,
+      "category": "negative-implementation"
+    },
+    {
+      "id": "neg-03",
+      "query": "Review this PR — does it introduce any obvious bugs?",
+      "should_trigger": false,
+      "category": "negative-pr-review"
+    },
+    {
+      "id": "neg-04",
+      "query": "Threat-model the new payment integration",
+      "should_trigger": false,
+      "category": "negative-threat-model"
+    },
+    {
+      "id": "neg-05",
+      "query": "Design the architecture for a fraud-detection service",
+      "should_trigger": false,
+      "category": "negative-architecture"
+    },
+    {
+      "id": "neg-06",
+      "query": "Split this bug-fix task into smaller pieces — it's too big for one PR",
+      "should_trigger": false,
+      "category": "negative-work-splitting"
+    },
+    {
+      "id": "neg-07",
+      "query": "Write the test plan for the upcoming release",
+      "should_trigger": false,
+      "category": "negative-test-plan"
+    },
+    {
+      "id": "neg-08",
+      "query": "Document this bug we found — write up a Jira ticket description",
+      "should_trigger": false,
+      "category": "negative-documentation"
+    },
+    {
+      "id": "edge-01",
+      "query": "I think I found the cause mid-investigation — should I keep digging or hand off?",
+      "should_trigger": true,
+      "category": "edge-mid-investigation-handoff",
+      "notes": "Skill fires; output instructs handing to bug-analysis once root cause is confirmed."
+    },
+    {
+      "id": "edge-02",
+      "query": "Debug this flaky test — fails ~10% of the time, no clear reason",
+      "should_trigger": true,
+      "category": "edge-flaky-test"
+    },
+    {
+      "id": "edge-03",
+      "query": "We have a customer-reported bug but can't reproduce it locally — help",
+      "should_trigger": true,
+      "category": "edge-non-reproducible-customer-report"
+    }
+  ]
+}

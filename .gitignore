@@ -10,18 +10,30 @@
 # stay in git; results are transient and reproduced by re-running the harness.
 .eval-runs/
 
-# Future baseline lives at .eval-baseline.json (committed when promoted).
+# The baseline (.eval-baseline.json) at repo root IS committed when promoted.
 
 # Python
 __pycache__/
 *.pyc
 *.pyo
-.venv/
-venv/
+*.pyd
+.venv*/
+venv*/
 .mypy_cache/
 .pytest_cache/
+.ruff_cache/
+
+# Secrets — never commit any of these
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
 
 # IDE / editor noise
 .vscode/
 .idea/
 *.swp
+*.swo
+*~

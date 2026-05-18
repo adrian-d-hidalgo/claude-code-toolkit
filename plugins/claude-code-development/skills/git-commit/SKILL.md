@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Drafts, proposes, suggests, generates, recommends, composes, optimizes, improves, refines, reviews, critiques, or rewrites the text of git commit messages — subjects and bodies — following Conventional Commits 1.0.0. Use when the user asks for a commit message, a commit subject, a commit body, a commit msg, "what should the commit message say", "what to put as the commit subject", or refers to the commit message elliptically ("commit subject for this change", "commit msg please"). Applies even when nothing is staged, when the request is hypothetical, when the language for the proposal is specified, or when combined with execution intent — produces only the message text, not the commit itself.
+description: Use when the user asks to draft, propose, suggest, generate, compose, optimize, improve, refine, review, critique, or rewrite the text of a git commit message — subject or body. Trigger phrases include "commit message", "commit subject", "commit body", "commit msg please", "what should the commit message say", "what to put as the commit subject", "mensaje del squash", "mensaje para el commit", and elliptical references. Applies for staged, hypothetical, or prospective changes.
 allowed-tools:
   - Read
   - Bash(git status:*)

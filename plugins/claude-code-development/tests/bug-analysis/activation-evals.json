@@ -1,0 +1,135 @@
+{
+  "kind": "skill",
+  "skill": "bug-analysis",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-17",
+  "notes": "Positive: RCA requests, 'root cause of', 'post-mortem', 'analiza este bug', '5 whys', 'fishbone', 'find the introducing commit'. Negative: implement the fix, design the fix architecturally, write the test that catches it, full code review. Edge: non-reproducible bug; security-incident RCA; in-the-moment debugging (→ debugging-protocol).",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Analyse this bug — checkout returned 500 errors for 12 minutes yesterday",
+      "should_trigger": true,
+      "category": "positive-explicit-analysis"
+    },
+    {
+      "id": "pos-02",
+      "query": "What's the root cause of the auth-service outage at 14:00?",
+      "should_trigger": true,
+      "category": "positive-root-cause"
+    },
+    {
+      "id": "pos-03",
+      "query": "Write a post-mortem for the discount-redeem-v2 incident",
+      "should_trigger": true,
+      "category": "positive-postmortem"
+    },
+    {
+      "id": "pos-04",
+      "query": "Analiza este bug que apareció en producción ayer",
+      "should_trigger": true,
+      "category": "positive-spanish"
+    },
+    {
+      "id": "pos-05",
+      "query": "Run 5 whys on the connection-pool exhaustion incident",
+      "should_trigger": true,
+      "category": "positive-5-whys"
+    },
+    {
+      "id": "pos-06",
+      "query": "Apply Ishikawa / fishbone to enumerate contributing factors for the checkout double-charge bug",
+      "should_trigger": true,
+      "category": "positive-ishikawa"
+    },
+    {
+      "id": "pos-07",
+      "query": "Find the introducing commit for this bug — it was introduced sometime in the last 2 weeks",
+      "should_trigger": true,
+      "category": "positive-introducing-commit"
+    },
+    {
+      "id": "pos-08",
+      "query": "Necesito un RCA blameless del incidente de ayer",
+      "should_trigger": true,
+      "category": "positive-blameless-rca-spanish"
+    },
+    {
+      "id": "pos-09",
+      "query": "Por qué está fallando el endpoint /checkout intermitentemente?",
+      "should_trigger": true,
+      "category": "positive-why-failing"
+    },
+    {
+      "id": "neg-01",
+      "query": "Implement the fix for this bug",
+      "should_trigger": false,
+      "category": "negative-implementation",
+      "notes": "Implementation = software-developer; bug-analysis precedes the fix."
+    },
+    {
+      "id": "neg-02",
+      "query": "Write the regression test that would have caught this bug",
+      "should_trigger": false,
+      "category": "negative-test-implementation",
+      "notes": "Test implementation = developer; bug-analysis recommends the test, doesn't write it."
+    },
+    {
+      "id": "neg-03",
+      "query": "Design the architecture for a more resilient auth service",
+      "should_trigger": false,
+      "category": "negative-architecture"
+    },
+    {
+      "id": "neg-04",
+      "query": "Review this PR for code quality",
+      "should_trigger": false,
+      "category": "negative-pr-review"
+    },
+    {
+      "id": "neg-05",
+      "query": "Write the PRD for the next iteration of checkout",
+      "should_trigger": false,
+      "category": "negative-prd-authoring"
+    },
+    {
+      "id": "neg-06",
+      "query": "Debug this — I'm seeing intermittent slowness but I don't know where",
+      "should_trigger": false,
+      "category": "negative-live-debugging",
+      "notes": "Live in-the-moment debugging = debugging-protocol. bug-analysis comes after the cause is found."
+    },
+    {
+      "id": "neg-07",
+      "query": "Threat-model the auth flow",
+      "should_trigger": false,
+      "category": "negative-threat-model"
+    },
+    {
+      "id": "neg-08",
+      "query": "Split this bug-fix task into smaller deliverable pieces",
+      "should_trigger": false,
+      "category": "negative-work-splitting"
+    },
+    {
+      "id": "edge-01",
+      "query": "We have a non-reproducible bug — can you still produce a useful analysis?",
+      "should_trigger": true,
+      "category": "edge-non-reproducible",
+      "notes": "Skill fires; analysis explicitly states 'non-reproducible at present' and recommends instrumentation + reproduction-pursuit actions."
+    },
+    {
+      "id": "edge-02",
+      "query": "RCA for a security incident — credential leak in the logs",
+      "should_trigger": true,
+      "category": "edge-security-incident",
+      "notes": "Skill fires for the technical RCA portion; security-engineer leads the broader incident response."
+    },
+    {
+      "id": "edge-03",
+      "query": "I just found a typo in an error string — do we need an RCA?",
+      "should_trigger": true,
+      "category": "edge-trivial",
+      "notes": "Skill fires and pushes back: trivial bugs are exempt with rationale; suggest skipping the full RCA for this one."
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "kind": "subagent",
   "agent": "security-engineer",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "snapshot_date": "2026-05-16",
   "notes": "Positive: threat modeling (STRIDE), AuthN/AuthZ design, OWASP review (web/API/LLM/Agentic), encryption + key management strategy, secret-management policy, compliance scoping (SOC2/GDPR/HIPAA/PCI/EU AI Act), vulnerability response and VEX drafting, security review of code, AI/LLM security. Negative: implementing the mitigation, CI pipeline plumbing, cloud-account/IAM provisioning, runtime SIEM ops, physical/HR security, or meta-component edits. Edge: code review with a security focus; LLM features that mix product + security.",
   "cases": [
@@ -145,6 +145,18 @@
       "should_trigger": true,
       "category": "edge-architectural-security-question",
       "ambiguous": true
+    },
+    {
+      "id": "pos-11",
+      "query": "Just give me the VEX statement for CVE-2024-9876 in our axios dep — nothing else",
+      "should_trigger": true,
+      "category": "positive-output-shape-varies"
+    },
+    {
+      "id": "pos-12",
+      "query": "Read the auth-service code and tell me whether the rate-limit middleware claimed in the spec actually exists",
+      "should_trigger": true,
+      "category": "positive-code-grounded-control-verification"
     }
   ]
 }

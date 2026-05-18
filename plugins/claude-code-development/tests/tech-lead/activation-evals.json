@@ -1,0 +1,178 @@
+{
+  "kind": "subagent",
+  "agent": "tech-lead",
+  "version": "1.1.0",
+  "snapshot_date": "2026-05-17",
+  "notes": "Positive: prompts asking to break a PRD/tech-spec into an executable development plan, sequence PRs for a migration, define spikes, build a traceability matrix from AC to tasks, plan rollout with feature flags, lay out task dependencies. Negative: write code, write the PRD, write the test plan, write the tech-spec, run sprint planning (capacity allocation), review a PR. Edge: lite-plan requests, plans without an approved spec yet.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Break this approved PRD + tech-spec into an executable development plan — ordered tasks, dependencies, PR sequence, spikes, DoD per task",
+      "should_trigger": true,
+      "category": "positive-full-plan"
+    },
+    {
+      "id": "pos-02",
+      "query": "Necesito el plan de desarrollo para el feature de checkout v2 a partir del PRD y la tech-spec aprobados",
+      "should_trigger": true,
+      "category": "positive-spanish-plan"
+    },
+    {
+      "id": "pos-03",
+      "query": "Turn this epic into a tasks.md — vertically sliced, with explicit dependencies and AC traceability",
+      "should_trigger": true,
+      "category": "positive-tasks-md"
+    },
+    {
+      "id": "pos-04",
+      "query": "Plan the rollout for the payments-redesign — which PRs merge first, where do we put feature flags, what's the canary sequence",
+      "should_trigger": true,
+      "category": "positive-pr-sequencing"
+    },
+    {
+      "id": "pos-05",
+      "query": "Build the traceability matrix mapping every acceptance criterion in this PRD to a task with a Definition of Done",
+      "should_trigger": true,
+      "category": "positive-traceability"
+    },
+    {
+      "id": "pos-06",
+      "query": "Identify the spikes we need before we can commit to the timeline for this migration — give me time-boxes and exit criteria",
+      "should_trigger": true,
+      "category": "positive-spike-identification"
+    },
+    {
+      "id": "pos-07",
+      "query": "What's the right sequencing strategy for this schema migration with live readers — expand-contract, flag, or strangler — and lay out the PR order",
+      "should_trigger": true,
+      "category": "positive-sequencing-strategy"
+    },
+    {
+      "id": "pos-08",
+      "query": "Decompose this large epic into vertical slices using story mapping; the feature is a multi-step onboarding journey",
+      "should_trigger": true,
+      "category": "positive-story-mapping"
+    },
+    {
+      "id": "pos-09",
+      "query": "Plan how we sequence the work for the auth-rewrite — strangler-fig, with rollback at every step",
+      "should_trigger": true,
+      "category": "positive-strangler-plan"
+    },
+    {
+      "id": "pos-10",
+      "query": "I have the PRD and the architecture decided — give me an implementation plan a developer can pick up tomorrow",
+      "should_trigger": true,
+      "category": "positive-handoff-plan"
+    },
+    {
+      "id": "neg-01",
+      "query": "Implement the discount-redeem-v2 service end-to-end based on the plan",
+      "should_trigger": false,
+      "category": "negative-implementation",
+      "notes": "Implementation = software-developer; plan is upstream."
+    },
+    {
+      "id": "neg-02",
+      "query": "Write the PRD for the checkout v2 feature",
+      "should_trigger": false,
+      "category": "negative-prd-authoring",
+      "notes": "PRD authoring = prd-writer skill / product-manager."
+    },
+    {
+      "id": "neg-03",
+      "query": "Write the test plan for the payments release",
+      "should_trigger": false,
+      "category": "negative-test-plan",
+      "notes": "Test plan = quality-engineer."
+    },
+    {
+      "id": "neg-04",
+      "query": "Design the architecture for the new fraud-detection service",
+      "should_trigger": false,
+      "category": "negative-architecture",
+      "notes": "Architecture = software-architect."
+    },
+    {
+      "id": "neg-05",
+      "query": "Review this PR and tell me what's blocking",
+      "should_trigger": false,
+      "category": "negative-pr-review",
+      "notes": "PR review = code-reviewer."
+    },
+    {
+      "id": "neg-06",
+      "query": "Run sprint planning — assign these tasks to engineers based on capacity for the next two weeks",
+      "should_trigger": false,
+      "category": "negative-sprint-planning",
+      "notes": "Capacity allocation = engineering manager / scrum master; plan is the *input* to sprint planning."
+    },
+    {
+      "id": "neg-07",
+      "query": "Draft the threat model for the new payment service",
+      "should_trigger": false,
+      "category": "negative-threat-model"
+    },
+    {
+      "id": "neg-08",
+      "query": "Write an ADR for choosing Postgres over DynamoDB",
+      "should_trigger": false,
+      "category": "negative-adr",
+      "notes": "ADR authoring = adr skill / software-architect."
+    },
+    {
+      "id": "edge-01",
+      "query": "Give me a lite development plan — the PRD is still being finalised but I need a sequencing strategy and spike list",
+      "should_trigger": true,
+      "category": "edge-lite-plan",
+      "notes": "Lite plan is an explicit supported variant when full spec isn't ready."
+    },
+    {
+      "id": "edge-02",
+      "query": "I have a tech-spec but no PRD yet — can you still produce a development plan?",
+      "should_trigger": true,
+      "category": "edge-missing-prd",
+      "notes": "Agent should fire and explicitly flag the missing PRD, not silently refuse."
+    },
+    {
+      "id": "edge-03",
+      "query": "Help me plan the order in which to ship these five features over the next quarter",
+      "should_trigger": false,
+      "category": "edge-roadmap",
+      "notes": "Cross-feature quarterly sequencing = product / engineering management, not per-feature dev plan."
+    },
+    {
+      "id": "pos-11",
+      "query": "Triagea esto antes de empezar a planear — ¿está listo el spec?",
+      "should_trigger": true,
+      "category": "positive-intake-triage-only",
+      "notes": "Triage-only output shape per the intake protocol."
+    },
+    {
+      "id": "pos-12",
+      "query": "Antes de proponer sub-tasks, lee el código de src/auth/ y dime qué tocaríamos",
+      "should_trigger": true,
+      "category": "positive-code-grounded"
+    },
+    {
+      "id": "pos-13",
+      "query": "Is this task DV or Enabler? Classify per SAFe and explain",
+      "should_trigger": true,
+      "category": "positive-dv-vs-enabler-classification"
+    },
+    {
+      "id": "pos-14",
+      "query": "Plan how we fix this production bug — start with root-cause analysis then sequence the fix",
+      "should_trigger": true,
+      "category": "positive-bug-intake",
+      "notes": "TL invokes bug-analysis during triage; then plans the fix."
+    },
+    {
+      "id": "pos-15",
+      "query": "Just emit the sub-tasks for this existing plan — I already have the strategy",
+      "should_trigger": true,
+      "category": "positive-sub-tasks-only",
+      "notes": "Output shape varies; sub-tasks only."
+    }
+  ]
+}

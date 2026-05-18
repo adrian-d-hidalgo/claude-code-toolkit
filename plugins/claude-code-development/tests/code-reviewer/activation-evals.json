@@ -1,7 +1,7 @@
 {
   "kind": "subagent",
   "agent": "code-reviewer",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "snapshot_date": "2026-05-16",
   "notes": "Positive: prompts asking to review, audit, evaluate, or assess existing code or a PR; identify tech debt; flag dependency hygiene; scrutinize AI-generated code. Negative: requests to write net-new features, design tests strategy, do threat modeling, plan architecture, or edit meta-component files. Edge: refactor requests that include 'review then change' phrasing, or audits that may overlap with quality / security.",
   "cases": [
@@ -147,6 +147,18 @@
       "should_trigger": true,
       "category": "edge-correctness-check",
       "notes": "Reviewing existing logic for correctness — in scope."
+    },
+    {
+      "id": "pos-11",
+      "query": "Just give me the worst issue in this PR — single highest-severity finding only",
+      "should_trigger": true,
+      "category": "positive-output-shape-varies"
+    },
+    {
+      "id": "pos-12",
+      "query": "Review this PR and read the surrounding callers in src/orders/ — don't just look at the diff in isolation",
+      "should_trigger": true,
+      "category": "positive-code-grounded-context"
     }
   ]
 }

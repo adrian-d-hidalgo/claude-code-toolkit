@@ -1,17 +1,15 @@
 ---
 name: mermaid
-description: Creates, designs, and recommends Mermaid diagrams. Use when the user asks for a diagram, flowchart, sequence diagram, ER diagram, state diagram, class diagram, C4 diagram, mindmap, Gantt, timeline, user journey, architecture diagram, or says "create a diagram", "draw", "visualize", "diagrama mermaid", "haz un flowchart", "diagrama de secuencia". Picks the optimal diagram type with rationale, generates valid Mermaid syntax by consulting the per-type reference for the chosen type, and recommends alternative tools (PlantUML, Excalidraw, draw.io) when Mermaid is the wrong fit. Handles Mermaid output only, not architectural design decisions.
+description: Use when the user asks to create, draw, design, or visualize a diagram — flowchart, sequence diagram, ER diagram, state diagram, class diagram, C4 diagram, mindmap, Gantt, timeline, user journey, quadrant, sankey, gitGraph, architecture diagram. Trigger phrases include "create a diagram", "draw", "visualize", "diagrama mermaid", "haz un flowchart", "diagrama de secuencia".
 allowed-tools:
   - Read
-  - Write
-  - Edit
   - Grep
   - Glob
 ---
 
 # mermaid skill
 
-Creates clear, focused Mermaid diagrams by **selecting the optimal type for the use case, consulting the per-type reference for valid syntax, and honestly flagging when Mermaid is not the right tool**. The reference files in `references/` are the source of truth for syntax — read the relevant one before authoring a diagram.
+Emits clear, focused Mermaid diagram **content** by selecting the optimal type for the use case, consulting the per-type reference for valid syntax, and honestly flagging when Mermaid is not the right tool. The reference files in `references/` are the source of truth for syntax — read the relevant one before authoring a diagram. Output is a Mermaid code block the caller embeds wherever (Markdown doc, MDX, Notion, wiki, GitHub issue). The skill does **not** write files.
 
 ## Scope and boundaries
 

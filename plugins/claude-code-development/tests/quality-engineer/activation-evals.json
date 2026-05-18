@@ -1,7 +1,7 @@
 {
   "kind": "subagent",
   "agent": "quality-engineer",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "snapshot_date": "2026-05-16",
   "notes": "Positive: prompts asking to design test strategy, plan layers (pyramid/trophy), plan E2E, contract tests, performance tests, chaos experiments, quality gates, traceability of acceptance criteria. Negative: implement routine unit tests for app code, do PR review, security threat model, CI pipeline plumbing, runtime SLO ops, or edit meta-component files. Edge: prompts that overlap with implementation or with SRE.",
   "cases": [
@@ -147,6 +147,18 @@
       "should_trigger": true,
       "category": "edge-coverage-strategy",
       "ambiguous": true
+    },
+    {
+      "id": "pos-11",
+      "query": "Just the traceability matrix AC → tests for this PRD — nothing else",
+      "should_trigger": true,
+      "category": "positive-output-shape-varies"
+    },
+    {
+      "id": "pos-12",
+      "query": "Read our existing test suite for the auth module and tell me where the gaps are",
+      "should_trigger": true,
+      "category": "positive-code-grounded-test-suite"
     }
   ]
 }

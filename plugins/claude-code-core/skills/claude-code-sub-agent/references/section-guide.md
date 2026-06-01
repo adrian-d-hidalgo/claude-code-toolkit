@@ -74,9 +74,10 @@ If both `tools` and `disallowedTools` are set, `disallowedTools` applies first, 
 
 - **Purpose** — Model the agent runs on.
 - **Required?** — Optional. Default: `inherit`.
-- **Allowed values** — `sonnet`, `opus`, `haiku`, a full model ID (`claude-opus-4-7`), or `inherit`.
-- **What to put in it** — `inherit` by default — let the user's session model flow through. Override only when the agent genuinely requires a specific model (heavy reasoning → opus; bulk read-only → haiku for cost).
-- **When to override** — When the agent's correctness is bound to a specific reasoning level the session might not have.
+- **Allowed values** — `sonnet`, `opus`, `haiku`, a full version ID (e.g. `claude-opus-4-7`), or `inherit`.
+- **What to put in it** — Prefer aliases (`opus`, `sonnet`, `haiku`) over full version IDs — aliases auto-resolve to the latest version so the agent stays current. Pair the model choice with `effort:` per the cognitive-load tier in `references/model-effort-matrix.md`.
+- **When to pin a full version ID** — Only when you have a specific reason to freeze a version (e.g. a tested-against-this-version eval gate, a known regression in a newer version).
+- **Critical constraint** — `effort: xhigh` requires `model: opus` explicitly. Do not pair `xhigh` with `inherit` — see `references/model-effort-matrix.md`.
 
 ### `permissionMode`
 
@@ -158,10 +159,11 @@ If both `tools` and `disallowedTools` are set, `disallowedTools` applies first, 
 
 ### `effort`
 
-- **Purpose** — Override the session reasoning effort.
-- **Required?** — Optional. Default: inherit.
-- **Allowed values** — `low`, `medium`, `high`, `xhigh`, `max`.
-- **When to set it** — When the agent needs more (audit, review) or less (mechanical) effort than the session.
+- **Purpose** — Override the session reasoning effort for this agent's turns.
+- **Required?** — Optional. Default: inherit (from session).
+- **Allowed values** — `low`, `medium`, `high`, `xhigh`, `max`. Availability depends on the model — see `references/model-effort-matrix.md` for the compatibility table.
+- **Critical constraint** — Always pair with `model:` per the cognitive-load tier rubric in `references/model-effort-matrix.md`. **`xhigh` requires `model: opus` explicitly** — pairing it with `model: inherit` or `model: sonnet` will fail.
+- **Hard rule** — Never default any agent to `effort: max`. Anthropic docs explicitly warn against it. Justification, evidence, and decision tree all live in `references/model-effort-matrix.md` — it is the single source of truth for picking `effort:`.
 
 ### `isolation`
 

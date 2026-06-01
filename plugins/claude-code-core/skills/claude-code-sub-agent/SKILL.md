@@ -40,7 +40,7 @@ End-to-end authoring toolkit for Claude Code sub-agents. Covers creating new sub
 2. **Author the frontmatter** using `references/section-guide.md`. Hard rules every time:
    - `description` is a **routing trigger** — names the user intent that fires the agent. Never put implementation details, tool lists, or references to other agents in it.
    - `tools` follows least privilege. Each entry must be a tool the agent actually uses.
-   - `model: inherit` by default. Override only when the agent genuinely needs a specific model.
+   - `model:` + `effort:` — classify the agent by cognitive load and pick the pair using **`references/model-effort-matrix.md`**. Do not default to `model: inherit` blindly; that pattern is unsafe when paired with effort levels that only exist on Opus. Picking the right tier (A: opus+xhigh strategic / B: opus+xhigh heavy analysis / C: sonnet+high structured review / D: sonnet+medium execution) saves cost and avoids overthinking on tasks that don't need it. Never default to `effort: max` — Anthropic explicitly warns against it.
    - `permissionMode` defaults to `default`. Use `acceptEdits` only for agents the user trusts to mutate files unattended. Never set `bypassPermissions` in a checked-in agent. Reason: `bypassPermissions` removes guardrails and can write to `.git`, `.claude`, etc. — that risk should not be a property of a distributed agent file.
 
 3. **Author the body** (the system prompt):
@@ -67,7 +67,8 @@ Steps:
 3. Rewrite `description` against the routing-trigger contract from `references/section-guide.md`.
 4. Strip cross-agent references from the description; relocate to body's Scope & boundaries.
 5. Audit `tools` and `disallowedTools` against the body — remove any tool not actually invoked.
-6. Re-run validation.
+6. **Audit `model:` + `effort:`** against the cognitive-load rubric in `references/model-effort-matrix.md` — follow Sub-Workflow 2F in `references/improvement-workflows.md` for the step-by-step procedure (classify tier → compare against default → flag unsafe pairings → promote intelligence-sensitive agents off `medium`).
+7. Re-run validation — see `references/validation-checklist.md` for the model+effort pairing checks.
 
 ## Mode: Validate
 
@@ -75,7 +76,7 @@ Steps:
 python3 ${CLAUDE_PLUGIN_ROOT}/shared/scripts/validate_agent.py <path-to-agent>.md
 ```
 
-Validator checks YAML, allowed frontmatter fields, length caps, tool name validity, model alias validity, and `permissionMode` enum. Use `references/validation-checklist.md` for the human checklist.
+Validator checks YAML, allowed frontmatter fields, length caps, tool name validity, model alias validity, and `permissionMode` enum. Use `references/validation-checklist.md` for the comprehensive pre-ship rubric (includes the model + effort pairing checks that the script-level validator does not cover).
 
 ## Mode: Audit
 
@@ -83,8 +84,9 @@ Use when production-readiness is the goal.
 
 1. **Activation quality** — `references/activation-patterns.md` for description tuning; check positive and negative test cases.
 2. **Tool security** — `references/tool-security.md`. Verify least privilege, audit any `permissionMode` override.
-3. **Prompt clarity** — body should pass the "cold reader" test: someone with no prior context understands the agent's role and limits in the first paragraph.
-4. **Memory scope** — if `memory: project|user|local` is set, confirm the agent is writing useful curated knowledge, not session noise.
+3. **Model + effort fit** — `references/model-effort-matrix.md`. Classify the agent into a cognitive-load tier (A strategic / B heavy analysis / C intelligence-sensitive execution / D mechanical) and check whether `model:` + `effort:` match the tier. Misalignment is a real and common defect: agents over-budgeted to `max` waste tokens and overthink; agents under-budgeted to `medium` miss nuance on intelligence-sensitive work.
+4. **Prompt clarity** — body should pass the "cold reader" test: someone with no prior context understands the agent's role and limits in the first paragraph.
+5. **Memory scope** — if `memory: project|user|local` is set, confirm the agent is writing useful curated knowledge, not session noise.
 
 ## Designing the value-add (May 2026 reality check)
 
@@ -154,6 +156,7 @@ Local:
 - `references/improvement-workflows.md` — refactor playbook.
 - `references/tool-security.md` — least-privilege tool selection.
 - `references/validation-checklist.md` — pre-ship checklist.
+- `references/model-effort-matrix.md` — cognitive-load tiers (A/B/C/D) → `model:` + `effort:` pair, with effort-level compatibility table per model, evidence from Anthropic docs and benchmarks, and the decision tree for picking each pair. Always consult before authoring or auditing `model:` / `effort:`.
 
 Shared:
 

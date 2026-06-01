@@ -1,6 +1,6 @@
 # bug-analysis — activation tests
 
-Companion corpus to `activation-evals.json`. The skill is **preloaded on `tech-lead`** (used at intake when the work item is a bug) and **runtime-available to `software-developer`** (used when investigating a bug found during execution).
+Companion corpus to `activation-evals.json`. The skill is **preloaded on `code-planner`** (used at intake when the work item is a bug) and **runtime-available to `software-developer`** (used when investigating a bug found during execution).
 
 ## Scope
 
@@ -32,6 +32,6 @@ Does NOT fire for in-the-moment debugging (use `debugging-protocol`) or for the 
 
 ## Notes for the runner
 
-- Preloaded on tech-lead and available via runtime on developer; routing rate from those agents may be high.
+- Preloaded on code-planner and available via runtime on developer; routing rate from those agents may be high.
 - Description is a pure routing trigger.
 - Outcome (LLM-as-judge on the analysis quality) is the gate; routing rate is informational.

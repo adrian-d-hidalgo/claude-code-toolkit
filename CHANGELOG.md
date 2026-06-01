@@ -4,7 +4,91 @@ All notable changes to this toolkit. Format follows [Keep a Changelog](https://k
 
 ## [Unreleased]
 
-Pre-publication; both plugins start at `1.0.0` once published. Subsequent changes will be tracked here per plugin.
+(empty)
+
+## [2.0.0] — claude-code-development — 2026-06-01
+
+### Changed (BREAKING)
+
+- Rename `tech-lead` → `code-planner` (scope reframed as a function — code-planning — not a real-world role with broader responsibilities). Update any user `CLAUDE.md`/`AGENTS.md`, scripts, or test corpora referencing the old name. Agent behavior is unchanged (same preloaded skills, same workflow). "Tech Lead" labels in shared templates (RACI, owners, DoD) renamed to "Code Planner" for consistency.
+
+### Added
+
+- `debugger` sub-agent — read-only RCA with hypothesis-driven investigation, git-timeline-first, observability-MCP-aware tool-surface inventory; exits at root cause + minimal reproduction.
+- `data-engineer` sub-agent — stack-agnostic data modeling (Kimball / Codd / access-pattern-first), schema evolution with expand/contract and consumer-driven contracts; read-only design and review.
+- `coding-practices` skill — ~25 tech-agnostic coding rules across 7 categories + strict comment philosophy (4 taxative exceptions; delete-on-sight list). Source of truth for `software-developer` and any code-writing agent.
+- `data-modeling` skill — access-pattern-first design, normalization (Codd 1NF–BCNF), dimensional modeling (Kimball: business process → grain → dimensions → facts), workload decision tree, storage-engine-agnostic.
+- `schema-evolution` skill — expand/contract playbook (Sadalage 2006), idempotent backfills, consumer-driven evolution, rollback per phase, data-contract spec.
+- `external-research` skill — source-priority pyramid (official docs > release notes > issue tracker > RFCs > comparative analyses > forums), triangulation, `[Verified-external]` citation discipline.
+- `references/` transversal layer: `evidence-rule.md`, `code-grounded-analysis.md`, `risk-scoring.md`, `tool-surface-inventory.md`, `destructive-operations.md` — shared across all agents.
+- `[Verified-external]` as 4th evidence level in `references/evidence-rule.md` for sources outside the repo (docs, RFCs, vendor advisories) with URL + access-date + version discipline.
+- Object-level authorization (OWASP API1 / BOLA) explicit coverage in `security-engineer`'s application security baseline.
+- `git-commit` skill substantially expanded: breaking-change detection from staged diff signals, atomicity smell detection, scope clustering with parent/child collapse and cardinality cap, trailer detection at ≥70% threshold, dominant body-language detection, PR-title-vs-commit-subject alignment for squash-merge repos, AI-attribution hard rule, gitmoji ban. New references: `active-diff-analysis.md`, `issue-linkage.md`, `non-goals.md`, `trailers.md`.
+
+### Changed
+
+- `software-developer` refactored to preload `coding-practices` skill instead of inlining ~25 rules + comment philosophy; `model: sonnet` + `effort: high` pinned per the new model-effort tier matrix.
+- All 8 agents decoupled from sibling agent names in scope/frontier sections; replaced with function labels (architecture, code-planning, data-engineering, quality-engineering, security-engineering) for LEGO portability when an agent is installed standalone.
+- `code-reviewer` body: removed misleading claim of `Edit` availability (frontmatter does not grant Edit; anti-pattern says "review suggests, never applies").
+- All 8 agents now share a uniform set of transversal practices (evidence levels, code-grounded analysis, tool-surface inventory, risk scoring, destructive-ops protocol, no-silent-drift, output-shape-varies, LEGO discipline) via the new `references/` layer.
+- Root `README.md` rewritten for humans (current 8-agent inventory, install/verify, platform note for the MCP plugin sub-agent bug anthropics/claude-code#13605); root `CLAUDE.md` rewritten for agents (meta-skill routing table, security invariants in primacy slot, scoped strictly to working on the project).
+
+### Removed
+
+- `Edit` tool from `security-engineer` frontmatter — agent designs and recommends; does not implement mitigation code (matching its own anti-pattern).
+
+## [1.2.0] — claude-code-core — 2026-06-01
+
+### Added
+
+- `claude-code-sub-agent/references/model-effort-matrix.md` — cognitive-load tier rubric (A strategic / B heavy analysis / C intelligence-sensitive execution / D mechanical) with `model:` + `effort:` pairing decision tree, effort-level compatibility per model, and evidence from Anthropic docs + benchmark data. Authoritative source for picking the right model and effort when authoring or auditing a sub-agent.
+- New anti-patterns in `claude-code-sub-agent/references/anti-patterns.md`: no tool-surface inventory before opining, fabricating MCP / vendor tool names not registered in session, defaulting `effort:` to `max`, pairing `effort: xhigh` with `model: inherit` or `model: sonnet`, demoting intelligence-sensitive execution to `effort: medium`.
+- New anti-patterns in `claude-code-skill/references/anti-patterns.md`.
+- `claude-code-sub-agent/references/improvement-workflows.md` Sub-Workflow 2F for model+effort auditing.
+
+### Changed
+
+- `claude-code-sub-agent/SKILL.md` references the new model-effort-matrix.
+- `claude-code-sub-agent/references/section-guide.md` and `validation-checklist.md` updated with model + effort pairing checks.
+- `claude-code-slash-command/scripts/init_command.py` rewritten — cleaner implementation aligned with `section-guide.md` and `assets/templates/` as source of truth.
+- `claude-code-slash-command/assets/templates/command-template.md` and `minimal-template.md` trimmed.
+- `shared/scripts/validate_command.py` rewritten — cleaner implementation aligned with `section-guide.md` and `anti-patterns.md` as source of truth.
+
+## [1.3.0] — claude-code-development — 2026-05-18
+
+### Added
+
+- `tech-lead` sub-agent — explicit intake-triage protocol (inputs check, scope-size verdict, task-too-big triggers), developer-actionable sub-task contract, Direct-Value-vs-Enabler classification per SAFe 6.0, bounded opportunistic-refactor discipline for code-grounded planning. (Renamed to `code-planner` in 2.0.0.)
+- 7 methodology-anchored skills: `work-splitting` (Lawrence patterns, Cohn SPIDR, Adzic Hamburger Method, Cockburn Elephant Carpaccio, Wake INVEST), `bug-analysis` (Toyoda 5 Whys, Ishikawa fishbone, Bell Labs FTA, Allspaw blameless postmortem), `threat-model` (Howard & Lipner STRIDE, UcedaVelez PASTA, Shostack trust boundaries), `tech-spec` (migrated from user level; Brown C4, arc42, IEEE 1016), `debugging-protocol` (Zeller hypothesis-driven, Majors observability-first, git-bisect, delta debugging), `code-audit` (Letouzey SQALE, Fowler code smells, Conventional Comments), `code-review-checklist` (Google Engineering Practices, Wiegers, OWASP code-review-guide).
+- Shared `references/evidence-rule.md` (3 evidence levels) referenced from every agent's transversal section.
+- Activation-eval corpora for the 7 new skills (19–21 cases each across positive, negative, edge); 6 agent corpora gained cases for code-grounded planning, intake triage, output-shape-varies, and no-silent-drift.
+
+### Changed
+
+- All 6 sub-agents bake in transversal practices: evidence levels, code-grounded analysis with real-name resolution, output-shape-varies, no-silent-drift, outputs-as-content, no-agent-invokes-another.
+- `development-plan`, `adr`, `test-plan`, `mermaid` skills reframed: outputs are content the caller persists wherever — drop `Status:` fields, drop imposed filenames (`plan.md`, `tasks.md`), drop `Write`/`Edit` tool grants.
+- Plugin description, README, marketplace tags refreshed.
+
+## [1.1.0] — claude-code-core — 2026-05-16
+
+### Changed
+
+- Refreshed all 6 meta-skills against Claude Code v2.1.140+ docs.
+- `claude-code-hook` meta-skill section-guide split into focused companion references to keep SKILL.md readable.
+
+## [1.1.0] — claude-code-development — 2026-05-16
+
+### Added
+
+- `software-architect`, `code-reviewer`, `quality-engineer`, `security-engineer` sub-agents — each with single-responsibility scope and least-privilege tooling, declining work outside its role.
+- 4 methodology-anchored skills bundled in the plugin: `adr` (Nygard), `test-plan` (ISO 29119-3), `git-commit` (Conventional Commits 1.0.0), `mermaid`.
+- Activation-eval corpus per new component covering positive, negative, edge routing.
+
+### Changed
+
+- `software-developer` gained a Large-change protocol for migrations and large refactors needing batch-level discipline.
+- Skill preload wired onto agents that use a skill on every invocation; the rest left as runtime discovery.
+- Plugin README rewritten to describe the full team and skills; marketplace description and tags resynced.
 
 ## [1.0.1] — claude-code-core — 2026-05-12
 

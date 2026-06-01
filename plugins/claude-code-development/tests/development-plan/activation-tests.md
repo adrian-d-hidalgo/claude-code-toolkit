@@ -1,6 +1,6 @@
 # development-plan — activation tests
 
-Companion corpus to `activation-evals.json`. The skill is **preloaded** on `tech-lead` (full SKILL.md injected into the agent's system prompt at startup) and available via runtime discovery for any other agent or for the main conversation.
+Companion corpus to `activation-evals.json`. The skill is **preloaded** on `code-planner` (full SKILL.md injected into the agent's system prompt at startup) and available via runtime discovery for any other agent or for the main conversation.
 
 ## Scope
 
@@ -38,5 +38,5 @@ The `development-plan` skill fires when the user asks to convert an approved spe
 ## Notes for the runner
 
 - This skill's `description` is a pure routing trigger — names the intent (development plan / implementation plan / tasks.md / PR sequencing / spike identification) and the explicit Spanish triggers. No internal mechanism, no negative scope ("does not cover X") — per our own meta-skill anti-pattern rules.
-- When invoked by `tech-lead`, the skill is already in the agent's system prompt at startup; runtime invocation is a no-op (preloaded ≠ second-load).
+- When invoked by `code-planner`, the skill is already in the agent's system prompt at startup; runtime invocation is a no-op (preloaded ≠ second-load).
 - When invoked from the main conversation, the skill is loaded via the `Skill` tool just like any other on-demand skill.

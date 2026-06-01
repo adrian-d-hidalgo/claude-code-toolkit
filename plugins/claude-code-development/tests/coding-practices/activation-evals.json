@@ -1,0 +1,134 @@
+{
+  "kind": "skill",
+  "skill": "coding-practices",
+  "version": "2.0.0",
+  "snapshot_date": "2026-05-23",
+  "notes": "Positive: explicit asks to apply / audit / review against the ~25 coding rules across 7 categories (read/scope, abstraction/coupling, state/errors, change-mgmt, ops/evolution, API/collab, naming) + the strict comment philosophy (default = no comment; 4 taxative exceptions). Negative: implement code (developer territory), review a PR (code-reviewer), design architecture (architect), write tests (developer). Edge: ambiguous 'best practices' that overlap with other agents; comment-style audit on an existing file; rule-citation lookups.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Apply coding practices to my implementation — am I violating YAGNI or rule-of-three here?",
+      "should_trigger": true,
+      "category": "positive-explicit-practices-audit"
+    },
+    {
+      "id": "pos-02",
+      "query": "Review this implementation against the coding rules — focus on idempotency and failure-mode enumeration",
+      "should_trigger": true,
+      "category": "positive-rules-audit"
+    },
+    {
+      "id": "pos-03",
+      "query": "Is this code following fail-fast vs degrade-gracefully appropriately?",
+      "should_trigger": true,
+      "category": "positive-rule-12-fail-fast"
+    },
+    {
+      "id": "pos-04",
+      "query": "Audit my comments — are they explaining why, or just narrating what?",
+      "should_trigger": true,
+      "category": "positive-comment-philosophy-audit"
+    },
+    {
+      "id": "pos-05",
+      "query": "Cite the rule for why I shouldn't add a config knob nobody asked for",
+      "should_trigger": true,
+      "category": "positive-cite-the-rule"
+    },
+    {
+      "id": "pos-06",
+      "query": "These three helpers look similar — is this the third instance that justifies abstraction?",
+      "should_trigger": true,
+      "category": "positive-rule-3-third-instance"
+    },
+    {
+      "id": "pos-07",
+      "query": "Coding-practice check — does this PR follow read-first, surgical changes, and self-review?",
+      "should_trigger": true,
+      "category": "positive-multi-rule-check"
+    },
+    {
+      "id": "pos-08",
+      "query": "Are these TODOs structured per the comment philosophy (owner + ticket + trigger)?",
+      "should_trigger": true,
+      "category": "positive-todo-structure-audit"
+    },
+    {
+      "id": "pos-09",
+      "query": "Is this commit message following Conventional Commits and Problem→Solution→Impact in the body?",
+      "should_trigger": true,
+      "category": "positive-commit-rule-6"
+    },
+    {
+      "id": "neg-01",
+      "query": "Implement the password-reset flow with a token-rotation step",
+      "should_trigger": false,
+      "category": "negative-implementation",
+      "notes": "Implementation = software-developer (or any other agent that writes code: devops authoring pipelines, IaC engineer, etc.). coding-practices is preloaded by those agents; it doesn't fire directly on every implement request."
+    },
+    {
+      "id": "neg-02",
+      "query": "Review this PR for code quality and security findings",
+      "should_trigger": false,
+      "category": "negative-pr-review",
+      "notes": "PR review = code-reviewer."
+    },
+    {
+      "id": "neg-03",
+      "query": "Design the architecture for the notification service",
+      "should_trigger": false,
+      "category": "negative-architecture"
+    },
+    {
+      "id": "neg-04",
+      "query": "Write a test plan for the new checkout flow",
+      "should_trigger": false,
+      "category": "negative-test-strategy"
+    },
+    {
+      "id": "neg-05",
+      "query": "Find the introducing commit for this bug",
+      "should_trigger": false,
+      "category": "negative-debug"
+    },
+    {
+      "id": "neg-06",
+      "query": "Plan the development work for the next iteration",
+      "should_trigger": false,
+      "category": "negative-code-planner"
+    },
+    {
+      "id": "neg-07",
+      "query": "Threat-model the auth flow",
+      "should_trigger": false,
+      "category": "negative-security"
+    },
+    {
+      "id": "neg-08",
+      "query": "Refactor this function and add tests",
+      "should_trigger": false,
+      "category": "negative-implementation-with-tests",
+      "notes": "Implementation request — coding-practices is loaded by whichever code-writing agent activates (developer, security-eng patching, devops authoring pipelines, etc.); not directly fired by the user request."
+    },
+    {
+      "id": "edge-01",
+      "query": "Is this 12-factor compliant?",
+      "should_trigger": true,
+      "category": "edge-12-factor-rule-10",
+      "notes": "Overlaps with rule 10 (config as data; secrets out of source); fires to consult the rule citation."
+    },
+    {
+      "id": "edge-02",
+      "query": "Should I optimise this hot loop or measure first?",
+      "should_trigger": true,
+      "category": "edge-rule-14-measure-first"
+    },
+    {
+      "id": "edge-03",
+      "query": "Are these comments going to age well after a refactor?",
+      "should_trigger": true,
+      "category": "edge-comment-rule-11-survival",
+      "notes": "Comment philosophy rule 11 — fires to audit comment survival."
+    }
+  ]
+}

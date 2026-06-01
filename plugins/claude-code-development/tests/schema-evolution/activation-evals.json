@@ -1,0 +1,140 @@
+{
+  "kind": "skill",
+  "skill": "schema-evolution",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-22",
+  "notes": "Positive: plan a migration, expand/contract, dual-write, backfill, rename safely, NOT NULL safely, ghost column, drop safely, data contract, rollback per phase. Negative: design schema from scratch (data-modeling), execute migration (developer), choose engine (architect), review migration code (code-reviewer). Edge: add nullable column (single-phase), drop table consumer-enumeration intensive, JSON-shape change as semantic.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Plan this migration: rename `user.email_addr` to `user.email` without breaking consumers",
+      "should_trigger": true,
+      "category": "positive-rename-column"
+    },
+    {
+      "id": "pos-02",
+      "query": "How do I add a NOT NULL column to a 50M-row table safely?",
+      "should_trigger": true,
+      "category": "positive-add-not-null"
+    },
+    {
+      "id": "pos-03",
+      "query": "Design the expand/contract sequence for dropping the legacy `subscriptions_v1` table",
+      "should_trigger": true,
+      "category": "positive-drop-table-expand-contract"
+    },
+    {
+      "id": "pos-04",
+      "query": "I need a dual-write strategy for migrating customer_id from int to bigint",
+      "should_trigger": true,
+      "category": "positive-dual-write-type-change"
+    },
+    {
+      "id": "pos-05",
+      "query": "Write a backfill plan that's idempotent and resumable for populating the new `customer.region` column",
+      "should_trigger": true,
+      "category": "positive-backfill-design"
+    },
+    {
+      "id": "pos-06",
+      "query": "Audit this proposed migration for breaking changes — does it have a rollback per phase?",
+      "should_trigger": true,
+      "category": "positive-audit-migration"
+    },
+    {
+      "id": "pos-07",
+      "query": "Define the data contract between the orders producer and the analytics consumer",
+      "should_trigger": true,
+      "category": "positive-data-contract"
+    },
+    {
+      "id": "pos-08",
+      "query": "Plan a ghost-column migration to change the email column's casing semantics",
+      "should_trigger": true,
+      "category": "positive-ghost-column-semantic"
+    },
+    {
+      "id": "pos-09",
+      "query": "Planea la migración para dividir la columna `name` en `first_name` y `last_name` con consumer-driven validation",
+      "should_trigger": true,
+      "category": "positive-split-column-spanish"
+    },
+    {
+      "id": "pos-10",
+      "query": "We need to evolve the event schema in Kafka — add a required field without breaking consumers",
+      "should_trigger": true,
+      "category": "positive-event-stream-evolution"
+    },
+    {
+      "id": "neg-01",
+      "query": "Design the schema for the new orders system from scratch",
+      "should_trigger": false,
+      "category": "negative-greenfield-schema",
+      "notes": "Greenfield design = data-modeling, not schema-evolution."
+    },
+    {
+      "id": "neg-02",
+      "query": "Run this ALTER TABLE in staging",
+      "should_trigger": false,
+      "category": "negative-execute-migration"
+    },
+    {
+      "id": "neg-03",
+      "query": "Should we use Postgres or MySQL for our store?",
+      "should_trigger": false,
+      "category": "negative-engine-choice"
+    },
+    {
+      "id": "neg-04",
+      "query": "Review this migration PR for code quality and security",
+      "should_trigger": false,
+      "category": "negative-code-review"
+    },
+    {
+      "id": "neg-05",
+      "query": "Write a test plan for the orders service",
+      "should_trigger": false,
+      "category": "negative-test-plan"
+    },
+    {
+      "id": "neg-06",
+      "query": "Threat-model the new auth schema",
+      "should_trigger": false,
+      "category": "negative-threat-model"
+    },
+    {
+      "id": "neg-07",
+      "query": "Plan the rollout of the new authentication feature",
+      "should_trigger": false,
+      "category": "negative-feature-rollout",
+      "notes": "Feature rollout = code-planner. Schema-evolution is about data-shape change."
+    },
+    {
+      "id": "neg-08",
+      "query": "Set up monitoring for the orders table",
+      "should_trigger": false,
+      "category": "negative-operations"
+    },
+    {
+      "id": "edge-01",
+      "query": "Is it safe to add a nullable column to the users table?",
+      "should_trigger": true,
+      "category": "edge-nullable-single-phase",
+      "notes": "Fires; the answer is single-phase (nullable column is backward+forward compatible)."
+    },
+    {
+      "id": "edge-02",
+      "query": "We need to deprecate the `legacy_orders` table — how do I enumerate every consumer first?",
+      "should_trigger": true,
+      "category": "edge-consumer-enumeration",
+      "notes": "Fires; consumer enumeration is a core pre-phase of any breaking change."
+    },
+    {
+      "id": "edge-03",
+      "query": "We changed the shape of the `metadata` JSON field — is that breaking?",
+      "should_trigger": true,
+      "category": "edge-json-shape-change",
+      "notes": "Fires; document-shape change is a semantic change per the classification, often breaking and consumer-dependent."
+    }
+  ]
+}

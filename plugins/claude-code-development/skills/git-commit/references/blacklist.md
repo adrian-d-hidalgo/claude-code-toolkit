@@ -17,7 +17,10 @@
 - **Meta-commentary**: "This PR addresses feedback from code review", "Per discussion in Slack".
 - **Mechanical bullets**: "Modified 45 lines in auth.service.ts", "Updated session handling code".
 - **Path-shaped scopes**: `(.project)`, `(src)`, `(node_modules)`.
-- **AI attribution**: `Co-authored-by: Claude`, `Generated with Claude Code`, `🤖`. **Never** add these.
+- **Nested scopes (parent + its children in the same prefix)**: `(child,parent)` or `(childA,parent,childB)` when the diff shows those children live inside the parent's directory. Collapse to the highest dictionary-blessed ancestor; mention the sub-areas in the body. Do **not** climb past whatever the `git log` dictionary has actually used as a scope — that ceiling is what prevents collapse from terminating at the repo root.
+- **Cardinality overflow (4+ scopes)**: a 4-scope prefix almost always means either un-collapsed hierarchy (apply parent/child collapse) or a commit too wide to label crisply (pick the dominant scope or a dictionary-blessed umbrella; the body covers the rest). At 3 scopes the skill must offer one of its three proposals as a 2-scope alternative so the user sees the smell.
+- **AI attribution**: `Co-authored-by: Claude`, `Co-authored-by: GPT-*`, `Co-authored-by: Copilot`, `Generated with Claude Code`, `🤖`, `Generated-by:`. **Never** add these — hard rule, even when explicitly asked. Full rationale in `references/non-goals.md` (license/legal clarity, repo author choice, trailer hygiene, user preference).
+  - **Human** `Co-authored-by: Real Person <email>` for genuine pair/mob programming **is** allowed and encouraged when the user names a collaborator — the ban above is specific to AI tools. See `references/trailers.md`.
 
 ## Forbidden granular content inventories (critical)
 

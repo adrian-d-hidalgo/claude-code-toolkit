@@ -12,7 +12,7 @@ DoD is the **contract** for "this task is shippable". It is the bridge between A
 
 | AC (Acceptance Criteria)                                  | DoD (Definition of Done)                                                 |
 | --------------------------------------------------------- | ------------------------------------------------------------------------ |
-| Lives in the PRD (PM owns it).                            | Lives in `tasks.md` (Tech Lead owns it).                                 |
+| Lives in the PRD (PM owns it).                            | Lives in `tasks.md` (Code Planner owns it).                              |
 | Describes **user-observable behavior** (Given/When/Then). | Describes **engineering completion** (tests, telemetry, flag, rollback). |
 | Stable across many tasks if the AC spans them.            | Specific to one task — bespoke, not template-pasted.                     |
 | If AC changes, scope changed → escalate.                  | If DoD shifts mid-task, it's usually a re-scope of the task.             |
@@ -119,7 +119,7 @@ When a sub-task is `Class: Enabler / ...` (Architecture / Infrastructure / Explo
 | DoD without rollback (for migration / flag-gated work)        | Rollback is improvised under pressure → bad outcomes.                               | Add explicit rollback step.                                        |
 | DoD with vague "documentation updated"                        | Reader does not know which doc; reviewer cannot verify.                             | Name the doc.                                                      |
 | DoD that includes Slack notifications or status-meeting steps | Communication is not engineering completion; track in comms plan, not DoD.          | Move to communication plan.                                        |
-| DoD that includes "approved by tech lead"                     | Review approval is implicit via merge process; DoD is about the work, not the gate. | Remove.                                                            |
+| DoD that includes "approved by code planner"                  | Review approval is implicit via merge process; DoD is about the work, not the gate. | Remove.                                                            |
 
 ## AC traceability matrix
 
@@ -160,7 +160,7 @@ The **plan** also has a DoD (in `plan.md` §6). It is **not** the union of all t
 - Escape budget respected (e.g., zero P0 escapes within N days).
 - Postmortem written if any P1+ escape occurred.
 
-Plan-level DoD is the artifact the PM + Tech Lead sign off as "delivered". Task-level DoD is the artifact the Tech Lead + Reviewer sign off as "merge-able".
+Plan-level DoD is the artifact the PM + Code Planner sign off as "delivered". Task-level DoD is the artifact the Code Planner + Reviewer sign off as "merge-able".
 
 ## Quick check before delivery
 

@@ -1,124 +1,91 @@
 #!/usr/bin/env python3
 """
-Validate Claude Code command structure, security, and compliance.
+Validate Claude Code slash command structure and compliance.
+
+Source of truth for the rules enforced here:
+  plugins/claude-code-core/skills/claude-code-slash-command/references/section-guide.md
+  plugins/claude-code-core/skills/claude-code-slash-command/references/anti-patterns.md
 
 Usage:
-    python scripts/validate_command.py /path/to/command.md
-    python scripts/validate_command.py /path/to/commands/ --all
-    python scripts/validate_command.py --help
+    python3 validate_command.py /path/to/command.md
+    python3 validate_command.py /path/to/commands/ --all
+    python3 validate_command.py --help
 """
 
 import argparse
-import os
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 try:
     import yaml
     HAS_YAML = True
 except ImportError:
     HAS_YAML = False
-    print("⚠️  Warning: PyYAML not installed. YAML validation will be limited.", file=sys.stderr)
-    print("   Install with: pip install pyyaml", file=sys.stderr)
-    print()
 
 
 class ValidationResult:
-    """Store validation results."""
+    """Store validation results for one category."""
 
     def __init__(self, category: str):
         self.category = category
-        self.passed = []
-        self.warnings = []
-        self.errors = []
+        self.passed: List[str] = []
+        self.warnings: List[str] = []
+        self.errors: List[str] = []
 
-    def add_pass(self, message: str):
+    def add_pass(self, message: str) -> None:
         self.passed.append(message)
 
-    def add_warning(self, message: str):
+    def add_warning(self, message: str) -> None:
         self.warnings.append(message)
 
-    def add_error(self, message: str):
+    def add_error(self, message: str) -> None:
         self.errors.append(message)
 
     @property
     def status(self) -> str:
         if self.errors:
             return "❌ FAIL"
-        elif self.warnings:
+        if self.warnings:
             return "⚠️  WARNINGS"
-        else:
-            return "✅ PASS"
+        return "✅ PASS"
 
     @property
     def has_issues(self) -> bool:
-        return len(self.errors) > 0 or len(self.warnings) > 0
+        return bool(self.errors or self.warnings)
 
 
 def parse_arguments():
-    """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description="Validate Claude Code command structure and compliance",
+        description="Validate Claude Code slash command structure and compliance",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Validate single command
-  python scripts/validate_command.py .claude/commands/development/setup-testing.md
-
-  # Validate all commands in directory
-  python scripts/validate_command.py .claude/commands/ --all
-
-  # Validate with detailed output
-  python scripts/validate_command.py command.md --verbose
-
-  # Custom required fields (for older commands)
-  python scripts/validate_command.py command.md --required-fields description,allowed-tools
-
-  # Strict mode (warnings as errors)
-  python scripts/validate_command.py command.md --strict
+  python3 validate_command.py .claude/commands/spec.md
+  python3 validate_command.py .claude/commands/ --all
+  python3 validate_command.py command.md --verbose
+  python3 validate_command.py command.md --strict
+  python3 validate_command.py command.md --required-fields description,allowed-tools
         """,
     )
-
-    parser.add_argument(
-        "path",
-        help="Path to command file or directory",
-    )
-
-    parser.add_argument(
-        "--all",
-        action="store_true",
-        help="Validate all commands in directory (recursive)",
-    )
-
-    parser.add_argument(
-        "--verbose",
-        action="store_true",
-        help="Show detailed validation output",
-    )
-
-    parser.add_argument(
-        "--strict",
-        action="store_true",
-        help="Treat warnings as errors",
-    )
-
+    parser.add_argument("path", help="Path to command file or directory")
+    parser.add_argument("--all", action="store_true", help="Validate all .md files recursively")
+    parser.add_argument("--verbose", action="store_true", help="Show passed checks too")
+    parser.add_argument("--strict", action="store_true", help="Treat warnings as errors")
     parser.add_argument(
         "--required-fields",
-        default="description,allowed-tools,argument-hint,model",
-        help="Comma-separated list of required frontmatter fields (default: description,allowed-tools,argument-hint,model)",
+        default="description",
+        help="Comma-separated list of required frontmatter fields (default: description). "
+             "All other fields are optional per section-guide.md.",
     )
-
     return parser.parse_args()
 
 
-def extract_frontmatter(content: str) -> Tuple[Dict, str]:
+def extract_frontmatter(content: str) -> Tuple[Optional[Dict], str]:
     """Extract YAML frontmatter from markdown content."""
-    # Match frontmatter between --- delimiters
     pattern = r"^---\s*\n(.*?)\n---\s*\n(.*)$"
     match = re.match(pattern, content, re.DOTALL)
-
     if not match:
         return None, content
 
@@ -127,336 +94,275 @@ def extract_frontmatter(content: str) -> Tuple[Dict, str]:
 
     if HAS_YAML:
         try:
-            frontmatter = yaml.safe_load(frontmatter_str)
-            return frontmatter, body
-        except yaml.YAMLError as e:
+            parsed = yaml.safe_load(frontmatter_str)
+            if isinstance(parsed, dict):
+                return parsed, body
             return None, content
-    else:
-        # Simple YAML parsing without yaml library
-        frontmatter = {}
-        for line in frontmatter_str.strip().split('\n'):
-            if ':' in line:
-                key, value = line.split(':', 1)
-                key = key.strip()
-                value = value.strip()
-                # Handle lists
-                if value.startswith('[') and value.endswith(']'):
-                    frontmatter[key] = [v.strip() for v in value[1:-1].split(',')]
-                # Handle multi-line strings
-                elif value.startswith('>'):
-                    continue  # Skip for simple parser
-                else:
-                    frontmatter[key] = value
-        return frontmatter if frontmatter else None, body
+        except yaml.YAMLError:
+            return None, content
+
+    # Fallback: minimal parser, only handles scalar key: value.
+    frontmatter: Dict = {}
+    for line in frontmatter_str.strip().split("\n"):
+        if ":" in line and not line.startswith(" "):
+            key, value = line.split(":", 1)
+            frontmatter[key.strip()] = value.strip()
+    return frontmatter if frontmatter else None, body
 
 
-def validate_structure(file_path: Path, content: str, required_fields: List[str] = None) -> ValidationResult:
-    """Validate command structure."""
+def _normalize_allowed_tools(raw) -> Optional[List[str]]:
+    """`allowed-tools` accepts both list and comma-separated string forms.
+    Return a normalized list or None when the shape is unrecognized."""
+    if raw is None:
+        return None
+    if isinstance(raw, list):
+        return [str(item).strip() for item in raw if str(item).strip()]
+    if isinstance(raw, str):
+        return [item.strip() for item in raw.split(",") if item.strip()]
+    return None
+
+
+def validate_structure(file_path: Path, content: str, required_fields: List[str]) -> ValidationResult:
+    """Structure + frontmatter checks. Rules trace to section-guide.md Part A."""
     result = ValidationResult("Structure")
 
-    # Default required fields if not specified
-    if required_fields is None:
-        required_fields = ["description", "allowed-tools", "argument-hint", "model"]
-
-    # Check file naming
     if not file_path.name.endswith(".md"):
         result.add_error(f"File must have .md extension: {file_path.name}")
     else:
         result.add_pass("File has .md extension")
 
-    # Check kebab-case naming
     name_without_ext = file_path.stem
     if re.match(r"^[a-z0-9]+(-[a-z0-9]+)*$", name_without_ext):
         result.add_pass("File name follows kebab-case convention")
     else:
         result.add_error(f"File name must be kebab-case: {name_without_ext}")
 
-    # Extract and validate frontmatter
     frontmatter, body = extract_frontmatter(content)
-
     if not frontmatter:
         result.add_error("Missing or invalid YAML frontmatter")
         return result
-
     result.add_pass("Valid YAML frontmatter present")
 
-    # Check required fields
     for field in required_fields:
         if field in frontmatter:
             result.add_pass(f"Required field present: {field}")
         else:
             result.add_error(f"Missing required field: {field}")
 
-    # Validate description
-    if "description" in frontmatter:
-        desc = frontmatter["description"]
-        if len(desc) > 200:
-            result.add_warning(f"Description too long ({len(desc)} chars, max 200)")
-        if len(desc) < 20:
-            result.add_warning(f"Description too short ({len(desc)} chars, min 20)")
+    if "description" in frontmatter and isinstance(frontmatter["description"], str):
+        desc = frontmatter["description"].strip()
+        word_count = len(desc.split())
+        if word_count > 20:
+            result.add_warning(
+                f"Description too long ({word_count} words; section-guide §description recommends <20)"
+            )
+        if word_count == 0:
+            result.add_error("Description is empty")
+        trigger_patterns = re.compile(r"\b(use when|fire when|trigger|invoke when)\b", re.IGNORECASE)
+        if trigger_patterns.search(desc):
+            result.add_warning(
+                "Description reads like a routing trigger; the slash IS the trigger (anti-patterns.md)"
+            )
 
-    # Validate model
     if "model" in frontmatter:
-        valid_models = ["sonnet", "opus", "haiku"]
-        if frontmatter["model"] in valid_models:
-            result.add_pass(f"Valid model: {frontmatter['model']}")
+        valid_models = ["sonnet", "opus", "haiku", "inherit"]
+        model = frontmatter["model"]
+        if isinstance(model, str) and (model in valid_models or "-" in model):
+            result.add_pass(f"Valid model: {model}")
         else:
-            result.add_error(f"Invalid model: {frontmatter['model']}, must be one of {valid_models}")
+            result.add_error(
+                f"Invalid model: {model}. Use one of {valid_models} or a full model id."
+            )
 
-    # Check file size
+    if "argument-hint" in frontmatter and isinstance(frontmatter["argument-hint"], str):
+        hint = frontmatter["argument-hint"].strip()
+        if hint and not (hint.startswith("[") or hint.startswith("<")):
+            result.add_warning(
+                f"argument-hint should use [bracketed] or <angle> placeholders; got: {hint!r}"
+            )
+
     lines = content.count("\n")
-    if lines > 1000:
-        result.add_warning(f"Command file is very long ({lines} lines). Consider moving content to references/")
+    if lines > 400:
+        result.add_warning(
+            f"Command body is long ({lines} lines); consider migrating to a skill with references/ "
+            "(see command-vs-skill.md)"
+        )
     else:
         result.add_pass(f"File size reasonable ({lines} lines)")
 
-    # Check markdown structure
     if body:
         headers = re.findall(r"^(#{2,}) (.+)$", body, re.MULTILINE)
         if headers:
             result.add_pass(f"Found {len(headers)} section headers")
         else:
-            result.add_warning("No section headers found in command body")
+            result.add_warning("No section headers in command body")
 
     return result
 
 
 def validate_security(file_path: Path, content: str) -> ValidationResult:
-    """Validate security configuration."""
+    """Security checks. Rules trace to anti-patterns.md (Untrusted argument, Over-broad allowed-tools)."""
     result = ValidationResult("Security")
 
     frontmatter, body = extract_frontmatter(content)
-
-    if not frontmatter or "allowed-tools" not in frontmatter:
-        result.add_error("Cannot validate security: missing allowed-tools")
+    if not frontmatter:
+        result.add_warning("Cannot validate security: no frontmatter")
         return result
 
-    allowed_tools = frontmatter["allowed-tools"]
-
-    # Check if allowed-tools is a list
-    if not isinstance(allowed_tools, list):
-        result.add_error("allowed-tools must be a list")
+    if "allowed-tools" not in frontmatter:
+        result.add_warning(
+            "No allowed-tools declared; command will prompt the user for every tool use"
+        )
         return result
 
-    # Check for dangerous patterns
-    if "Bash" in allowed_tools:
-        result.add_error("CRITICAL: Unrestricted Bash access detected! Use Bash(command *) instead")
+    tools = _normalize_allowed_tools(frontmatter["allowed-tools"])
+    if tools is None:
+        result.add_error("allowed-tools must be a list or comma-separated string")
+        return result
 
-    # Check for Bash restrictions
-    bash_tools = [tool for tool in allowed_tools if tool.startswith("Bash(")]
-    if bash_tools:
-        for tool in bash_tools:
-            if tool == "Bash(*)":
-                result.add_error(f"Unrestricted Bash pattern: {tool}")
-            else:
-                result.add_pass(f"Restricted Bash command: {tool}")
-    elif any("Bash" in str(tool) for tool in allowed_tools):
-        result.add_warning("Bash tool may not be properly restricted")
+    # Unrestricted Bash: literal 'Bash' OR 'Bash(*)'.
+    if "Bash" in tools:
+        result.add_error("Unrestricted Bash access — replace with Bash(<command> *) patterns")
+    for tool in tools:
+        if tool == "Bash(*)":
+            result.add_error(f"Unrestricted Bash pattern: {tool}")
+        elif tool.startswith("Bash("):
+            result.add_pass(f"Restricted Bash tool: {tool}")
 
-    # Check for write operations
-    write_tools = [tool for tool in allowed_tools if tool in ["Write", "Edit", "MultiEdit"]]
+    write_tools = [t for t in tools if t in {"Write", "Edit", "MultiEdit"}]
     if write_tools:
-        result.add_pass(f"File modification tools: {', '.join(write_tools)}")
+        result.add_pass(f"File-modification tools present: {', '.join(write_tools)}")
 
-        # Check if context detection is present when Write is used
-        if "Write" in write_tools and "Context Detection Implementation" not in body:
-            result.add_warning("Write tool present but no Context Detection Implementation section found")
+    if set(tools) <= {"Read", "Grep", "Glob"}:
+        result.add_pass("Read-only tool configuration")
 
-    # Check for read-only pattern
-    readonly_tools = {"Read", "Grep", "Glob"}
-    if set(allowed_tools) <= readonly_tools:
-        result.add_pass("Read-only tool configuration detected")
-
-    # Validate input validation presence
-    validation_keywords = ["validate", "validation", "check", "verify", "sanitize"]
-    has_validation = any(keyword in body.lower() for keyword in validation_keywords)
-
-    if has_validation:
-        result.add_pass("Input validation keywords found in command")
-    else:
-        result.add_warning("No explicit input validation found in command")
+    if body:
+        # Shell injection vector: !`...$ARGUMENTS...` per section-guide §F.2.
+        injection_pattern = re.compile(r"!`[^`]*\$ARGUMENTS[^`]*`")
+        if injection_pattern.search(body):
+            result.add_warning(
+                "Body uses $ARGUMENTS inside a `!` shell injection — "
+                "validate or quote per section-guide §F.2"
+            )
 
     return result
 
 
-def validate_context_detection(file_path: Path, content: str) -> ValidationResult:
-    """Validate context detection implementation."""
-    result = ValidationResult("Context Detection")
+def validate_substitutions(file_path: Path, content: str) -> ValidationResult:
+    """Body substitution sanity. Rules trace to section-guide.md Part B + anti-patterns 'Orphan $N'."""
+    result = ValidationResult("Substitutions")
 
     frontmatter, body = extract_frontmatter(content)
-
-    # Only validate if command has Write capability
-    if not frontmatter or "allowed-tools" not in frontmatter:
-        result.add_pass("N/A - No frontmatter")
-        return result
-
-    allowed_tools = frontmatter.get("allowed-tools", [])
-    has_write = "Write" in allowed_tools or any("write" in str(tool).lower() for tool in allowed_tools)
-
-    if not has_write:
-        result.add_pass("N/A - Command doesn't create files")
-        return result
-
-    # Check for context detection section
-    if "Context Detection Implementation" in body:
-        result.add_pass("Context Detection Implementation section present")
-    else:
-        result.add_error("Missing Context Detection Implementation section (required for commands that create files)")
-        return result
-
-    # Check for required context detection elements
-    required_patterns = [
-        (r"Glob\([\"'].*\.claude", "Glob check for .claude/ directory"),
-        (r"mkdir|directory structure", "Directory structure creation"),
-        (r"[Nn]ever create files in root", "Root directory protection"),
-        (r"feedback|Provide.*location", "User feedback about file location"),
-    ]
-
-    for pattern, description in required_patterns:
-        if re.search(pattern, body, re.IGNORECASE):
-            result.add_pass(f"Found: {description}")
-        else:
-            result.add_warning(f"Missing: {description}")
-
-    return result
-
-
-def validate_independence(file_path: Path, content: str) -> ValidationResult:
-    """Validate command independence."""
-    result = ValidationResult("Independence")
-
-    # Check for circular dependencies
-    command_calls = re.findall(r"/([a-z-]+)", content)
-    if command_calls:
-        result.add_warning(f"Command calls other commands: {', '.join(set(command_calls)[:5])}")
-    else:
-        result.add_pass("No external command dependencies detected")
-
-    # Check for error handling
-    error_keywords = ["error", "fail", "rollback", "recovery", "fallback"]
-    has_error_handling = any(keyword in content.lower() for keyword in error_keywords)
-
-    if has_error_handling:
-        result.add_pass("Error handling keywords found")
-    else:
-        result.add_warning("No explicit error handling found")
-
-    # Check for graceful degradation
-    if "graceful" in content.lower() or "fallback" in content.lower():
-        result.add_pass("Graceful degradation mentioned")
-
-    return result
-
-
-def validate_documentation(file_path: Path, content: str) -> ValidationResult:
-    """Validate documentation quality."""
-    result = ValidationResult("Documentation")
-
-    frontmatter, body = extract_frontmatter(content)
-
     if not body:
-        result.add_error("Command has no body content")
+        result.add_warning("No body to inspect")
         return result
 
-    # Check for examples
-    if "example" in body.lower():
-        result.add_pass("Usage examples present")
-    else:
-        result.add_warning("No usage examples found")
+    has_dollar_n = bool(re.search(r"\$\d+", body))
+    if has_dollar_n:
+        result.add_warning(
+            "Body uses $0/$1/... — per section-guide.md, $N is documented but currently not "
+            "implemented (issue #16163). Parse $ARGUMENTS or declare named arguments."
+        )
 
-    # Check for parameter documentation
-    if "parameter" in body.lower() or "argument" in body.lower():
-        result.add_pass("Parameter documentation present")
-    else:
-        result.add_warning("No parameter documentation found")
+    if "$ARGUMENTS" in body:
+        result.add_pass("Uses $ARGUMENTS substitution")
+        if frontmatter and "argument-hint" not in frontmatter:
+            result.add_warning(
+                "Body uses $ARGUMENTS but frontmatter has no argument-hint"
+            )
 
-    # Check for clear sections
-    common_sections = ["prerequisite", "implementation", "validation", "error"]
-    found_sections = [s for s in common_sections if s in body.lower()]
-
-    if len(found_sections) >= 3:
-        result.add_pass(f"Good section organization ({len(found_sections)} common sections)")
-    else:
-        result.add_warning("Limited section organization")
+    # Named substitutions: requires `arguments:` frontmatter list.
+    named_subs = set(re.findall(r"\$([a-z_][a-z0-9_]*)", body))
+    named_subs.discard("ARGUMENTS")
+    if named_subs and frontmatter and "arguments" not in frontmatter:
+        result.add_warning(
+            f"Body references named substitutions ({sorted(named_subs)[:3]}) but no `arguments:` "
+            "list declared in frontmatter"
+        )
 
     return result
 
 
-def validate_command_file(file_path: Path, verbose: bool = False, required_fields: List[str] = None) -> Dict[str, ValidationResult]:
-    """Validate a single command file."""
-    results = {}
+def validate_paths(file_path: Path, content: str) -> ValidationResult:
+    """Hardcoded absolute paths leak across users / installs."""
+    result = ValidationResult("Paths")
 
+    _, body = extract_frontmatter(content)
+    if not body:
+        result.add_pass("No body to inspect")
+        return result
+
+    absolute_paths = re.findall(r"(?<![\$\w/])/(?:Users|home)/[^\s`'\"]+", body)
+    # Filter out paths inside markdown link targets that point to repo files.
+    suspect = [p for p in absolute_paths if "/.claude" in p or "/plugins/" in p]
+    if suspect:
+        sample = ", ".join(suspect[:3])
+        result.add_warning(
+            f"Hardcoded absolute paths detected (e.g. {sample}). "
+            "Use ${CLAUDE_SKILL_DIR} or ${CLAUDE_PLUGIN_ROOT} per anti-patterns.md."
+        )
+    else:
+        result.add_pass("No suspicious absolute paths")
+
+    return result
+
+
+def validate_command_file(file_path: Path, verbose: bool, required_fields: List[str]) -> Dict[str, ValidationResult]:
+    """Run all validators against one command file."""
+    results: Dict[str, ValidationResult] = {}
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            content = f.read()
-    except Exception as e:
-        print(f"❌ Error reading file {file_path}: {e}", file=sys.stderr)
+        with open(file_path, "r", encoding="utf-8") as fh:
+            content = fh.read()
+    except OSError as err:
+        print(f"❌ Error reading {file_path}: {err}", file=sys.stderr)
         return results
 
-    # Run all validations
     results["structure"] = validate_structure(file_path, content, required_fields)
     results["security"] = validate_security(file_path, content)
-    results["context"] = validate_context_detection(file_path, content)
-    results["independence"] = validate_independence(file_path, content)
-    results["documentation"] = validate_documentation(file_path, content)
-
+    results["substitutions"] = validate_substitutions(file_path, content)
+    results["paths"] = validate_paths(file_path, content)
     return results
 
 
-def print_results(file_path: Path, results: Dict[str, ValidationResult], verbose: bool = False):
-    """Print validation results."""
+def print_results(file_path: Path, results: Dict[str, ValidationResult], verbose: bool) -> None:
     print(f"\n{'=' * 80}")
     print(f"Validating: {file_path}")
     print(f"{'=' * 80}\n")
 
-    for category, result in results.items():
-        print(f"{result.status} {result.category} Validation")
-
+    for result in results.values():
+        print(f"{result.status} {result.category}")
         if verbose or result.has_issues:
-            if result.errors:
-                for error in result.errors:
-                    print(f"  ❌ {error}")
-
-            if result.warnings:
-                for warning in result.warnings:
-                    print(f"  ⚠️  {warning}")
-
-            if verbose and result.passed:
+            for error in result.errors:
+                print(f"  ❌ {error}")
+            for warning in result.warnings:
+                print(f"  ⚠️  {warning}")
+            if verbose:
                 for passed in result.passed:
                     print(f"  ✅ {passed}")
-
         print()
 
 
-def get_overall_status(results: Dict[str, ValidationResult], strict: bool = False) -> str:
-    """Determine overall validation status."""
+def overall_status(results: Dict[str, ValidationResult], strict: bool) -> str:
     has_errors = any(r.errors for r in results.values())
     has_warnings = any(r.warnings for r in results.values())
-
     if has_errors or (strict and has_warnings):
         return "FAIL"
-    elif has_warnings:
+    if has_warnings:
         return "PASS WITH WARNINGS"
-    else:
-        return "PASS"
+    return "PASS"
 
 
 def find_command_files(directory: Path) -> List[Path]:
-    """Find all .md command files in directory recursively."""
-    return list(directory.rglob("*.md"))
+    return sorted(directory.rglob("*.md"))
 
 
-def main():
-    """Main execution function."""
+def main() -> None:
     args = parse_arguments()
-
     path = Path(args.path)
-
     if not path.exists():
-        print(f"❌ Error: Path does not exist: {path}", file=sys.stderr)
+        print(f"❌ Path does not exist: {path}", file=sys.stderr)
         sys.exit(1)
 
-    # Determine files to validate
     if path.is_file():
         files = [path]
     elif args.all:
@@ -465,37 +371,31 @@ def main():
             print(f"❌ No .md files found in: {path}", file=sys.stderr)
             sys.exit(1)
     else:
-        print(f"❌ Error: {path} is a directory. Use --all to validate all commands", file=sys.stderr)
+        print(f"❌ {path} is a directory; pass --all to scan recursively", file=sys.stderr)
         sys.exit(1)
+
+    required_fields = [f.strip() for f in args.required_fields.split(",") if f.strip()]
 
     print(f"🔍 Validating {len(files)} command file(s)...\n")
 
-    # Parse required fields
-    required_fields = [field.strip() for field in args.required_fields.split(",") if field.strip()]
-
-    # Validate each file
     all_passed = True
     for file_path in files:
         results = validate_command_file(file_path, args.verbose, required_fields)
+        if not results:
+            all_passed = False
+            continue
+        print_results(file_path, results, args.verbose)
+        if overall_status(results, args.strict) == "FAIL":
+            all_passed = False
 
-        if results:
-            print_results(file_path, results, args.verbose)
-
-            status = get_overall_status(results, args.strict)
-            if status == "FAIL":
-                all_passed = False
-
-    # Print summary
     print(f"\n{'=' * 80}")
     print("VALIDATION SUMMARY")
     print(f"{'=' * 80}\n")
-
     if all_passed:
         print("✅ All command files passed validation")
         sys.exit(0)
-    else:
-        print("❌ Some command files failed validation")
-        sys.exit(1)
+    print("❌ Some command files failed validation")
+    sys.exit(1)
 
 
 if __name__ == "__main__":

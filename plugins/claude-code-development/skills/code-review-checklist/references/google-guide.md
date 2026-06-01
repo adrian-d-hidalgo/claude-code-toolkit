@@ -75,7 +75,7 @@ The skill's 10-category list extends Google's 8 with `Security`, `Performance`, 
 
 ## §8 — Resolving conflicts
 
-When reviewer and reviewee disagree, Google's principle: **defer to the data**. Cite the principle (style guide, prior decision, performance measurement). When data doesn't resolve, escalate to a third reviewer or the team's tech lead — don't make it personal.
+When reviewer and reviewee disagree, Google's principle: **defer to the data**. Cite the principle (style guide, prior decision, performance measurement). When data doesn't resolve, escalate to a third reviewer or a senior engineer on the team — don't make it personal.
 
 In the skill output, when a finding is opinion-based, mark it `suggestion` not `required`. Save `blocking` and `required` for things you can back with data or principle.
 

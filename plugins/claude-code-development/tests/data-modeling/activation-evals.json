@@ -1,0 +1,141 @@
+{
+  "kind": "skill",
+  "skill": "data-modeling",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-22",
+  "notes": "Positive: design schema, choose normalization, OLTP vs OLAP, star vs normalized, single-table, access-pattern-first, model events. Negative: engine choice (architect), execute migration / write SQL (developer), test strategy (QE), threat-model (security), operate the store (SRE/platform outside this plugin). Edge: model + engine bundled ask (split); model for a domain crossing OLTP+OLAP (split into two stores).",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Diseña el esquema para un sistema de pedidos con estado de envío",
+      "should_trigger": true,
+      "category": "positive-design-schema-spanish"
+    },
+    {
+      "id": "pos-02",
+      "query": "Should the orders table be 3NF or denormalised given our read-heavy reporting workload?",
+      "should_trigger": true,
+      "category": "positive-normalization-decision"
+    },
+    {
+      "id": "pos-03",
+      "query": "Model the customer dimension for our analytics warehouse — star schema",
+      "should_trigger": true,
+      "category": "positive-kimball-star"
+    },
+    {
+      "id": "pos-04",
+      "query": "We're using DynamoDB. Design the single-table model for orders, customers, and order items with these 5 access patterns: ...",
+      "should_trigger": true,
+      "category": "positive-single-table-design"
+    },
+    {
+      "id": "pos-05",
+      "query": "Review my schema — are the indexes serving the actual access patterns?",
+      "should_trigger": true,
+      "category": "positive-review-schema"
+    },
+    {
+      "id": "pos-06",
+      "query": "Model the user-action audit log as an event-sourced stream",
+      "should_trigger": true,
+      "category": "positive-event-sourcing"
+    },
+    {
+      "id": "pos-07",
+      "query": "What's the right grain for the order-fulfilment fact table?",
+      "should_trigger": true,
+      "category": "positive-kimball-grain"
+    },
+    {
+      "id": "pos-08",
+      "query": "Should we use a document model or relational for the product catalogue?",
+      "should_trigger": true,
+      "category": "positive-document-vs-relational"
+    },
+    {
+      "id": "pos-09",
+      "query": "Modela los datos para un dashboard de métricas de marketing con 6 dimensiones",
+      "should_trigger": true,
+      "category": "positive-design-spanish-analytical"
+    },
+    {
+      "id": "pos-10",
+      "query": "We need indexes and partitions for this 500M-row events table — what's the rationale per access pattern?",
+      "should_trigger": true,
+      "category": "positive-indexes-partitions"
+    },
+    {
+      "id": "neg-01",
+      "query": "Should we use Postgres or DynamoDB for this workload?",
+      "should_trigger": false,
+      "category": "negative-engine-choice",
+      "notes": "Engine selection = software-architect. data-modeling models within a chosen engine."
+    },
+    {
+      "id": "neg-02",
+      "query": "Run this ALTER TABLE migration in staging",
+      "should_trigger": false,
+      "category": "negative-execute-migration"
+    },
+    {
+      "id": "neg-03",
+      "query": "Write the SQL queries for the order-lookup endpoint",
+      "should_trigger": false,
+      "category": "negative-write-queries"
+    },
+    {
+      "id": "neg-04",
+      "query": "Plan a migration to rename the email_addr column to email without breaking consumers",
+      "should_trigger": false,
+      "category": "negative-schema-evolution",
+      "notes": "Change-over-time = schema-evolution skill, not data-modeling."
+    },
+    {
+      "id": "neg-05",
+      "query": "Design the test strategy for the orders service",
+      "should_trigger": false,
+      "category": "negative-test-strategy"
+    },
+    {
+      "id": "neg-06",
+      "query": "Threat-model the PII handling in our user table",
+      "should_trigger": false,
+      "category": "negative-threat-model"
+    },
+    {
+      "id": "neg-07",
+      "query": "Set up Postgres replication and backup policy for production",
+      "should_trigger": false,
+      "category": "negative-operate-store",
+      "notes": "Operating the store = platform / SRE, outside this plugin."
+    },
+    {
+      "id": "neg-08",
+      "query": "Review this PR with schema changes for code quality",
+      "should_trigger": false,
+      "category": "negative-code-review"
+    },
+    {
+      "id": "edge-01",
+      "query": "Design the schema AND pick the right database engine for this analytics use case",
+      "should_trigger": true,
+      "category": "edge-engine-plus-schema-bundle",
+      "notes": "Fires for the schema portion; surface engine choice as architect handoff in the report."
+    },
+    {
+      "id": "edge-02",
+      "query": "We have one orders dataset that serves both checkout (OLTP) and analytics (OLAP). How do we model this?",
+      "should_trigger": true,
+      "category": "edge-hybrid-workload-split",
+      "notes": "Fires; the modelling answer is 'split into two stores with CDC linkage,' not 'one schema fits both.'"
+    },
+    {
+      "id": "edge-03",
+      "query": "Model the orders schema but I haven't enumerated the access patterns yet",
+      "should_trigger": true,
+      "category": "edge-missing-access-patterns",
+      "notes": "Fires and refuses to model; asks for access patterns first per the four-questions discipline."
+    }
+  ]
+}

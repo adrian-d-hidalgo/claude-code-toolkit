@@ -37,9 +37,18 @@ Complete validation criteria for agent quality and compliance.
 
 ### Model Field
 
-- [ ] Valid value: `sonnet`, `opus`, `haiku`, or `inherit`
-- [ ] Appropriate for agent complexity
-- [ ] Consistent with agent's role
+- [ ] Valid value: `sonnet`, `opus`, `haiku`, or `inherit` (prefer aliases over full version IDs)
+- [ ] If a full version ID is pinned (`claude-opus-4-7`, etc.), the rationale is documented in the agent body or commit message
+- [ ] Aligned with the cognitive-load tier (`references/model-effort-matrix.md`): Tier A/B → `opus`, Tier C → `sonnet`, Tier D → `sonnet` or `haiku`
+
+### Effort Field + Model:Effort Pairing
+
+- [ ] If present, `effort:` is one of: `low`, `medium`, `high`, `xhigh`, `max`
+- [ ] **`effort: xhigh` is paired with `model: opus` explicitly** — never with `model: inherit` or `model: sonnet` (xhigh is Opus-only; pairing breaks on Sonnet sessions)
+- [ ] `effort:` is **not defaulted to `max`** — Anthropic docs explicitly warn against it; reserve `max` for one-shot high-stakes invocations with evidence of headroom past `xhigh`
+- [ ] Intelligence-sensitive agents (write/refactor/review/debug code) use at least `effort: high` (Sonnet) or `effort: xhigh` (Opus) — not `medium`, which docs reserve for "cost-sensitive work that can trade off some intelligence"
+- [ ] Truly mechanical agents (formatters, regex transformers) using `effort: medium` have that choice justified in the body — "this is mechanical work, judgment is not required"
+- [ ] `effort:` is omitted (or N/A) for `model: haiku` — Haiku does not support adaptive thinking
 
 ## Activation Examples Validation
 

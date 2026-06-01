@@ -65,7 +65,7 @@ The skill emits two structured content blocks. The caller decides whether to sav
 # Development plan — <Feature / Epic name>
 
 **Spec source**: <link to PRD> · <link to tech-spec> · <ADR-NNNN, ADR-NNNN>
-**Owners suggestion**: Tech Lead <name>, Architect <name>, QE <name>, Security <name>
+**Owners suggestion**: Code Planner <name>, Architect <name>, QE <name>, Security <name>
 **Target dates** (informational): Start YYYY-MM-DD · Target done YYYY-MM-DD
 
 ## 1. Scope summary

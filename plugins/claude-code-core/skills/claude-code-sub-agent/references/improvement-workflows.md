@@ -229,3 +229,53 @@ When current information needed:
    - Provide clear decision criteria
 
 **Use template** for structure reference
+
+## Sub-Workflow 2F: Model + Effort Alignment
+
+**Symptoms**:
+
+- `model: inherit` paired with reasoning-heavy work (agent is silently downgraded to Sonnet on non-Max sessions, losing Opus's capacity for tier A/B work)
+- `effort: max` set as a blanket default (wastes tokens, overthinks per Anthropic's warning)
+- `effort: xhigh` paired with `model: inherit` or `model: sonnet` (will fail — `xhigh` is Opus-only)
+- Intelligence-sensitive agent (code-writing / refactoring / debugging) running at `effort: medium` (under-powered for the work)
+- Full version ID pinned (`claude-opus-4-7`) without a documented reason (agent goes stale when newer versions ship)
+
+**Implementation**:
+
+1. **Classify the agent's cognitive load** using `references/model-effort-matrix.md`:
+   - Tier A — Strategic (architecture, planning, ADRs, NFRs)
+   - Tier B — Heavy analysis (STRIDE, dimensional modelling, performance analysis)
+   - Tier C — Intelligence-sensitive execution (code writing, review, debug, refactor)
+   - Tier D — Mechanical (regex transformers, formatters, syntax converters)
+
+2. **Compare current pair against tier default**:
+
+   ```yaml
+   # Tier A/B
+   model: opus
+   effort: xhigh
+
+   # Tier C
+   model: sonnet
+   effort: high
+
+   # Tier D
+   model: sonnet
+   effort: medium
+   # or:
+   model: haiku
+   # (omit effort — Haiku doesn't support adaptive thinking)
+   ```
+
+3. **Flag unsafe pairings**:
+   - `effort: xhigh` + `model: inherit` → unsafe; pin `model: opus`.
+   - `effort: xhigh` + `model: sonnet` → invalid; demote to `effort: high` or change model.
+   - `effort: max` as default → revert to tier-appropriate `xhigh`/`high`; document any retention with an evidence link to evals.
+   - Full version ID (`claude-opus-4-7`) without rationale → switch to alias (`opus`) for auto-update.
+
+4. **Promote intelligence-sensitive agents off `medium`**:
+   Docs frame `high` as the minimum for intelligence-sensitive work. Any code-writing / refactoring / review / debug agent currently on `medium` should be promoted to `high` unless the body justifies why the work is genuinely mechanical.
+
+5. **Run validation**: see `references/validation-checklist.md` Effort Field + Model:Effort Pairing section.
+
+**Load**: `references/model-effort-matrix.md` for the full rubric, decision tree, and per-cell hints.

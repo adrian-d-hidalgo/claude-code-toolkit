@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "name": "claude-code-toolkit",
-  "description": "Personal toolkit for Claude Code. Bundles a core meta-toolkit for authoring skills, sub-agents, slash commands, plugins, hooks, and CLAUDE.md memory files, plus a development plugin shipping an opinionated senior engineering team (software-developer, software-architect, tech-lead, code-reviewer, quality-engineer, security-engineer) — composable LEGO pieces with transversal practices (evidence levels, code-grounded analysis, no-silent-drift, outputs-as-content) — and twelve methodology-anchored skills (adr, test-plan, development-plan, work-splitting, bug-analysis, threat-model, tech-spec, debugging-protocol, code-audit, code-review-checklist, git-commit, mermaid).",
+  "description": "Personal toolkit for Claude Code. Bundles a core meta-toolkit for authoring skills, sub-agents, slash commands, plugins, hooks, and CLAUDE.md memory files, plus a development plugin shipping an opinionated senior engineering team (software-developer, software-architect, code-planner, code-reviewer, quality-engineer, security-engineer, debugger, data-engineer) — composable LEGO pieces with transversal practices (evidence levels, code-grounded analysis, risk scoring, tool-surface inventory, no-silent-drift, outputs-as-content) — and sixteen methodology-anchored skills (adr, test-plan, development-plan, work-splitting, bug-analysis, threat-model, tech-spec, debugging-protocol, code-audit, code-review-checklist, git-commit, mermaid, external-research, coding-practices, data-modeling, schema-evolution).",
   "owner": {
     "name": "Adrián Darío Hidalgo Flores",
     "url": "https://github.com/adrian-d-hidalgo/claude-code-toolkit"
@@ -27,16 +27,18 @@
     {
       "name": "claude-code-development",
       "source": "./plugins/claude-code-development",
-      "description": "Opinionated senior engineering team for Claude Code: developer, architect, tech-lead, reviewer, QE, security-eng — composable pieces with transversal practices (evidence levels, code-grounded analysis, no-silent-drift, outputs-as-content). Twelve methodology-anchored bundled skills covering ADR (Nygard), test plan (ISO 29119-3), development plan (spec-kit + SAFe), work-splitting (Lawrence / SPIDR / Hamburger / Carpaccio), bug-analysis (5 Whys / Ishikawa / FTA / blameless postmortem), threat-model (STRIDE / PASTA), tech-spec (C4 / arc42), debugging-protocol (Zeller / git-bisect / observability-first), code-audit (SQALE / Fowler), code-review-checklist (Google / Wiegers / OWASP), git-commit (Conventional Commits), mermaid. Least-privilege tooling, no orchestration baked in.",
+      "description": "Opinionated senior engineering team for Claude Code: developer, architect, code-planner, reviewer, QE, security-eng, debugger, data-engineer — composable pieces with transversal practices (evidence levels, code-grounded analysis, risk scoring, tool-surface inventory, no-silent-drift, outputs-as-content). Sixteen methodology-anchored bundled skills covering ADR (Nygard), test plan (ISO 29119-3), development plan (spec-kit + SAFe), work-splitting (Lawrence / SPIDR / Hamburger / Carpaccio), bug-analysis (5 Whys / Ishikawa / FTA / blameless postmortem), threat-model (STRIDE / PASTA), tech-spec (C4 / arc42), debugging-protocol (Zeller / git-bisect / observability-first), code-audit (SQALE / Fowler), code-review-checklist (Google / Wiegers / OWASP), git-commit (Conventional Commits), mermaid, external-research (triangulation + source priority), coding-practices (~25 rules + strict comment philosophy), data-modeling (Kimball / Codd / access-patterns-first), schema-evolution (Sadalage expand-contract). Least-privilege tooling, no orchestration baked in.",
       "category": "development",
       "tags": [
         "engineering-team",
         "software-developer",
         "software-architect",
-        "tech-lead",
+        "code-planner",
         "code-reviewer",
         "quality-engineer",
         "security-engineer",
+        "debugger",
+        "data-engineer",
         "adr",
         "test-plan",
         "development-plan",
@@ -49,6 +51,10 @@
         "code-review-checklist",
         "git-commit",
         "mermaid",
+        "external-research",
+        "coding-practices",
+        "data-modeling",
+        "schema-evolution",
         "spec-kit",
         "safe",
         "invest",
@@ -56,6 +62,10 @@
         "5-whys",
         "iso-29119",
         "iso-25010",
+        "kimball",
+        "expand-contract",
+        "data-contracts",
+        "tool-surface-inventory",
         "conventional-commits",
         "conventional-comments"
       ]

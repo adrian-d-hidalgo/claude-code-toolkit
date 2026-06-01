@@ -1,6 +1,6 @@
 # work-splitting — activation tests
 
-Companion corpus to `activation-evals.json`. The skill is **preloaded on `tech-lead`** (full SKILL.md injected into the agent's system prompt at startup) and available via runtime discovery for any other agent or for the main conversation when a work item needs splitting.
+Companion corpus to `activation-evals.json`. The skill is **preloaded on `code-planner`** (full SKILL.md injected into the agent's system prompt at startup) and available via runtime discovery for any other agent or for the main conversation when a work item needs splitting.
 
 ## Scope
 
@@ -19,7 +19,7 @@ Fires when the user asks to split a work item (story / task / bug / spike / chor
 
 - Implementation (software-developer).
 - PRD authoring (prd-writer at user-level).
-- Full development plan (development-plan + tech-lead).
+- Full development plan (development-plan + code-planner).
 - Code review (code-reviewer).
 - Architecture design (software-architect).
 - ADR authoring (adr skill).
@@ -34,6 +34,6 @@ Fires when the user asks to split a work item (story / task / bug / spike / chor
 
 ## Notes for the runner
 
-- The skill is preloaded on `tech-lead`; routing rate for `tech-lead` invocations may be 100% as a result.
+- The skill is preloaded on `code-planner`; routing rate for `code-planner` invocations may be 100% as a result.
 - Description is a pure routing trigger: names intents (split this story / task / bug / work item), named techniques (SPIDR, hamburger, carpaccio), Spanish phrasing.
 - Outcome is the gate; routing rate is informational.

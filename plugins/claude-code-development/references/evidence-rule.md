@@ -1,8 +1,8 @@
 # Evidence levels — transversal convention
 
-Every engineering-team agent in `claude-code-development` annotates **every recommendation, decision, finding, sub-task, or sign-off** with one of three evidence levels. The annotation is short, inline, and explicit. The reader can audit the claim without re-doing the work.
+Every engineering-team agent in `claude-code-development` annotates **every recommendation, decision, finding, sub-task, or sign-off** with one of four evidence levels. The annotation is short, inline, and explicit. The reader can audit the claim without re-doing the work.
 
-## The three levels
+## The four levels
 
 ### `[Verified]`
 
@@ -37,12 +37,27 @@ Assumption pending validation. The reader (or a downstream consumer) must verify
 
 Use `[Unverified]` honestly. Stamping `[Verified]` on an assumption breaks the reader's trust in the entire artefact.
 
+### `[Verified-external]`
+
+Sourced from an external authoritative document outside the repository — official docs, release notes, RFCs, vendor security advisories, upstream issue trackers. Distinct from `[Verified]` because the source lives outside the codebase and can move, be revised, or be deprecated.
+
+**Always cite URL + access date + version when applicable**:
+
+- `[Verified-external — Next.js 14.2.3 changelog https://github.com/vercel/next.js/releases/tag/v14.2.3 accessed 2026-05-22]`
+- `[Verified-external — RFC 9457 §3.1.2 https://www.rfc-editor.org/rfc/rfc9457 accessed 2026-05-22]`
+- `[Verified-external — Postgres 16 docs §11.2 "Index Types" https://www.postgresql.org/docs/16/indexes-types.html accessed 2026-05-22]`
+- `[Verified-external — GitHub issue vercel/next.js#62018 status:open accessed 2026-05-22]`
+
+Use this level when the source is outside the repo. Prefer it over `[Inference]` for library/spec behaviour — confirming against the upstream source is stronger than deducing from typical-for-language patterns.
+
 ## Anti-patterns
 
 - **Missing level tag**: a claim without an evidence level reads as fact; the reader can't audit. Tag every claim.
 - **`[Verified]` without a source**: the reader can't re-check. Cite file:line, commit, dashboard, command, or doc reference.
 - **`[Inference]` without antecedents**: degenerates to opinion. Cite the verified observations the inference rests on.
 - **`[Unverified]` without a verification path**: lazy — the reader has nowhere to go. Always state what would close the gap.
+- **`[Verified-external]` without URL or access date**: external sources move; without a date the claim cannot be re-checked. Always include URL + access date + version.
+- **`[Verified]` for a library claim that was not measured in this repo**: if the claim describes upstream library behaviour and is not measured by a local test, it is `[Verified-external]` (or `[Inference]` if deduced from typical-for-library patterns without consulting the source).
 - **Wrapping the whole document in one tag**: per-claim granularity. Different claims have different evidence levels.
 - **Tag inflation**: not every prose sentence needs a tag. Apply to claims that matter — recommendations, decisions, findings, sub-task DoD items, sign-off statements. Filler narration doesn't need tags.
 
@@ -50,7 +65,7 @@ Use `[Unverified]` honestly. Stamping `[Verified]` on an assumption breaks the r
 
 | Agent              | Where evidence levels apply                                                                                     |
 | ------------------ | --------------------------------------------------------------------------------------------------------------- |
-| tech-lead          | Triage findings, every sub-task field where it's a claim (e.g. "Files / modules touched"), spike exit criteria. |
+| code-planner       | Triage findings, every sub-task field where it's a claim (e.g. "Files / modules touched"), spike exit criteria. |
 | software-architect | Every decision; every NFR target; every ADR's Context and Consequences sections.                                |
 | code-reviewer      | Every finding (caught by analyzer = Verified; deduced pattern = Inference; suspicion = Unverified).             |
 | quality-engineer   | Coverage / flake / mutation claims; risk scoring; layer recommendations.                                        |

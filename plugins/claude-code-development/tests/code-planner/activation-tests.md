@@ -1,10 +1,10 @@
-# tech-lead — activation tests
+# code-planner — activation tests
 
 Companion corpus to `activation-evals.json`. Sub-agents are evaluated on **outcome quality** (LLM-as-judge), not routing accuracy — Claude rationally chooses not to delegate for small or repo-mismatched tasks. The judge scores `understood_intent`, `action_appropriate`, and `meta_skill_was_correct_route` per case.
 
 ## Scope
 
-The `tech-lead` agent fires when the user asks to convert an approved PRD + tech-spec into an executable development plan: ordered tasks, dependencies, PR sequencing, spikes, Definition of Done per task, AC traceability. It declines for product / architecture / test-plan / security / coding / sprint-planning / cross-feature roadmap work.
+The `code-planner` agent fires when the user asks to convert an approved PRD + tech-spec into an executable development plan: ordered tasks, dependencies, PR sequencing, spikes, Definition of Done per task, AC traceability. It declines for product / architecture / test-plan / security / coding / sprint-planning / cross-feature roadmap work. The name reflects that the agent plans the *code* work — it does not replace the human Tech Lead role (people management, capacity allocation, mentoring, cross-feature roadmap remain that human's responsibility).
 
 ## Positive coverage (pos-01 … pos-10)
 

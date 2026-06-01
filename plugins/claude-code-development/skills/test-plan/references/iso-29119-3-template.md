@@ -137,7 +137,7 @@ Configuration drift is managed via IaC; the plan flags any deltas from the agree
 
 ## 10. Roles and Responsibilities (RACI)
 
-| Activity         | QE Lead | Developers | PM  | Tech Lead | SRE | SecEng |
+| Activity         | QE Lead | Developers | PM  | Code Planner | SRE | SecEng |
 | ---------------- | ------- | ---------- | --- | --------- | --- | ------ |
 | Plan ownership   | R/A     | C          | C   | C         | C   | I      |
 | Test case design | R/A     | C          | C   | C         | I   | I      |
@@ -212,14 +212,14 @@ Testing complete when:
 - **Daily standup**: test progress vs plan.
 - **Mid-cycle review**: blocker triage.
 - **Pre-sign-off review**: exit criteria check.
-- **Stakeholder updates**: weekly to PM, tech lead.
+- **Stakeholder updates**: weekly to PM, code planner.
 
 ## 17. Change Control
 
 Plan changes require:
 
 - Author proposes change with rationale.
-- Approver sign-off (QE Lead + Tech Lead).
+- Approver sign-off (QE Lead + Code Planner).
 - Version bump and changelog entry below.
 
 ### Changelog
@@ -231,7 +231,7 @@ Plan changes require:
 ## 18. Approvals
 
 - [ ] QE Lead — [name + date]
-- [ ] Tech Lead — [name + date]
+- [ ] Code Planner — [name + date]
 - [ ] Product Manager — [name + date]
 - [ ] Security (if security-sensitive) — [name + date]
 - [ ] SRE (if reliability-sensitive) — [name + date]

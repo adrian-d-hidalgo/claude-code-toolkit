@@ -33,5 +33,5 @@ Does NOT fire for: per-PR review (→ code-review-checklist), implementation, ar
 
 ## Notes for the runner
 
-- Preloaded on `code-reviewer` and runtime-available to `software-architect` (for modernization proposals) and `tech-lead` (for opportunistic-refactor identification).
+- Preloaded on `code-reviewer` and runtime-available to `software-architect` (for modernization proposals) and `code-planner` (for opportunistic-refactor identification).
 - Description is a pure routing trigger.

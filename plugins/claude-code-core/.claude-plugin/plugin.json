@@ -1,6 +1,6 @@
 {
   "name": "claude-code-core",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Meta-skills for authoring Claude Code extensions: scaffold, validate, and audit skills, sub-agents, slash commands, plugins, hooks, and CLAUDE.md memory files against the latest official conventions.",
   "author": {
     "name": "Adrián Darío Hidalgo Flores"

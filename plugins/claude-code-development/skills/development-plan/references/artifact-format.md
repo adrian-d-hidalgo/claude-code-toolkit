@@ -7,7 +7,7 @@ The `development-plan` skill emits **two structured content blocks**: a **Plan**
 | Block     | Audience                                  | Cadence of update                                 |
 | --------- | ----------------------------------------- | ------------------------------------------------- |
 | Plan      | All stakeholders (PM, architect, QE, sec) | Stable — updated when scope or sequencing shifts. |
-| Sub-tasks | Developers + tech lead                    | Living — caller's tracker tracks per-item state.  |
+| Sub-tasks | Developers + code planner                 | Living — caller's tracker tracks per-item state.  |
 
 Keep the Plan short (1–2 pages of content). Keep Sub-tasks exhaustive (one entry per shippable unit). Neither carries a `Status:` lifecycle field — that lives in the project's tracker.
 
@@ -24,7 +24,7 @@ Keep the Plan short (1–2 pages of content). Keep Sub-tasks exhaustive (one ent
 - Test plan: <link or _N/A — explain_>
 - Threat model: <link or _N/A — explain_>
 
-**Owners suggestion**: Tech Lead <name> · Architect <name> · QE <name> · Security <name> · Product <name>
+**Owners suggestion**: Code Planner <name> · Architect <name> · QE <name> · Security <name> · Product <name>
 **Target dates** (informational, not authoritative — tracker is): Start YYYY-MM-DD · Target done YYYY-MM-DD
 
 ## 1. Scope summary
@@ -104,7 +104,7 @@ The plan is complete when:
 | Architect |      |                              |
 | QE        |      |                              |
 | Security  |      |                              |
-| Tech Lead |      |                              |
+| Code Planner |      |                              |
 ```
 
 **No `Status:` field** anywhere in the Plan block. Lifecycle is the project tracker's domain.
@@ -293,7 +293,7 @@ Rollback: flip flag OFF; defer contract sub-task until incident resolved.
 - [ ] Rollback: pure revert — no schema or contract change.
 - [ ] PR: title `refactor(discount): extract DiscountComputer interface`; description references `Enables T-04, T-05`.
 
-**Notes**: Opportunistic in-scope refactor surfaced by code-grounded reading during planning; bounded to S per the tech-lead opportunistic-refactor discipline.
+**Notes**: Opportunistic in-scope refactor surfaced by code-grounded reading during planning; bounded to S per the code-planner opportunistic-refactor discipline.
 ```
 
 ## Anti-pattern callout

@@ -1,0 +1,140 @@
+{
+  "kind": "skill",
+  "skill": "external-research",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-22",
+  "notes": "Positive: explicit external-research asks (investigate, look up, check changelog, is X a known issue, compare A vs B, RFC quote). Negative: pure repo questions, implementation, design, review, test strategy. Edge: trigger-word 'investiga' on an internal-debug question; comparative analysis that could route to architect; vendor MCP recall vs external research.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Investiga si esta versión de Next.js 14.2.3 tiene un known issue con app router redirects",
+      "should_trigger": true,
+      "category": "positive-known-issue-version-specific"
+    },
+    {
+      "id": "pos-02",
+      "query": "Check the Postgres 16 changelog for behaviour changes in logical replication",
+      "should_trigger": true,
+      "category": "positive-changelog-lookup"
+    },
+    {
+      "id": "pos-03",
+      "query": "What does RFC 9457 say about problem-details content negotiation?",
+      "should_trigger": true,
+      "category": "positive-rfc-spec-quote"
+    },
+    {
+      "id": "pos-04",
+      "query": "Is there an upstream issue for the Prisma pooler reconnect bug we keep seeing?",
+      "should_trigger": true,
+      "category": "positive-upstream-issue"
+    },
+    {
+      "id": "pos-05",
+      "query": "Compare Kafka and Pulsar for our event-streaming use case — find current comparative analyses",
+      "should_trigger": true,
+      "category": "positive-comparative-analysis"
+    },
+    {
+      "id": "pos-06",
+      "query": "Has anyone else hit `EBADF` after upgrading Node to 22.3?",
+      "should_trigger": true,
+      "category": "positive-has-anyone-hit-this"
+    },
+    {
+      "id": "pos-07",
+      "query": "Find the documentation for the OAuth 2.1 client-credentials flow with the latest IETF draft",
+      "should_trigger": true,
+      "category": "positive-find-documentation"
+    },
+    {
+      "id": "pos-08",
+      "query": "Why is the AWS SDK v3 retrying on 5xx now? Look up the recent behaviour change",
+      "should_trigger": true,
+      "category": "positive-vendor-behaviour-change"
+    },
+    {
+      "id": "pos-09",
+      "query": "Investigar el último security advisory del proyecto express",
+      "should_trigger": true,
+      "category": "positive-security-advisory-spanish"
+    },
+    {
+      "id": "pos-10",
+      "query": "What is the current best practice for storing JWT refresh tokens? Find authoritative sources",
+      "should_trigger": true,
+      "category": "positive-best-practice-external"
+    },
+    {
+      "id": "neg-01",
+      "query": "Where is `validateOrder` defined in this codebase?",
+      "should_trigger": false,
+      "category": "negative-pure-repo-lookup",
+      "notes": "Pure repo question → code reading, not external research."
+    },
+    {
+      "id": "neg-02",
+      "query": "Implement the user registration flow with email verification",
+      "should_trigger": false,
+      "category": "negative-implementation"
+    },
+    {
+      "id": "neg-03",
+      "query": "Design the architecture for our new notification service",
+      "should_trigger": false,
+      "category": "negative-architecture"
+    },
+    {
+      "id": "neg-04",
+      "query": "Review this PR for code quality issues",
+      "should_trigger": false,
+      "category": "negative-code-review"
+    },
+    {
+      "id": "neg-05",
+      "query": "Write a test plan for the new checkout flow",
+      "should_trigger": false,
+      "category": "negative-test-strategy"
+    },
+    {
+      "id": "neg-06",
+      "query": "Refactor this function to extract the validation logic into a helper",
+      "should_trigger": false,
+      "category": "negative-refactor"
+    },
+    {
+      "id": "neg-07",
+      "query": "What's the root cause of the checkout 500 error from yesterday?",
+      "should_trigger": false,
+      "category": "negative-internal-rca",
+      "notes": "Bug-analysis or debugger — root cause from internal artefacts, not external research."
+    },
+    {
+      "id": "neg-08",
+      "query": "Run mypy and tell me what type errors it finds",
+      "should_trigger": false,
+      "category": "negative-internal-tooling-run"
+    },
+    {
+      "id": "edge-01",
+      "query": "Investiga por qué falla nuestra integración con Stripe — sospecho que es un known issue de su SDK reciente",
+      "should_trigger": true,
+      "category": "edge-internal-debug-with-external-suspicion",
+      "notes": "Mixed: starts as a debug question but explicit external-suspicion phrasing should activate external-research alongside debugger."
+    },
+    {
+      "id": "edge-02",
+      "query": "Should we use Postgres logical replication or trigger-based CDC?",
+      "should_trigger": true,
+      "category": "edge-comparative-architect-handoff",
+      "notes": "Comparative analysis fires external-research; the final architecture decision may handoff to architect via the report."
+    },
+    {
+      "id": "edge-03",
+      "query": "Pull the latest 5 Sentry issues for the auth service",
+      "should_trigger": false,
+      "category": "edge-mcp-not-external",
+      "notes": "If a Sentry MCP is connected, that is the right path — not open-ended external research. External-research kicks in if the MCP is absent and the user wants known-issue lookup at upstream."
+    }
+  ]
+}

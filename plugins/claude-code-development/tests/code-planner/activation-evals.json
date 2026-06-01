@@ -1,7 +1,7 @@
 {
   "kind": "subagent",
-  "agent": "tech-lead",
-  "version": "1.1.0",
+  "agent": "code-planner",
+  "version": "1.2.0",
   "snapshot_date": "2026-05-17",
   "notes": "Positive: prompts asking to break a PRD/tech-spec into an executable development plan, sequence PRs for a migration, define spikes, build a traceability matrix from AC to tasks, plan rollout with feature flags, lay out task dependencies. Negative: write code, write the PRD, write the test plan, write the tech-spec, run sprint planning (capacity allocation), review a PR. Edge: lite-plan requests, plans without an approved spec yet.",
   "cases": [
@@ -165,7 +165,7 @@
       "query": "Plan how we fix this production bug — start with root-cause analysis then sequence the fix",
       "should_trigger": true,
       "category": "positive-bug-intake",
-      "notes": "TL invokes bug-analysis during triage; then plans the fix."
+      "notes": "code-planner invokes bug-analysis during triage; then plans the fix."
     },
     {
       "id": "pos-15",

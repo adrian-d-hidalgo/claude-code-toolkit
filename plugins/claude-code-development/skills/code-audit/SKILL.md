@@ -137,7 +137,7 @@ Low Impact | FILL-INS | THANKLESS |
 - Lead with the **scope + summary** (number of findings by severity + tech-debt rating + top-3 priorities) — stakeholders scan headlines.
 - Cite concrete file:line for every finding; abstract critiques don't drive action.
 - Distinguish quick wins from major projects clearly; teams act on quick wins independently and need leadership alignment on major projects.
-- Strategic recommendations are suggestions — never invocations. The architect / tech-lead acts on them via their own protocols.
+- Strategic recommendations are suggestions — never invocations. The architect / code-planner acts on them via their own protocols.
 
 ## Reference index
 

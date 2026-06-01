@@ -1,0 +1,158 @@
+{
+  "kind": "subagent",
+  "agent": "data-engineer",
+  "version": "1.0.0",
+  "snapshot_date": "2026-05-22",
+  "notes": "Positive: schema design, migration planning, data contract, indexes/partitions, lineage, access-pattern audit, schema review. Negative: engine choice (architect), execute migration (developer), code review (code-reviewer), test strategy (QE), threat-model PII (security), operate the store (SRE/platform). Edge: hybrid asks (schema + engine), feature planning that needs schema work (code-planner leads, data-engineer consulted), execution requests masquerading as design.",
+  "cases": [
+    {
+      "id": "pos-01",
+      "query": "Diseña el esquema para un sistema de pedidos con eventos de estado",
+      "should_trigger": true,
+      "category": "positive-design-schema-spanish"
+    },
+    {
+      "id": "pos-02",
+      "query": "Plan a migration that adds tenant_id to the users table for our multi-tenant rollout",
+      "should_trigger": true,
+      "category": "positive-migration-plan"
+    },
+    {
+      "id": "pos-03",
+      "query": "Design the data contract between the orders-service producer and the analytics-warehouse consumer",
+      "should_trigger": true,
+      "category": "positive-data-contract"
+    },
+    {
+      "id": "pos-04",
+      "query": "What indexes and partitions should this 500M-row events table have given these access patterns?",
+      "should_trigger": true,
+      "category": "positive-indexes-partitions"
+    },
+    {
+      "id": "pos-05",
+      "query": "Evolve the user schema to split the name column without breaking downstream consumers",
+      "should_trigger": true,
+      "category": "positive-schema-evolution"
+    },
+    {
+      "id": "pos-06",
+      "query": "Audit my data model for the customer dimension — does it match our actual access patterns?",
+      "should_trigger": true,
+      "category": "positive-audit-model"
+    },
+    {
+      "id": "pos-07",
+      "query": "Anchor this fact table to a business process — we have order placement, order fulfilment, and shipment as candidates",
+      "should_trigger": true,
+      "category": "positive-kimball-business-process"
+    },
+    {
+      "id": "pos-08",
+      "query": "Plan a dual-write strategy and backfill for the customer_id type migration from int to bigint",
+      "should_trigger": true,
+      "category": "positive-dual-write-backfill"
+    },
+    {
+      "id": "pos-09",
+      "query": "Modela los datos del pipeline ETL de marketing — necesito 6 dimensiones y 3 hechos",
+      "should_trigger": true,
+      "category": "positive-modela-spanish"
+    },
+    {
+      "id": "pos-10",
+      "query": "Document the data lineage for the customer-360 dataset — where does each column come from?",
+      "should_trigger": true,
+      "category": "positive-data-lineage"
+    },
+    {
+      "id": "neg-01",
+      "query": "Should we use Postgres or DynamoDB for the orders store?",
+      "should_trigger": false,
+      "category": "negative-engine-choice",
+      "notes": "Engine selection = software-architect via NFRs and ADRs. data-engineer models within the chosen engine."
+    },
+    {
+      "id": "neg-02",
+      "query": "Apply this migration in staging and verify the backfill ran",
+      "should_trigger": false,
+      "category": "negative-execute-migration",
+      "notes": "Execution = software-developer. data-engineer plans; developer executes."
+    },
+    {
+      "id": "neg-03",
+      "query": "Review this PR with schema changes for code quality issues",
+      "should_trigger": false,
+      "category": "negative-code-review",
+      "notes": "PR code review = code-reviewer."
+    },
+    {
+      "id": "neg-04",
+      "query": "Write the test plan for the orders service",
+      "should_trigger": false,
+      "category": "negative-test-plan",
+      "notes": "Test strategy = quality-engineer."
+    },
+    {
+      "id": "neg-05",
+      "query": "Threat-model the PII fields in our user schema — encryption at rest, row-level security",
+      "should_trigger": false,
+      "category": "negative-security",
+      "notes": "Security audit of PII handling = security-engineer; data-engineer designs the model, security audits it."
+    },
+    {
+      "id": "neg-06",
+      "query": "Set up Postgres replication and the daily backup schedule",
+      "should_trigger": false,
+      "category": "negative-operate-store",
+      "notes": "Operations = platform / SRE, outside this plugin's scope."
+    },
+    {
+      "id": "neg-07",
+      "query": "Implement the SQL query for the order-lookup endpoint",
+      "should_trigger": false,
+      "category": "negative-write-queries"
+    },
+    {
+      "id": "neg-08",
+      "query": "Plan the iteration backlog for the orders rewrite",
+      "should_trigger": false,
+      "category": "negative-code-planner-planning",
+      "notes": "Backlog planning = code-planner; data-engineer consulted on schema sub-tasks but does not own the plan."
+    },
+    {
+      "id": "neg-09",
+      "query": "Build the ETL job code for the marketing pipeline",
+      "should_trigger": false,
+      "category": "negative-implementation",
+      "notes": "Implementation = software-developer."
+    },
+    {
+      "id": "edge-01",
+      "query": "Design the schema and pick the engine for the new analytics warehouse",
+      "should_trigger": true,
+      "category": "edge-schema-plus-engine",
+      "notes": "Fires for schema design; surface engine-choice as architect handoff in the report."
+    },
+    {
+      "id": "edge-02",
+      "query": "We have a new feature that requires schema work — plan it",
+      "should_trigger": true,
+      "category": "edge-feature-with-schema",
+      "notes": "Fires for schema component; recommend code-planner leads the overall plan and consumes the data-engineer output as one input."
+    },
+    {
+      "id": "edge-03",
+      "query": "Audit my proposed migration plan for any breaking changes I missed",
+      "should_trigger": true,
+      "category": "edge-audit-existing-plan"
+    },
+    {
+      "id": "edge-04",
+      "query": "I want a quick review of this DDL before I run it in staging",
+      "should_trigger": true,
+      "category": "edge-pre-execution-review",
+      "notes": "Fires for review; the agent designs and reviews — it does not run the DDL."
+    }
+  ]
+}

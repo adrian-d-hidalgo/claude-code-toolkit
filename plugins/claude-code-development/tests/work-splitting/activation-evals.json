@@ -77,7 +77,7 @@
       "query": "Give me the full development plan for this PRD — triage + plan + sub-tasks",
       "should_trigger": false,
       "category": "negative-full-plan",
-      "notes": "Full plan = development-plan + tech-lead; work-splitting fires only when an item is already known to be too big."
+      "notes": "Full plan = development-plan + code-planner; work-splitting fires only when an item is already known to be too big."
     },
     {
       "id": "neg-04",

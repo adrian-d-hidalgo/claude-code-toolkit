@@ -89,7 +89,7 @@
       "query": "Give me a development plan: triage + plan + sub-tasks",
       "should_trigger": false,
       "category": "negative-development-plan",
-      "notes": "Dev plan = development-plan skill / tech-lead agent."
+      "notes": "Dev plan = development-plan skill / code-planner agent."
     },
     {
       "id": "neg-07",

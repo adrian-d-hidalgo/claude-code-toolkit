@@ -66,7 +66,7 @@ Every deviation appears in the Risk Analysis section with a one-line rationale.
 - **Score inflation**: everything 4–5 because "it matters". Forces P0 across the board, kills prioritization.
 - **Score deflation**: everything 1–2 because "we'll catch it in prod". Defers risk to incident response.
 - **Scoring without history**: pure intuition with no prior-incident anchor.
-- **Single-person scoring**: the QE lead alone. Risk scoring is more reliable as a cross-functional 15-minute review with PM + tech lead.
+- **Single-person scoring**: the QE lead alone. Risk scoring is more reliable as a cross-functional 15-minute review with PM + code planner.
 
 ## Source
 

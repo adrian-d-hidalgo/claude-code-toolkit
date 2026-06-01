@@ -1,306 +1,198 @@
 #!/usr/bin/env python3
 """
-Initialize new Claude Code command structure with templates and directory organization.
+Initialize a new Claude Code slash command from a template.
+
+Source of truth for the rules and templates used here:
+  plugins/claude-code-core/skills/claude-code-slash-command/SKILL.md
+  plugins/claude-code-core/skills/claude-code-slash-command/references/section-guide.md
+  plugins/claude-code-core/skills/claude-code-slash-command/assets/templates/
 
 Usage:
-    python scripts/init_command.py command-name --type [action|research] --path /path/to/commands/
-    python scripts/init_command.py --help
+    python3 init_command.py command-name [--type base|minimal|action|research]
+                                         [--path .claude/commands]
+                                         [--subdir <subdir>]
+                                         [--force] [--validate]
 """
 
 import argparse
-import os
+import re
+import subprocess
 import sys
 from pathlib import Path
-from datetime import datetime
 
 
-COMMAND_TEMPLATE_MAPPING = {
+TEMPLATE_MAPPING = {
     "base": "command-template.md",
-    "action": "action-command-template.md",
-    "research": "research-command-template.md",
     "minimal": "minimal-template.md",
+    "action": "action-command-template.md",      # legacy; kept for back-compat
+    "research": "research-command-template.md",  # legacy; kept for back-compat
 }
+
+# Resolved at runtime — points to the shared validator under the plugin root.
+DEFAULT_VALIDATOR = Path(__file__).resolve().parents[3] / "shared" / "scripts" / "validate_command.py"
 
 
 def parse_arguments():
-    """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description="Initialize new Claude Code command structure",
+        description="Initialize a new Claude Code slash command from a template.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Create base command (recommended)
-  python scripts/init_command.py my-command --type base
-
-  # Create minimal command for simple tasks
-  python scripts/init_command.py quick-check --type minimal
-
-  # Create with specific location and auto-validate
-  python scripts/init_command.py my-command --type base --path ~/.claude/commands/ --validate
-
-  # Create with category
-  python scripts/init_command.py my-command --type base --category development --validate
+  python3 init_command.py my-command
+  python3 init_command.py my-command --type minimal --path ~/.claude/commands
+  python3 init_command.py my-command --subdir git    # → .claude/commands/git/my-command.md
+  python3 init_command.py my-command --validate
         """,
     )
-
     parser.add_argument(
         "command_name",
-        help="Name of the command (use kebab-case, e.g., 'setup-testing')",
+        help="Command name in kebab-case (e.g. 'setup-testing')",
     )
-
     parser.add_argument(
         "--type",
-        choices=["base", "action", "research", "minimal"],
+        choices=sorted(TEMPLATE_MAPPING.keys()),
         default="base",
-        help="Type of command to create (base=generic, minimal=simple, action/research=legacy)",
+        help="Template variant (default: base). 'action'/'research' are legacy.",
     )
-
     parser.add_argument(
         "--path",
         default=".claude/commands",
-        help="Base path for commands directory (default: .claude/commands)",
+        help="Commands directory (default: .claude/commands)",
     )
-
     parser.add_argument(
-        "--category",
-        help="Category subdirectory (e.g., 'development/angular' or 'research/development')",
+        "--subdir",
+        default="",
+        help="Optional namespace subdirectory inside the commands dir (creates /<subdir>:<name> "
+             "per section-guide §F.4.1). Default: flat layout.",
     )
-
     parser.add_argument(
         "--force",
         action="store_true",
-        help="Overwrite existing command file",
+        help="Overwrite if the target file already exists",
     )
-
     parser.add_argument(
         "--validate",
         action="store_true",
-        help="Auto-validate command after creation",
+        help="Run the shared validator on the new file once created",
     )
-
     return parser.parse_args()
 
 
-def validate_command_name(name):
-    """Validate command name follows conventions."""
+def validate_command_name(name: str) -> tuple[bool, str]:
+    """Kebab-case, ≤64 chars (section-guide §name)."""
     if not name:
         return False, "Command name cannot be empty"
-
-    # Check for kebab-case
-    if not all(c.islower() or c == "-" or c.isdigit() for c in name):
-        return False, "Command name must be kebab-case (lowercase with hyphens)"
-
-    if name.startswith("-") or name.endswith("-"):
-        return False, "Command name cannot start or end with hyphen"
-
-    if "--" in name:
-        return False, "Command name cannot have consecutive hyphens"
-
+    if len(name) > 64:
+        return False, "Command name must be ≤64 characters"
+    if not re.match(r"^[a-z0-9]+(-[a-z0-9]+)*$", name):
+        return False, "Command name must be kebab-case (lowercase letters, digits, hyphens)"
     return True, ""
 
 
-def determine_category(command_type, specified_category):
-    """Determine appropriate category for command."""
-    if specified_category:
-        return specified_category
-
-    # Default categories
-    if command_type == "action":
-        return "development"
-    elif command_type == "research":
-        return "research/development"
-    elif command_type == "minimal":
-        return "core"
-
-    return "development"
-
-
-def get_template_path(command_type):
-    """Get path to template file."""
-    script_dir = Path(__file__).parent
-    skill_root = script_dir.parent
-    template_name = COMMAND_TEMPLATE_MAPPING.get(command_type)
-
+def template_path(command_type: str) -> Path | None:
+    template_name = TEMPLATE_MAPPING.get(command_type)
     if not template_name:
         return None
+    skill_root = Path(__file__).resolve().parent.parent
+    candidate = skill_root / "assets" / "templates" / template_name
+    return candidate if candidate.exists() else None
 
-    template_path = skill_root / "assets" / "templates" / template_name
-    return template_path if template_path.exists() else None
 
-
-def load_template(template_path):
-    """Load template content from file."""
+def read_template(path: Path) -> str | None:
     try:
-        with open(template_path, "r", encoding="utf-8") as f:
-            return f.read()
-    except Exception as e:
-        print(f"Error loading template: {e}", file=sys.stderr)
+        return path.read_text(encoding="utf-8")
+    except OSError as err:
+        print(f"❌ Could not read template {path}: {err}", file=sys.stderr)
         return None
 
 
-def create_command_file(base_path, category, command_name, template_content, force=False):
-    """Create command file with template content."""
-    # Build full path
-    full_path = Path(base_path) / category
-    full_path.mkdir(parents=True, exist_ok=True)
-
-    command_file = full_path / f"{command_name}.md"
-
-    # Check if file exists
-    if command_file.exists() and not force:
-        return False, f"Command file already exists: {command_file}\nUse --force to overwrite"
-
-    # Write template content
+def create_command_file(base_path: str, subdir: str, command_name: str,
+                        template_content: str, force: bool) -> tuple[bool, str]:
+    target_dir = Path(base_path) / subdir if subdir else Path(base_path)
     try:
-        with open(command_file, "w", encoding="utf-8") as f:
-            f.write(template_content)
-        return True, str(command_file)
-    except Exception as e:
-        return False, f"Error creating command file: {e}"
+        target_dir.mkdir(parents=True, exist_ok=True)
+    except OSError as err:
+        return False, f"Cannot create directory {target_dir}: {err}"
+
+    target_file = target_dir / f"{command_name}.md"
+    if target_file.exists() and not force:
+        return False, f"Already exists: {target_file} (use --force to overwrite)"
+
+    try:
+        target_file.write_text(template_content, encoding="utf-8")
+    except OSError as err:
+        return False, f"Cannot write {target_file}: {err}"
+    return True, str(target_file)
 
 
-def create_readme(base_path, category, command_name, command_type):
-    """Create README with command information."""
-    readme_path = Path(base_path) / category / "README.md"
-
-    readme_content = f"""# {category.replace('/', ' - ').title()} Commands
-
-Commands for {category} operations.
-
-## Available Commands
-
-### {command_name}
-
-**Type**: {command_type}
-
-**Created**: {datetime.now().strftime('%Y-%m-%d')}
-
-**Description**: [Add description here]
-
-**Usage**:
-```bash
-/{command_name} [arguments]
-```
-
-## Adding More Commands
-
-To add more commands to this category, use:
-
-```bash
-python scripts/init_command.py <command-name> --type {command_type} --category {category}
-```
-"""
-
-    # Only create if doesn't exist
-    if not readme_path.exists():
-        try:
-            with open(readme_path, "w", encoding="utf-8") as f:
-                f.write(readme_content)
-            return True, str(readme_path)
-        except Exception as e:
-            return False, f"Error creating README: {e}"
-
-    return True, None
+def print_next_steps(command_file: str, subdir: str, command_name: str) -> None:
+    invocation = f"/{subdir}:{command_name}" if subdir else f"/{command_name}"
+    print("\n✅ Command initialized.")
+    print(f"\n📝 Next steps:")
+    print(f"  1. Edit: {command_file}")
+    print(f"  2. Replace placeholders in the body and tighten the frontmatter")
+    print(f"     (description <20 words, allowed-tools least-privilege).")
+    print(f"  3. Decide command-vs-skill — see references/command-vs-skill.md.")
+    print(f"  4. Validate: python3 {DEFAULT_VALIDATOR} {command_file}")
+    print(f"\n  Invocation: {invocation}")
 
 
-def print_next_steps(command_file, command_type):
-    """Print helpful next steps for user."""
-    print("\n✅ Command initialized successfully!")
-    print(f"\n📝 Next steps:\n")
-    print(f"1. Edit the command file: {command_file}")
-    print(f"2. Fill in the TODO sections marked with [brackets]")
-    print(f"3. Configure allowed-tools for least privilege")
-
-    if command_type == "action":
-        print(f"4. Implement context detection if command creates files")
-        print(f"5. Add error recovery and validation sections")
-        print(f"6. Test the command with various inputs")
-    else:
-        print(f"4. Define domain-specific credibility criteria")
-        print(f"5. Implement progressive search strategy")
-        print(f"6. Add reincidence protocol handling")
-
-    print(f"\n📚 Reference documentation:")
-    print(f"   - references/command-patterns.md")
-    print(f"   - references/security-patterns.md")
-    print(f"   - references/context-detection.md")
-
-    print(f"\n🔍 Validate when ready:")
-    print(f"   python scripts/validate_command.py {command_file}")
-    print(f"\n💡 Tip: Next time use --validate flag for auto-validation:")
+def run_validator(command_file: str) -> int:
+    if not DEFAULT_VALIDATOR.exists():
+        print(f"⚠️  Validator not found at {DEFAULT_VALIDATOR}", file=sys.stderr)
+        return 0
+    print("\n" + "=" * 80)
+    print("🔍 Running validator")
+    print("=" * 80 + "\n")
+    try:
+        return subprocess.run(
+            ["python3", str(DEFAULT_VALIDATOR), command_file, "--verbose"],
+            check=False,
+        ).returncode
+    except OSError as err:
+        print(f"⚠️  Validator failed to run: {err}", file=sys.stderr)
+        return 1
 
 
-def main():
-    """Main execution function."""
+def main() -> None:
     args = parse_arguments()
 
-    # Validate command name
     valid, error_msg = validate_command_name(args.command_name)
     if not valid:
-        print(f"❌ Error: {error_msg}", file=sys.stderr)
+        print(f"❌ {error_msg}", file=sys.stderr)
         sys.exit(1)
 
-    # Determine category
-    category = determine_category(args.type, args.category)
-
-    print(f"🚀 Initializing {args.type} command: {args.command_name}")
-    print(f"📁 Location: {args.path}/{category}/")
-
-    # Get template
-    template_path = get_template_path(args.type)
-    if not template_path:
-        print(f"❌ Error: Could not find template for {args.type} command", file=sys.stderr)
+    if args.subdir and not re.match(r"^[a-z0-9]+(-[a-z0-9]+)*$", args.subdir):
+        print("❌ --subdir must be kebab-case (single segment)", file=sys.stderr)
         sys.exit(1)
 
-    print(f"📋 Using template: {template_path.name}")
-
-    # Load template
-    template_content = load_template(template_path)
-    if not template_content:
-        print(f"❌ Error: Could not load template", file=sys.stderr)
+    template = template_path(args.type)
+    if not template:
+        print(f"❌ Template for type '{args.type}' not found", file=sys.stderr)
         sys.exit(1)
 
-    # Create command file
-    success, result = create_command_file(
-        args.path, category, args.command_name, template_content, args.force
-    )
-
-    if not success:
-        print(f"❌ Error: {result}", file=sys.stderr)
+    template_content = read_template(template)
+    if template_content is None:
         sys.exit(1)
 
-    print(f"✅ Created command file: {result}")
+    target_display = f"{args.path}/{args.subdir}/" if args.subdir else f"{args.path}/"
+    print(f"🚀 Initializing '{args.command_name}' (type: {args.type})")
+    print(f"📁 Location: {target_display}")
+    print(f"📋 Template: {template.name}")
 
-    # Create README
-    readme_success, readme_path = create_readme(args.path, category, args.command_name, args.type)
-    if readme_success and readme_path:
-        print(f"✅ Created README: {readme_path}")
+    ok, result = create_command_file(args.path, args.subdir, args.command_name,
+                                     template_content, args.force)
+    if not ok:
+        print(f"❌ {result}", file=sys.stderr)
+        sys.exit(1)
+    print(f"✅ Created: {result}")
 
-    # Print next steps
-    print_next_steps(result, args.type)
+    print_next_steps(result, args.subdir, args.command_name)
 
-    # Validate if requested
     if args.validate:
-        print("\n" + "=" * 80)
-        print("🔍 AUTO-VALIDATING COMMAND")
-        print("=" * 80 + "\n")
-
-        # Try to run validation script
-        validate_script = Path(__file__).parent / "validate_command.py"
-        if validate_script.exists():
-            import subprocess
-
-            try:
-                subprocess.run(
-                    ["python3", str(validate_script), result, "--verbose"],
-                    check=False,
-                )
-            except Exception as e:
-                print(f"⚠️  Validation failed to run: {e}", file=sys.stderr)
-                print(f"   Run manually: python scripts/validate_command.py {result}")
-        else:
-            print(f"⚠️  Validation script not found at {validate_script}", file=sys.stderr)
-            print(f"   Run manually when available")
+        exit_code = run_validator(result)
+        if exit_code != 0:
+            sys.exit(exit_code)
 
 
 if __name__ == "__main__":

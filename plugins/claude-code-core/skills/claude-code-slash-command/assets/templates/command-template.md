@@ -1,8 +1,7 @@
 ---
-description: [Clear, specific description of what this command does]
+description: [Imperative phrase <20 words, no trigger language]
 allowed-tools: [Minimal required tools]
 argument-hint: [parameter-1] [parameter-2]
-model: sonnet
 ---
 
 Parse arguments from "$ARGUMENTS": [Brief acknowledgment and parameter extraction]

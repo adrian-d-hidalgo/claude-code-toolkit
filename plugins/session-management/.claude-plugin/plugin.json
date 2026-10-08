@@ -1,0 +1,32 @@
+{
+  "name": "session-management",
+  "version": "0.1.0",
+  "description": "Runtime mods that keep a Claude Code session organized: unanswered questions and a shared task checklist.",
+  "author": {
+    "name": "Adrián Darío Hidalgo Flores"
+  },
+  "homepage": "https://github.com/adrian-d-hidalgo/claude-code-toolkit",
+  "repository": "https://github.com/adrian-d-hidalgo/claude-code-toolkit",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "mods",
+    "session",
+    "questions",
+    "checklist",
+    "hooks"
+  ],
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "judge": {
+      "type": "string",
+      "title": "Question judge",
+      "description": "model: a small model decides which sentences are questions for you and which repeat an open one (any language). heuristic: local rules only, no model calls.",
+      "default": "model",
+      "options": [
+        "model",
+        "heuristic"
+      ]
+    }
+  }
+}

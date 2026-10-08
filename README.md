@@ -4,12 +4,13 @@ A personal marketplace of Claude Code plugins. Each plugin is self-contained, al
 
 ## What ships
 
-| Plugin                      | Version | What it gives you                                                                                                                                                                                                          |
-| --------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **claude-code-core**        | 1.2.0   | 6 meta-skills to **author Claude Code itself**: scaffold, refactor, validate, and audit skills, sub-agents, slash commands, plugins, hooks, and CLAUDE.md files. Each meta-skill ships an exhaustive `section-guide.md`.   |
-| **claude-code-development** | 2.0.0   | 8 senior engineering sub-agents + 16 methodology-anchored skills + 5 transversal references. Composable LEGO pieces with single-responsibility scope and least-privilege tooling. **No orchestration baked in** — you wire it. |
+| Plugin                 | Version | What it gives you                                                                                                                                                                                                                                                              |
+| ---------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **toolkit-core**       | 1.2.0   | 6 meta-skills to **author Claude Code itself**: scaffold, refactor, validate, and audit skills, sub-agents, slash commands, plugins, hooks, and CLAUDE.md files. Each meta-skill ships an exhaustive `section-guide.md`.                                                       |
+| **engineering-team**   | 2.0.0   | 8 senior engineering sub-agents + 16 methodology-anchored skills + 5 transversal references. Composable LEGO pieces with single-responsibility scope and least-privilege tooling. **No orchestration baked in** — you wire it.                                                 |
+| **session-management** | 0.1.0   | 2 runtime mods for a Claude Code session, each with a keyboard-driven pane and scoped to the current session: **open questions** (`/questions`: what Claude asked that is still unanswered) and a shared **checklist** (`/checklist`: tasks with priorities and dependencies). |
 
-### `claude-code-core` — meta-skills
+### `toolkit-core` — meta-skills
 
 | Skill                       | Triggers on                                                                                                                      |
 | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
@@ -22,7 +23,7 @@ A personal marketplace of Claude Code plugins. Each plugin is self-contained, al
 
 Each meta-skill ships `references/section-guide.md` that exhaustively documents every frontmatter field, body section, and directory of the artifact it scaffolds — a per-field reference rare in the ecosystem.
 
-### `claude-code-development` — engineering team
+### `engineering-team` — engineering team
 
 | Agent                | Role                                                                                                                                       |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -42,6 +43,17 @@ The team works in **two modes**:
 - **Independently**: invoke any agent directly for a single-discipline task. Each one is self-sufficient with its own preloaded methodology.
 - **Collaboratively**: chain them via your project's `CLAUDE.md` / `AGENTS.md`. The agents *suggest consults* but never invoke each other — orchestration is yours. This matches Anthropic's [orchestrator-worker multi-agent pattern](https://www.anthropic.com/engineering/multi-agent-research-system).
 
+### `session-management` — session mods
+
+Two mods driven by one hooks module, both acting only on the current session:
+
+| Mod | Command | What it gives you |
+| --- | ------- | ----------------- |
+| **open questions** | `/questions` | A pane with the questions Claude asked that are still unanswered: answer by option or free text, ask for an explanation, or dismiss. Also `doctor`, `fix`, `rebuild`, `undo` and `scan`. |
+| **checklist** | `/checklist` | A task list shared with Claude: run, cancel, edit title and description, priorities, dependencies on other tasks or questions, and a scan of the conversation. Also `doctor`, `fix`, `rebuild` and `undo`. |
+
+See [`plugins/session-management/README.md`](plugins/session-management/README.md).
+
 ## Install
 
 ```bash
@@ -51,9 +63,10 @@ claude plugin marketplace add file:///path/to/claude-code-toolkit
 # From GitHub
 claude plugin marketplace add github:adrian-d-hidalgo/claude-code-toolkit
 
-# Install one or both plugins
-claude plugin install claude-code-core@claude-code-toolkit
-claude plugin install claude-code-development@claude-code-toolkit
+# Install any of the plugins
+claude plugin install toolkit-core@claude-code-toolkit
+claude plugin install engineering-team@claude-code-toolkit
+claude plugin install session-management@claude-code-toolkit
 ```
 
 Verify:
@@ -61,8 +74,8 @@ Verify:
 ```bash
 claude plugin marketplace list   # marketplace appears
 claude plugin list               # plugins listed
-/agents                          # claude-code-development:* agents listed
-/skills                          # claude-code-*:* skills listed
+/agents                          # engineering-team:* agents listed
+/skills                          # toolkit-core:* and engineering-team:* skills listed
 ```
 
 ## Validate and evaluate
@@ -70,31 +83,31 @@ claude plugin list               # plugins listed
 The core plugin ships validators (no install — pure Python 3 stdlib):
 
 ```bash
-python3 plugins/claude-code-core/shared/scripts/validate_plugin.py plugins/<plugin> --marketplace .
-python3 plugins/claude-code-core/shared/scripts/validate_skill.py <skill-dir>/
-python3 plugins/claude-code-core/shared/scripts/validate_agent.py <agent>.md
-python3 plugins/claude-code-core/shared/scripts/validate_hooks.py <hooks.json>
+python3 plugins/toolkit-core/shared/scripts/validate_plugin.py plugins/<plugin> --marketplace .
+python3 plugins/toolkit-core/shared/scripts/validate_skill.py <skill-dir>/
+python3 plugins/toolkit-core/shared/scripts/validate_agent.py <agent>.md
+python3 plugins/toolkit-core/shared/scripts/validate_hooks.py <hooks.json>
 ```
 
 Activation evals (offline shape check + optional live + LLM-as-judge):
 
 ```bash
 # Offline corpus shape across a plugin.
-python3 scripts/run_activation_evals.py --all plugins/claude-code-core
+python3 scripts/run_activation_evals.py --all plugins/toolkit-core
 
 # Live evaluation against your local `claude` binary, with LLM-as-judge.
-python3 scripts/run_activation_evals.py --all plugins/claude-code-development --live --judge
+python3 scripts/run_activation_evals.py --all plugins/engineering-team --live --judge
 
 # Single skill / single sub-agent.
-python3 scripts/run_activation_evals.py --skill plugins/claude-code-core/skills/claude-code-hook --live --judge
-python3 scripts/run_activation_evals.py --agent plugins/claude-code-development/agents/code-planner.md --live --judge
+python3 scripts/run_activation_evals.py --skill plugins/toolkit-core/skills/claude-code-hook --live --judge
+python3 scripts/run_activation_evals.py --agent plugins/engineering-team/agents/code-planner.md --live --judge
 ```
 
 Reports auto-write to `.eval-runs/.eval-<scope>-<UTC-timestamp>.json` (gitignored). Skills are gated on routing accuracy; sub-agents are gated on outcome quality (delegation rate is informational — Claude rationally inlines small tasks).
 
 ## Platform note (June 2026)
 
-Plugin-installed sub-agents currently cannot access MCP server tools — see [anthropics/claude-code#13605](https://github.com/anthropics/claude-code/issues/13605). This applies to any plugin in this toolkit that ships sub-agents (currently only `claude-code-development`; future plugins may also). When an agent body references MCPs (`mcp__codegraph__*`, `mcp__sentry__*`, etc.), treat that as "prefer if available" guidance for the orchestrating main agent, not for the sub-agent itself. The sub-agents' file-based / bash fallbacks already cover this case.
+Plugin-installed sub-agents currently cannot access MCP server tools — see [anthropics/claude-code#13605](https://github.com/anthropics/claude-code/issues/13605). This applies to any plugin in this toolkit that ships sub-agents (currently only `engineering-team`; future plugins may also). When an agent body references MCPs (`mcp__codegraph__*`, `mcp__sentry__*`, etc.), treat that as "prefer if available" guidance for the orchestrating main agent, not for the sub-agent itself. The sub-agents' file-based / bash fallbacks already cover this case.
 
 ## Repository layout
 
@@ -105,18 +118,23 @@ claude-code-toolkit/
 ├── CLAUDE.md                           # operating instructions for any agent working here
 ├── scripts/run_activation_evals.py     # eval harness (cross-plugin)
 └── plugins/
-    ├── claude-code-core/
+    ├── toolkit-core/
     │   ├── .claude-plugin/plugin.json
     │   ├── README.md
     │   ├── shared/                     # validators + shared references
     │   └── skills/                     # 6 meta-skills, each with references/, templates/, tests/
-    └── claude-code-development/
+    └── engineering-team/
         ├── .claude-plugin/plugin.json
         ├── README.md
         ├── agents/                     # 8 engineering sub-agents
         ├── references/                 # 5 transversal references (evidence, code-grounded, etc.)
         ├── skills/                     # 16 methodology-anchored skills
         └── tests/                      # activation-eval corpora per agent + per skill
+    └── session-management/
+        ├── .claude-plugin/plugin.json
+        ├── README.md
+        ├── hooks/                      # the mods: register/, questions/, checklist/, shared/
+        └── types/                      # plugin state typings
 ```
 
 `tests/` lives in two places by design:

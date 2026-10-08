@@ -18,16 +18,16 @@ Directives for any agent working in this repository (main Claude, sub-agents, sc
 
 ## Authoring rule — always delegate to the matching meta-skill
 
-To **create, modify, refactor, validate, or audit** any Claude Code component, **invoke the matching meta-skill in `claude-code-core`** rather than editing the file directly:
+To **create, modify, refactor, validate, or audit** any Claude Code component, **invoke the matching meta-skill in `toolkit-core`** rather than editing the file directly:
 
 | Component | Meta-skill to invoke |
 |---|---|
-| Skill (`SKILL.md`, references, templates) | `claude-code-core:claude-code-skill` |
-| Sub-agent (`.claude/agents/*.md`) | `claude-code-core:claude-code-sub-agent` |
-| Slash command (`.claude/commands/*.md`) | `claude-code-core:claude-code-slash-command` |
-| Plugin manifest (`.claude-plugin/plugin.json`) or marketplace | `claude-code-core:claude-code-plugin` |
-| Hook (`hooks/hooks.json` + scripts) | `claude-code-core:claude-code-hook` |
-| CLAUDE.md / AGENTS.md (any scope) | `claude-code-core:claude-code-claude-md` |
+| Skill (`SKILL.md`, references, templates) | `toolkit-core:claude-code-skill` |
+| Sub-agent (`.claude/agents/*.md`) | `toolkit-core:claude-code-sub-agent` |
+| Slash command (`.claude/commands/*.md`) | `toolkit-core:claude-code-slash-command` |
+| Plugin manifest (`.claude-plugin/plugin.json`) or marketplace | `toolkit-core:claude-code-plugin` |
+| Hook (`hooks/hooks.json` + scripts) | `toolkit-core:claude-code-hook` |
+| CLAUDE.md / AGENTS.md (any scope) | `toolkit-core:claude-code-claude-md` |
 
 The meta-skills own the conventions, the validators, and the section-guides. Manual edits drift; meta-skill-driven edits stay aligned with the upstream Anthropic spec and pass the validators.
 
@@ -38,10 +38,10 @@ When the meta-skill references its own files (`${CLAUDE_PLUGIN_ROOT}/...` or `~/
 ## Validators (run after any component edit)
 
 ```bash
-python3 plugins/claude-code-core/shared/scripts/validate_plugin.py plugins/<plugin> --marketplace .
-python3 plugins/claude-code-core/shared/scripts/validate_skill.py <skill-dir>/
-python3 plugins/claude-code-core/shared/scripts/validate_agent.py <agent>.md
-python3 plugins/claude-code-core/shared/scripts/validate_hooks.py <hooks.json>
+python3 plugins/toolkit-core/shared/scripts/validate_plugin.py plugins/<plugin> --marketplace .
+python3 plugins/toolkit-core/shared/scripts/validate_skill.py <skill-dir>/
+python3 plugins/toolkit-core/shared/scripts/validate_agent.py <agent>.md
+python3 plugins/toolkit-core/shared/scripts/validate_hooks.py <hooks.json>
 ```
 
 ## Activation evals (run only on explicit user request)
@@ -56,9 +56,9 @@ Reports auto-write to `.eval-runs/.eval-<scope>-<UTC-timestamp>.json`. Wait for 
 
 If debugging, eval, or refactor work uncovers a NEW rule, anti-pattern, trigger pattern, or eval-design insight about a component type, **propagate it to the matching meta-skill before closing the task**. Order of preference:
 
-1. `plugins/claude-code-core/skills/claude-code-X/references/` (anti-patterns, activation-optimization, section-guide).
-2. `plugins/claude-code-core/skills/claude-code-X/SKILL.md` — only for fundamental authoring principles (≤1 paragraph).
-3. `plugins/claude-code-core/shared/references/` — when the learning generalizes across component types.
+1. `plugins/toolkit-core/skills/claude-code-X/references/` (anti-patterns, activation-optimization, section-guide).
+2. `plugins/toolkit-core/skills/claude-code-X/SKILL.md` — only for fundamental authoring principles (≤1 paragraph).
+3. `plugins/toolkit-core/shared/references/` — when the learning generalizes across component types.
 
 Each propagated learning includes: pattern observed, why it's right/wrong, fix, and ideally an empirical anchor ("May 2026, routing dropped from 0.94 to 0.68 across 6 skills when X").
 

@@ -12,6 +12,10 @@
 
 # The baseline (.eval-baseline.json) at repo root IS committed when promoted.
 
+# Typings of the Claude Code plugin API that an editor reads next to a plugin's hooks (see the
+# plugin's README, Develop). Laid down per machine, never source.
+plugins/*/.claude-plugin/types/
+
 # Python
 __pycache__/
 *.pyc

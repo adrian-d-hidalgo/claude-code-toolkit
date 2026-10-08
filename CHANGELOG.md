@@ -2,9 +2,15 @@
 
 All notable changes to this toolkit. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) per plugin.
 
-## [Unreleased]
+## [2026-10-08] — toolkit-core, engineering-team, session-management
 
-(empty)
+### Changed (BREAKING)
+
+- Rename plugins to drop the `claude-` prefix, which Claude Code reserves for Anthropic's own plugins: `claude-code-core` → `toolkit-core`, `claude-code-development` → `engineering-team`. Skills are now invoked as `toolkit-core:<skill>`. Reinstall both from the `claude-code-toolkit` marketplace and update `enabledPlugins`. Entries below keep the names in use when they were written.
+
+### Added
+
+- `session-management` 0.1.0 — runtime mods for a Claude Code session, each with a keyboard-driven pane and scoped to the current session: `open-questions` (`/questions`: the questions Claude asked that are still unanswered, answered or explained from the pane) and `checklist` (`/checklist`: a task list shared with Claude, with priorities, dependencies and a scan of the conversation). Both come with `doctor` and `fix` commands.
 
 ## [2.0.0] — claude-code-development — 2026-06-01
 

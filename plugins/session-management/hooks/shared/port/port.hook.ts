@@ -33,10 +33,6 @@ export type Port = {
     write: (change: (list: ChecklistItem[]) => ChecklistItem[]) => Promise<void>
     /** The store key of this session's checklist. */
     key: () => Promise<string>
-    /** The shared checklist of this folder that earlier versions kept, if any. */
-    legacy: () => Promise<ChecklistItem[]>
-    /** Brings the folder's older checklist into this session's and removes it. */
-    claimLegacy: () => Promise<void>
   }
   turn: {
     /** The model turn running now, if any. */
@@ -106,13 +102,6 @@ export const memoryPort = (options: MemoryPortOptions = {}) => {
         data[`checklist:${session}`] = byPriority(change(byPriority(read<ChecklistItem[]>(`checklist:${session}`, []))))
       },
       key: async () => `checklist:${session}`,
-      legacy: async () => read<ChecklistItem[]>(`checklist:${root}`, []),
-      claimLegacy: async () => {
-        const legacy = read<ChecklistItem[]>(`checklist:${root}`, [])
-        const own = read<ChecklistItem[]>(`checklist:${session}`, [])
-        data[`checklist:${session}`] = [...own, ...legacy.filter(old => !own.some(one => one.id === old.id))]
-        delete data[`checklist:${root}`]
-      },
     },
     turn: {
       current: () => options.turn ?? null,

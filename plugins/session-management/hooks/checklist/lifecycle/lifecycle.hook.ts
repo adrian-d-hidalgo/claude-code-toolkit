@@ -1,6 +1,6 @@
 import type { ChecklistItem } from '../../../types'
 import type { Port } from '../../shared/port/port.hook'
-import { CHECKLIST_CAP } from '../ops/ops.hook'
+import { CHECKLIST_CAP, byPriority } from '../ops/ops.hook'
 
 const backupKey = async (port: Port): Promise<string> => `backup:${await port.checklist.key()}`
 
@@ -64,4 +64,58 @@ export const sweepChecklists = async (port: Port): Promise<number> => {
   await port.store.set(CHECKLIST_INDEX, Object.fromEntries(Object.entries(index).filter(([key]) => !gone.some(([old]) => old === key))))
 
   return gone.length
+}
+
+// One-time move of what an earlier version stored under the session's launch time to the
+// conversation's id: the checklist (the live list wins on the same id, the old backup comes
+// along), the questions' session, and the per-session copies kept beside them. Does nothing once
+// nothing is left under the old key.
+export const migrateToId = async (port: Port, launch: string): Promise<boolean> => {
+  const id = await port.sessionId()
+
+  if (launch === id) {
+    return false
+  }
+
+  const older = (await port.store.get(`checklist:${launch}`)) as ChecklistItem[] | undefined
+  const questions = (await port.questions.all()).filter(one => one.session === launch)
+  const parked = ((await port.store.get('parked:questions')) as Record<string, unknown> | undefined) ?? {}
+  const moves = ['backup:checklist', 'closed:questions', 'backup:questions'].map(prefix => [`${prefix}:${launch}`, `${prefix}:${id}`] as const)
+  const kept = await Promise.all(moves.map(async ([from]) => port.store.get(from)))
+
+  if (!older && questions.length === 0 && !(launch in parked) && kept.every(one => one === undefined)) {
+    return false
+  }
+
+  if (older) {
+    await port.checklist.write(own => byPriority([...own, ...older.filter(task => !own.some(one => one.id === task.id))].slice(0, CHECKLIST_CAP)))
+    await port.store.delete(`checklist:${launch}`)
+  }
+
+  if (questions.length > 0) {
+    await port.questions.write(list => list.map(one => (one.session === launch ? { ...one, session: id } : one)))
+  }
+
+  if (launch in parked) {
+    const { [launch]: group, ...rest } = parked
+    await port.store.set('parked:questions', { ...rest, [id]: group })
+  }
+
+  for (const [index, [from, to]] of moves.entries()) {
+    const value = kept[index]
+
+    if (value !== undefined) {
+      if ((await port.store.get(to)) === undefined) {
+        await port.store.set(to, value)
+      }
+
+      await port.store.delete(from)
+    }
+  }
+
+  const index = ((await port.store.get(CHECKLIST_INDEX)) as Record<string, number> | undefined) ?? {}
+  const { [`checklist:${launch}`]: _moved, ...rest } = index
+  await port.store.set(CHECKLIST_INDEX, rest)
+
+  return true
 }

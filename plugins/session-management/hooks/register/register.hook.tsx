@@ -7,7 +7,7 @@ import { activeBlockers, withoutBlocker } from '../checklist/blockers/blockers.h
 import type { ActiveBlocker } from '../checklist/blockers/blockers.hook'
 import { CHECKLIST_COMMAND, runChecklistCommand } from '../checklist/command/command.hook'
 import { byPriority, hasRoom, withDetail, withPriority, withStatus, withText, without } from '../checklist/ops/ops.hook'
-import { CHECKLIST_INDEX, sweepChecklists } from '../checklist/lifecycle/lifecycle.hook'
+import { CHECKLIST_INDEX, migrateToId, sweepChecklists } from '../checklist/lifecycle/lifecycle.hook'
 import { ADD_FIELD, WIDE, renderChecklistPane, selectedOf } from '../checklist/pane/pane.hook'
 import { CHECKLIST_TOOL_SPEC, callChecklistTool } from '../checklist/tool/tool.hook'
 import type { ChecklistCall } from '../checklist/tool/tool.hook'
@@ -54,12 +54,12 @@ const answering = atom({ plugin: 'session-management', key: 'answering' } as con
 const typing = atom({ plugin: 'session-management', key: 'typing' } as const, null)
 
 let counter = 0
-// The conversation's key: its first launch, which a resumed session keeps while its id changes.
-let known: { id: string; key: string } | null = null
 let runningTurn: string | null = null
 let lastUserText = ''
 // The session id the last prompt ran under: it can change under a conversation (resume, reattach).
 let lastSessionId = ''
+// Whether this process has moved what an earlier version kept under the launch time to the session id.
+let isMigrated = false
 // What the assistant last saw of the checklist and of this session's questions; the next prompt
 // reports what changed since (the user's edits, another session's). Null until baselined.
 let seenChecklist: ChecklistItem[] | null = null
@@ -70,26 +70,9 @@ async function newId($: any) {
   return `${(await $.clock.now()).toString(36)}${counter.toString(36)}`
 }
 
+// The conversation's key is its session id: it holds through /login, a restart and /compact.
 async function conversationKey($: any): Promise<string> {
-  const id = await $.session.id()
-
-  const cached = known
-
-  if (cached && cached.id === id) {
-    return cached.key
-  }
-
-  let key: string = id
-
-  try {
-    key = String((await $.session.usage()).startedAt)
-  } catch {
-    // Without a launch time the session's own id stands.
-  }
-
-  known = { id, key }
-
-  return key
+  return String(await $.session.id())
 }
 
 // Each conversation has its own checklist.
@@ -207,13 +190,6 @@ function makePort($: any): Port {
       all: () => loadChecklist($),
       write: change => writeChecklist($, change),
       key: () => checklistKey($),
-      legacy: async () => ((await $.store.get(`checklist:${await $.session.root()}`)) as ChecklistItem[] | undefined) ?? [],
-      claimLegacy: async () => {
-        const legacyKey = `checklist:${await $.session.root()}`
-        const older = ((await $.store.get(legacyKey)) as ChecklistItem[] | undefined) ?? []
-        await writeChecklist($, own => [...own, ...older.filter(task => !own.some(one => one.id === task.id))])
-        await $.store.delete(legacyKey)
-      },
     },
     turn: {
       current: () => runningTurn,
@@ -678,6 +654,14 @@ async function drawChecklist($: any, e: any) {
 
 // Bookkeeping must never break a session, a turn or the user's answer: a failure leaves that
 // step undone and the rest goes on.
+// Once per process, from session.start or the first prompt (a plugin reload does not fire session.start).
+async function migrate($: any) {
+  if (!isMigrated) {
+    isMigrated = true
+    await migrateToId(makePort($), String((await $.session.usage()).startedAt))
+  }
+}
+
 async function attempt(job: () => Promise<unknown>) {
   try {
     await job()
@@ -695,6 +679,8 @@ export const register: Register = (on, options) => {
     await $.tool.register(CHECKLIST_TOOL_SPEC)
     await attempt(() => writeQuestions($, list => list))
     await attempt(() => writeChecklist($, list => list))
+    // What an earlier version kept under the launch time moves to the session id, before the sweep.
+    await attempt(() => migrate($))
     await attempt(() => sweepChecklists(makePort($)))
     // The conversation's own questions first, so the sweep does not take them for another session's.
     await attempt(() => adoptFromTranscript(makePort($)))
@@ -820,6 +806,8 @@ export const register: Register = (on, options) => {
     }
 
     lastUserText = e.text
+
+    await attempt(() => migrate($))
 
     await attempt(async () => {
       if ((await $.session.id()) !== lastSessionId) {

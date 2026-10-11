@@ -74,19 +74,6 @@ test('doctor reports, fix repairs and keeps a copy for undo', async () => {
   expect((data['backup:checklist:s1'] as ChecklistItem[])[0]?.text).toBe(long)
 })
 
-test('the older folder checklist is reported, and fix brings it into this session once', async () => {
-  const { port, data } = memoryPort({ root: '/work/app', store: { 'checklist:/work/app': [task('old', 'An older shared task')], 'checklist:s1': [task('a', 'Write the tests')] } })
-
-  expect(await runChecklistDoctor(port, false, false)).toContain("1 task in this folder's older shared checklist (`fix` brings them into this session)")
-  expect(await port.checklist.all()).toHaveLength(1)
-
-  await runChecklistDoctor(port, true, false)
-
-  expect((await port.checklist.all()).map(one => one.id)).toEqual(['a', 'old'])
-  expect('checklist:/work/app' in data).toBe(false)
-  expect(await runChecklistDoctor(port, false, false)).toContain('Everything checks out.')
-})
-
 test('stale blockers are dropped: a missing task, an unknown question, and the later blocker of a loop', () => {
   const blocked = (id: string, text: string, blockedBy: NonNullable<ChecklistItem['blockedBy']>): ChecklistItem => ({ ...task(id, text), blockedBy })
   const list = [

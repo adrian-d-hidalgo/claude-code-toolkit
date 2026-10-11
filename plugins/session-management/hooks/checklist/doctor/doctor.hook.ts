@@ -166,21 +166,11 @@ const countTasks = (list: readonly ChecklistItem[]): string => {
 // `doctor` reports what is wrong in this session's checklist, `fix` applies the safe repairs (a copy
 // is kept for `undo`).
 export const runChecklistDoctor = async (port: Port, isFixing: boolean, isHistory: boolean): Promise<string> => {
-  const older = (await port.checklist.legacy()).length
-
-  if (isFixing && older > 0) {
-    await port.checklist.claimLegacy()
-  }
-
   const list = await port.checklist.all()
   const { lines, fixed, checks } = diagnoseChecklist(list, port.turn.current() !== null, isHistory, new Set((await port.questions.all()).map(one => one.id)))
-  const legacy =
-    older > 0
-      ? [`${plural(older, 'task')} in this folder's older shared checklist ${isFixing ? 'brought into this session' : '(`fix` brings them into this session)'}`]
-      : []
-  const report = formatChecks(`Checklist doctor · this session${isHistory ? ' · with finished and cancelled tasks (--history)' : ''}`, countTasks(list), checks, legacy)
+  const report = formatChecks(`Checklist doctor · this session${isHistory ? ' · with finished and cancelled tasks (--history)' : ''}`, countTasks(list), checks)
 
-  if (lines.length + legacy.length === 0) {
+  if (lines.length === 0) {
     return report.join('\n')
   }
 
@@ -191,5 +181,5 @@ export const runChecklistDoctor = async (port: Port, isFixing: boolean, isHistor
   await keepBackup(port, list, fixed)
   await port.checklist.write(() => fixed)
 
-  return ['Fixed:', ...[...legacy, ...lines].map(line => `- ${line}`), 'Dropped tasks come back with `/checklist undo`.'].join('\n')
+  return ['Fixed:', ...lines.map(line => `- ${line}`), 'Dropped tasks come back with `/checklist undo`.'].join('\n')
 }

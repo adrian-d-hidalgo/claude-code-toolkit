@@ -20,7 +20,7 @@ const tasks = [
 test('the checklist pane draws its list, opens a task and walks through the tasks', async ($, on) => {
   on('session.id', async () => ({ value: 'sx' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
   const ui = await $.ui.mount({ plugin: 'session-management', surface: 'terminal', component: 'Pane', requestId: 'checklist', props })
 
   expect(await ui.find({ type: 'Text', text: /Write the tests for the pane/ })).toBeDefined()
@@ -45,7 +45,7 @@ test('the questions pane draws a choice question with its actions and reveals th
     questions: [
       {
         id: 'q1',
-        session: '5000',
+        session: 'sx',
         texts: ['Which environment should the plan use, staging or production?'],
         choices: { 'Which environment should the plan use, staging or production?': { kind: 'multi', options: ['staging', 'production'] } },
         source: 'text',
@@ -72,7 +72,7 @@ const wide = { ...props, bodyColumns: 110 }
 test('the checklist pane changes its design with its width: narrow opens a task on demand, wide shows it beside the list', async ($, on) => {
   on('session.id', async () => ({ value: 'sx' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   const narrow = await $.ui.mount({ plugin: 'session-management', surface: 'terminal', component: 'Pane', requestId: 'checklist', props })
 
@@ -95,8 +95,8 @@ test('the questions pane shows the focused question beside the list when it is w
   mock.clock(on, { now: 1000 })
   mock.store(on, {
     questions: [
-      { id: 'q1', session: '5000', texts: ['Which environment should the plan use, staging or production?'], choices: { 'Which environment should the plan use, staging or production?': { kind: 'multi', options: ['staging', 'production'] } }, source: 'text', project: '/p', at: 1, asks: 1, isOpen: true },
-      { id: 'q2', session: '5000', texts: ['Should the legal review happen before the launch?'], source: 'text', project: '/p', at: 1, asks: 1, isOpen: true },
+      { id: 'q1', session: 'sx', texts: ['Which environment should the plan use, staging or production?'], choices: { 'Which environment should the plan use, staging or production?': { kind: 'multi', options: ['staging', 'production'] } }, source: 'text', project: '/p', at: 1, asks: 1, isOpen: true },
+      { id: 'q2', session: 'sx', texts: ['Should the legal review happen before the launch?'], source: 'text', project: '/p', at: 1, asks: 1, isOpen: true },
     ],
   })
 
@@ -118,7 +118,7 @@ test('moving the focus onto a task row selects it', async ($, on) => {
   on('session.id', async () => ({ value: 'sx' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   const ui = await $.ui.mount({ plugin: 'session-management', surface: 'terminal', component: 'Pane', requestId: 'checklist', props })
 
@@ -135,8 +135,8 @@ test('the answer field opens on its key and closes when the focus leaves it', as
   mock.clock(on, { now: 1000 })
   mock.store(on, {
     questions: [
-      { id: 'q1', session: '5000', texts: ['Should the legal review happen before the launch?'], source: 'text', project: '/p', at: 1, asks: 1, isOpen: true },
-      { id: 'q2', session: '5000', texts: ['Is the rollout window the weekend or a weekday?'], source: 'text', project: '/p', at: 1, asks: 1, isOpen: true },
+      { id: 'q1', session: 'sx', texts: ['Should the legal review happen before the launch?'], source: 'text', project: '/p', at: 1, asks: 1, isOpen: true },
+      { id: 'q2', session: 'sx', texts: ['Is the rollout window the weekend or a weekday?'], source: 'text', project: '/p', at: 1, asks: 1, isOpen: true },
     ],
   })
 
@@ -154,14 +154,14 @@ const blockedTasks = [
   { id: 'b', text: 'Ship it', status: 'todo', blockedBy: [{ kind: 'task', id: 'a' }, { kind: 'question', id: 'q1' }] },
 ]
 
-const openQuestion = (isOpen: boolean) => ({ id: 'q1', session: '5000', texts: ['Which environment should the plan use?'], source: 'text', project: '/p', at: 1, asks: 1, isOpen })
+const openQuestion = (isOpen: boolean) => ({ id: 'q1', session: 'sx', texts: ['Which environment should the plan use?'], source: 'text', project: '/p', at: 1, asks: 1, isOpen })
 
 test('a blocked task shows what it waits for on its screen and the blocked glyph in the list', async ($, on) => {
   on('session.id', async () => ({ value: 'sx' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
   mock.clock(on, { now: 1000 })
-  mock.store(on, { 'checklist:5000': blockedTasks, questions: [openQuestion(true)] })
+  mock.store(on, { 'checklist:sx': blockedTasks, questions: [openQuestion(true)] })
 
   const ui = await $.ui.mount({ plugin: 'session-management', surface: 'terminal', component: 'Pane', requestId: 'checklist', props })
 
@@ -185,7 +185,7 @@ test('a closed question stops blocking and its section disappears', async ($, on
   on('ui.focus', async () => ({}))
   mock.clock(on, { now: 1000 })
   mock.store(on, {
-    'checklist:5000': [{ id: 'b', text: 'Ship it', status: 'todo', blockedBy: [{ kind: 'question', id: 'q1' }] }],
+    'checklist:sx': [{ id: 'b', text: 'Ship it', status: 'todo', blockedBy: [{ kind: 'question', id: 'q1' }] }],
     questions: [openQuestion(false)],
   })
 
@@ -204,7 +204,7 @@ test('the task screen puts the actions under the status, pencils beside Task and
   on('session.id', async () => ({ value: 'sx' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   const ui = await mountChecklist($)
 
@@ -228,7 +228,7 @@ test('pressing a priority button moves the task in the list and marks the new le
   on('session.id', async () => ({ value: 'sx' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   const ui = await mountChecklist($)
 
@@ -246,7 +246,7 @@ test('pressing a priority button moves the task in the list and marks the new le
 
 test('editing a short title shows its label and no preview', async ($, on) => {
   session(on)
-  mock.store(on, { 'checklist:5000': [{ id: 'a', text: 'Short', status: 'todo' }] })
+  mock.store(on, { 'checklist:sx': [{ id: 'a', text: 'Short', status: 'todo' }] })
 
   const ui = await mountChecklist($)
 
@@ -287,7 +287,7 @@ test('a long description or a long title are edited in the prompt box through th
   const { filled, toasts } = promptBox(on)
 
   mock.store(on, {
-    'checklist:5000': [
+    'checklist:sx': [
       { id: 'a', text: 'First', status: 'todo', priority: 'low' },
       { id: 'b', text: longTitle, status: 'todo', detail: longNotes },
     ],
@@ -312,7 +312,7 @@ test('a long description or a long title are edited in the prompt box through th
 test('a short description keeps the in-pane field, with no preview', async ($, on) => {
   const { filled } = promptBox(on)
 
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   const ui = await mountChecklist($, { bodyColumns: 110 })
 
@@ -327,7 +327,7 @@ test('a short description keeps the in-pane field, with no preview', async ($, o
 test('a prompt that already has text is never replaced: a toast asks to clear it', async ($, on) => {
   const { filled, toasts } = promptBox(on, 'half-written thought')
 
-  mock.store(on, { 'checklist:5000': [{ id: 'b', text: 'Ship it', status: 'todo', detail: longNotes }] })
+  mock.store(on, { 'checklist:sx': [{ id: 'b', text: 'Ship it', status: 'todo', detail: longNotes }] })
 
   const ui = await mountChecklist($)
 
@@ -343,7 +343,7 @@ test('an unfocused pane closes the edit that was open, so Esc then Esc cancels i
   on('session.id', async () => ({ value: 'sx' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   const focused = await mountChecklist($)
 
@@ -364,7 +364,7 @@ test('an unfocused questions pane draws without the answer field that was open',
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
   mock.clock(on, { now: 1000 })
-  mock.store(on, { questions: [{ id: 'q1', session: '5000', texts: ['Should the legal review happen before the launch?'], source: 'text', project: '/p', at: 1, asks: 1, isOpen: true }] })
+  mock.store(on, { questions: [{ id: 'q1', session: 'sx', texts: ['Should the legal review happen before the launch?'], source: 'text', project: '/p', at: 1, asks: 1, isOpen: true }] })
 
   const focused = await $.ui.mount({ plugin: 'session-management', surface: 'terminal', component: 'Pane', requestId: 'open-questions', props })
 
@@ -383,7 +383,7 @@ const mountQuestions = ($: any, extra: object = {}) =>
 
 const ask = (id: string, text: string, choice?: { kind: 'single' | 'multi'; options: string[] }) => ({
   id,
-  session: '5000',
+  session: 'sx',
   texts: [text],
   ...(choice ? { choices: { [text]: choice } } : {}),
   source: 'text',
@@ -399,7 +399,7 @@ test('the narrow checklist draws the selected task\'s actions after the list onl
   on('session.id', async () => ({ value: 'sx' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   const narrow = await mountChecklist($)
 
@@ -437,7 +437,7 @@ test('pressing the quick cancel cancels the task', async ($, on) => {
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
   mock.clock(on, { now: 1000 })
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   const ui = await mountChecklist($)
 
@@ -831,7 +831,7 @@ test('no two stops of a drawn checklist share a key, in any state or layout', as
   session(on)
   mock.clock(on, { now: 1000 })
   // A short description, so the narrow pane still opens the in-pane field.
-  mock.store(on, { 'checklist:5000': tasks.map(one => (one.detail ? { ...one, detail: 'After tests' } : one)) })
+  mock.store(on, { 'checklist:sx': tasks.map(one => (one.detail ? { ...one, detail: 'After tests' } : one)) })
 
   for (const extra of [{}, { bodyColumns: 110 }]) {
     const ui = await mountChecklist($, extra)
@@ -853,7 +853,7 @@ test('no two stops of a drawn checklist share a key, in any state or layout', as
 
 test('the description pencil and the description field are different elements, so the field is what takes the keyboard', async ($, on) => {
   session(on)
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   const ui = await mountChecklist($, { bodyColumns: 110 })
 
@@ -869,7 +869,7 @@ test('the description pencil and the description field are different elements, s
 
 test('focusing a pencil closes the edit, focusing the field keeps it', async ($, on) => {
   session(on)
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   const ui = await mountChecklist($, { bodyColumns: 110 })
   const focus = (element: string) => $.ui.focus({ component: 'Pane', requestId: 'checklist', element, origin: person })
@@ -887,7 +887,7 @@ test('focusing a pencil closes the edit, focusing the field keeps it', async ($,
 
 test('the above and below buttons move the selection and the window', async ($, on) => {
   session(on)
-  mock.store(on, { 'checklist:5000': manyTasks(30) })
+  mock.store(on, { 'checklist:sx': manyTasks(30) })
 
   const ui = await mountChecklist($)
   const shownRows = async () => (await stops(ui)).filter(one => String(one.props?.key).startsWith('row-')).map(one => String(one.props?.key))
@@ -916,7 +916,7 @@ test('the above and below buttons move the selection and the window', async ($, 
 test('a selection pointing to a removed task falls back, and removing a task selects its neighbour', async ($, on) => {
   session(on)
   mock.clock(on, { now: 1000 })
-  const entries: Record<string, unknown> = { 'checklist:5000': manyTasks(4) }
+  const entries: Record<string, unknown> = { 'checklist:sx': manyTasks(4) }
   liveStore(on, entries)
 
   const ui = await mountChecklist($, { bodyColumns: 110 })
@@ -930,7 +930,7 @@ test('a selection pointing to a removed task falls back, and removing a task sel
   expect(await ui.find({ key: 'remove-t1' })).toBeDefined()
 
   // Another path (a tool, a command) removes the selected task behind the pane's back.
-  entries['checklist:5000'] = [{ id: 't0', text: 'Task number 0', status: 'todo' }]
+  entries['checklist:sx'] = [{ id: 't0', text: 'Task number 0', status: 'todo' }]
   await ui.redraw()
   expect(await ui.find({ key: 'remove-t0' })).toBeDefined()
   expect(await ui.find({ key: 'remove-t1' })).toBeUndefined()
@@ -939,7 +939,7 @@ test('a selection pointing to a removed task falls back, and removing a task sel
 
 const group = (id: string, texts: string[], choices?: Record<string, { kind: 'single' | 'multi'; options: string[] }>) => ({
   id,
-  session: '5000',
+  session: 'sx',
   texts,
   ...(choices ? { choices } : {}),
   source: 'text',
@@ -1017,7 +1017,7 @@ test('answering the last part of a group selects the neighbour, not the top', as
 test('a text field closes when another one opens: the title, the description and the answer never share a draft', async ($, on) => {
   session(on)
   mock.clock(on, { now: 1000 })
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   const ui = await mountChecklist($, { bodyColumns: 110 })
 
@@ -1050,7 +1050,7 @@ const parentOf = (tree: unknown, key: string): Drawn | undefined => {
 
 test('the checklist header shows the title and the counts, with a gauge and a percentage under it', async ($, on) => {
   session(on)
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   const ui = await mountChecklist($)
   const header = parentOf(await ui.drawn(), 'nothing') ?? undefined
@@ -1072,7 +1072,7 @@ test('the checklist header shows the title and the counts, with a gauge and a pe
 
 test('the selected task is a round card in the colour of its status; the other rows have no border', async ($, on) => {
   session(on)
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   const ui = await mountChecklist($)
   const cards = cardsOf(await ui.drawn())
@@ -1095,7 +1095,7 @@ test('the selected task is a round card in the colour of its status; the other r
 
 test('an unfocused checklist pane draws its card border dim', async ($, on) => {
   session(on)
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   const ui = await mountChecklist($, { isFocused: false })
 
@@ -1106,7 +1106,7 @@ test('an unfocused checklist pane draws its card border dim', async ($, on) => {
 test('a blocked task is a card in the attention colour with its waiting chip', async ($, on) => {
   session(on)
   mock.clock(on, { now: 1000 })
-  mock.store(on, { 'checklist:5000': blockedTasks, questions: [openQuestion(true)] })
+  mock.store(on, { 'checklist:sx': blockedTasks, questions: [openQuestion(true)] })
 
   const ui = await mountChecklist($)
 
@@ -1121,7 +1121,7 @@ test('a blocked task is a card in the attention colour with its waiting chip', a
 
 test('between two rows of the narrow list there is no other stop, but the selected card\'s actions', async ($, on) => {
   session(on)
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   const ui = await mountChecklist($)
   const keys = async () => (await stops(ui)).map(one => String(one.props?.key))
@@ -1138,7 +1138,7 @@ test('between two rows of the narrow list there is no other stop, but the select
 
 test('the narrow actions of a task sit side by side on one row inside the card, at 38 columns', async ($, on) => {
   session(on)
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   const ui = await mountChecklist($, { bodyColumns: 38 })
   const order = async (id: string) => {
@@ -1164,7 +1164,7 @@ test('the narrow actions of a task sit side by side on one row inside the card, 
 
 test('the checklist Detail action opens the task screen', async ($, on) => {
   session(on)
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   const ui = await mountChecklist($)
 
@@ -1177,7 +1177,7 @@ test('the checklist Detail action opens the task screen', async ($, on) => {
 
 test('the checklist tree stays inside the pane rows with a long, high-priority, noted selected task', async ($, on) => {
   session(on)
-  mock.store(on, { 'checklist:5000': [{ id: 'long', text: 'Rewrite the whole onboarding flow so that every step explains itself '.repeat(3), status: 'todo', priority: 'high', detail: 'notes' }, ...manyTasks(30)] })
+  mock.store(on, { 'checklist:sx': [{ id: 'long', text: 'Rewrite the whole onboarding flow so that every step explains itself '.repeat(3), status: 'todo', priority: 'high', detail: 'notes' }, ...manyTasks(30)] })
 
   for (const bodyRows of [12, 16, 24, 40]) {
     const ui = await mountChecklist($, { scroll: { offset: 0, bodyRows } })
@@ -1190,7 +1190,7 @@ test('the checklist tree stays inside the pane rows with a long, high-priority, 
 
 test('the checklist tree stays inside the pane rows, whatever its size', async ($, on) => {
   session(on)
-  mock.store(on, { 'checklist:5000': [...manyTasks(40), { id: 'd1', text: 'Done one', status: 'done' }, { id: 'd2', text: 'Done two', status: 'done' }] })
+  mock.store(on, { 'checklist:sx': [...manyTasks(40), { id: 'd1', text: 'Done one', status: 'done' }, { id: 'd2', text: 'Done two', status: 'done' }] })
 
   for (const bodyRows of [12, 16, 24, 40]) {
     for (const columns of [38, 60]) {
@@ -1342,7 +1342,7 @@ test('Up from the selected question reaches the previous row, not the paging lin
 test('the meta line names the part, and the hint only promises Enter where it opens the task', async ($, on) => {
   session(on)
   mock.clock(on, { now: 1000 })
-  mock.store(on, { questions: [pair()], 'checklist:5000': tasks })
+  mock.store(on, { questions: [pair()], 'checklist:sx': tasks })
 
   const questionsPane = await mountQuestions($)
 
@@ -1394,7 +1394,7 @@ test('no two stops of a drawn questions pane share a key, answering or not', asy
 
 test('an edit left open when the pane lost focus is dropped when the ring comes back to its field', async ($, on) => {
   session(on)
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   const ui = await mountChecklist($)
 
@@ -1428,7 +1428,7 @@ test('a stale open answer area is dropped the same way', async ($, on) => {
 
 test('closing a task screen with no selection returns the ring to the first row, not to row-null', async ($, on) => {
   session(on)
-  mock.store(on, { 'checklist:5000': [{ id: 'a', text: 'Old chore', status: 'done' }, { id: 'b', text: 'Next chore', status: 'todo' }] })
+  mock.store(on, { 'checklist:sx': [{ id: 'a', text: 'Old chore', status: 'done' }, { id: 'b', text: 'Next chore', status: 'todo' }] })
 
   const ui = await mountChecklist($)
 
@@ -1440,7 +1440,7 @@ test('closing a task screen with no selection returns the ring to the first row,
 
 test('a task screen left open before the pane grew wide does not hide the list', async ($, on) => {
   session(on)
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   const narrow = await mountChecklist($)
 
@@ -1458,7 +1458,7 @@ test('a task screen left open before the pane grew wide does not hide the list',
 test('adding a task keeps the same field and empties it', async ($, on) => {
   session(on)
   mock.clock(on, { now: 1000 })
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   const ui = await mountChecklist($)
 
@@ -1495,7 +1495,7 @@ test('every unselected checklist row has the same structure, with or without a d
   mock.clock(on, { now: 1000 })
   const long = 'Rewrite the whole onboarding flow so that every step explains itself'
   mock.store(on, {
-    'checklist:5000': [
+    'checklist:sx': [
       { id: 'sel', text: 'The one in progress', status: 'doing' },
       { id: 'n1', text: long, status: 'todo', detail: 'with notes' },
       { id: 'n2', text: long, status: 'todo' },
@@ -1570,7 +1570,7 @@ test('every questions row has the same structure, with or without a group chip',
 test('the header, the gauge and the paging lines are non-shrinking boxes', async ($, on) => {
   session(on)
   mock.clock(on, { now: 1000 })
-  mock.store(on, { 'checklist:5000': manyTasks(30) })
+  mock.store(on, { 'checklist:sx': manyTasks(30) })
 
   const ui = await mountChecklist($, { scroll: { offset: 0, bodyRows: 16 } })
   const tree = await ui.drawn()
@@ -1589,7 +1589,7 @@ test('the header, the gauge and the paging lines are non-shrinking boxes', async
 
 test('the task screen has a blank row between its sections when the pane has the rows, and none when it is tight', async ($, on) => {
   session(on)
-  mock.store(on, { 'checklist:5000': tasks })
+  mock.store(on, { 'checklist:sx': tasks })
 
   for (const [bodyRows, margin] of [[60, 1], [8, 0]] as const) {
     const ui = await mountChecklist($, { scroll: { offset: 0, bodyRows } })
@@ -1610,7 +1610,7 @@ test('the task screen has a blank row between its sections when the pane has the
 
 test('the narrow selected card has a blank row above its chips and actions only while the list keeps its rows', async ($, on) => {
   session(on)
-  mock.store(on, { 'checklist:5000': [{ id: 'a', text: 'Selected task', status: 'doing', priority: 'high' }, ...manyTasks(20)] })
+  mock.store(on, { 'checklist:sx': [{ id: 'a', text: 'Selected task', status: 'doing', priority: 'high' }, ...manyTasks(20)] })
 
   for (const [bodyRows, margin] of [[40, 1], [12, 0]] as const) {
     const ui = await mountChecklist($, { scroll: { offset: 0, bodyRows } })
@@ -1731,7 +1731,7 @@ const chained = [
 
 test('Waiting for names each blocker and offers Go beside its drop button', async ($, on) => {
   navigation(on)
-  mock.store(on, { 'checklist:5000': chained, questions: twoAsked })
+  mock.store(on, { 'checklist:sx': chained, questions: twoAsked })
 
   const ui = await mountChecklist($)
 
@@ -1748,7 +1748,7 @@ test('Waiting for names each blocker and offers Go beside its drop button', asyn
 
 test('Go on a task blocker opens that task\'s screen when narrow and selects it when wide', async ($, on) => {
   navigation(on)
-  mock.store(on, { 'checklist:5000': chained, questions: twoAsked })
+  mock.store(on, { 'checklist:sx': chained, questions: twoAsked })
 
   const narrow = await mountChecklist($)
 
@@ -1771,7 +1771,7 @@ test('Go on a task blocker opens that task\'s screen when narrow and selects it 
 
 test('Go on a question blocker raises the questions pane on that question and asks for its row', async ($, on) => {
   const { opened, toasts } = navigation(on)
-  mock.store(on, { 'checklist:5000': chained, questions: twoAsked })
+  mock.store(on, { 'checklist:sx': chained, questions: twoAsked })
 
   const questionsUi = await mountQuestions($)
   const ui = await mountChecklist($)
@@ -1792,7 +1792,7 @@ test('Go on a question that closed since it was drawn says so and opens nothing'
   const { opened, toasts } = navigation(on)
   // A store the test can change under a drawn pane, without the pane being told.
   const data: Record<string, unknown> = {
-    'checklist:5000': [{ id: 'b', text: 'Ship it', status: 'todo', blockedBy: [{ kind: 'question', id: 'q1' }] }],
+    'checklist:sx': [{ id: 'b', text: 'Ship it', status: 'todo', blockedBy: [{ kind: 'question', id: 'q1' }] }],
     questions: twoAsked,
   }
   on('store.get', async (_$: any, e: any) => ({ value: data[e.key] }))
@@ -1817,7 +1817,7 @@ test('Go on a question that closed since it was drawn says so and opens nothing'
 test('Blocks lists the open tasks that wait for this one, with Go and no drop button', async ($, on) => {
   navigation(on)
   mock.store(on, {
-    'checklist:5000': [
+    'checklist:sx': [
       { id: 'a', text: 'Write the tests for the pane', status: 'doing' },
       { id: 'b', text: 'Ship it', status: 'todo', blockedBy: [{ kind: 'task', id: 'a' }] },
       { id: 'c', text: 'Announce it', status: 'done', blockedBy: [{ kind: 'task', id: 'a' }] },
@@ -1844,7 +1844,7 @@ test('Blocks lists the open tasks that wait for this one, with Go and no drop bu
 test('Blocks is absent once its dependants are finished', async ($, on) => {
   navigation(on)
   mock.store(on, {
-    'checklist:5000': [
+    'checklist:sx': [
       { id: 'a', text: 'Write the tests for the pane', status: 'doing' },
       { id: 'b', text: 'Ship it', status: 'done', blockedBy: [{ kind: 'task', id: 'a' }] },
     ],
@@ -1860,7 +1860,7 @@ test('Blocks is absent once its dependants are finished', async ($, on) => {
 test('the selected question says how many open tasks wait for it', async ($, on) => {
   navigation(on)
   mock.store(on, {
-    'checklist:5000': [
+    'checklist:sx': [
       { id: 'a', text: 'Write the tests', status: 'todo', blockedBy: [{ kind: 'question', id: 'q2' }] },
       { id: 'b', text: 'Ship it', status: 'doing', blockedBy: [{ kind: 'question', id: 'q2' }] },
       { id: 'c', text: 'Announce it', status: 'done', blockedBy: [{ kind: 'question', id: 'q2' }] },
@@ -1879,7 +1879,7 @@ test('the selected question says how many open tasks wait for it', async ($, on)
 test('the task screen with Waiting for and Blocks stays inside the pane rows', async ($, on) => {
   navigation(on)
   mock.store(on, {
-    'checklist:5000': [
+    'checklist:sx': [
       { id: 'a', text: 'Write the tests for the pane', status: 'doing', blockedBy: [{ kind: 'question', id: 'q2' }, { kind: 'task', id: 'b' }] },
       { id: 'b', text: 'A prerequisite whose title is long enough to wrap onto a second line', status: 'todo' },
       { id: 'c', text: 'Ship it after everything else, with a title that wraps as well', status: 'todo', blockedBy: [{ kind: 'task', id: 'a' }] },

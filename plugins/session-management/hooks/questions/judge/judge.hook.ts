@@ -1,6 +1,5 @@
 import type { Choice } from '../../../types'
-import { oneLine } from '../../shared/format/format.hook'
-import { uniqueTexts } from '../parts/parts.hook'
+import { questionLine, uniqueTexts } from '../parts/parts.hook'
 
 export type JudgedGroup = { texts: string[]; repeatOf: string | null; choices?: Record<string, Choice> }
 
@@ -23,7 +22,7 @@ export const buildJudgePrompt = (content: string, known: Known, isDialog: boolea
     content,
     '>>>',
     '',
-    'List the questions the assistant asks THE USER and expects an answer to. The text may be in any language: keep each question in its original wording. Every question must make sense on its own, shown in a list without the message around it: if it refers to something said earlier ("which one?", "¿Cuál eliges?"), rewrite it with the options or subject it needs, in the same language. Skip rhetorical questions, questions inside code or quotes, and questions the assistant answers itself. Put questions about the same decision in one group.',
+    'List the questions the assistant asks THE USER and expects an answer to. The text may be in any language: keep each question in its original wording. Every question must make sense on its own, shown in a list without the message around it: if it refers to something said earlier ("which one?", "¿Cuál eliges?"), rewrite it with the options or subject it needs, in the same language. Keep each text short: the question sentence itself, not the explanation, reasons or examples around it (the list shows it on one line). Skip rhetorical questions, questions inside code or quotes, and questions the assistant answers itself. Put questions about the same decision in one group.',
     'For each group, set "repeatOf" to the id of a tracked question that asks the same thing, even in different words or another language; otherwise null.',
     'For each question also say how it is answered, in "choices" (same order as "texts"): kind "single" when the message lists options to pick one from, "multi" when several can be picked, "text" for a free answer; list the options (2 to 8 short labels, as the message words them) for single and multi.',
     'Format: {"groups":[{"texts":["..."],"choices":[{"kind":"single|multi|text","options":["..."]}],"repeatOf":"id or null"}]}',
@@ -72,14 +71,14 @@ export const parseJudge = (reply: string): JudgedGroup[] | null => {
     for (const group of value.groups as Array<{ texts?: unknown; choices?: unknown; repeatOf?: unknown }>) {
       const raw: unknown[] = Array.isArray(group.texts) ? group.texts : []
       // One line each: a newline in a judged text could forge a line of the prompt context.
-      const texts = uniqueTexts(raw.filter((text): text is string => typeof text === 'string').map(text => oneLine(text)).filter(Boolean))
+      const texts = uniqueTexts(raw.filter((text): text is string => typeof text === 'string').map(text => questionLine(text)).filter(Boolean))
       const choices: Record<string, Choice> = {}
 
       raw.forEach((text, index) => {
         const choice = typeof text === 'string' && Array.isArray(group.choices) ? parseChoice(group.choices[index]) : null
 
-        if (choice && typeof text === 'string' && oneLine(text) !== '') {
-          choices[oneLine(text)] = choice
+        if (choice && typeof text === 'string' && questionLine(text) !== '') {
+          choices[questionLine(text)] = choice
         }
       })
 
@@ -102,7 +101,7 @@ export const parseJudge = (reply: string): JudgedGroup[] | null => {
 // conversation: it knows what was asked, answered or skipped.
 export const buildForkQuestionsPrompt = (known: Known): string =>
   [
-    'Do not use tools. List every question you asked the user in this session that they have not answered yet: dialog questions they skipped or dismissed, and questions in your messages that got no reply. Put questions about the same decision in one group. Keep each question in its original wording, but make it understandable on its own: if it is vague, add the options or subject it refers to ("¿Cuál eliges?" becomes "¿Cuál eliges, t4g.large o m7g.large?").',
+    'Do not use tools. List every question you asked the user in this session that they have not answered yet: dialog questions they skipped or dismissed, and questions in your messages that got no reply. Put questions about the same decision in one group. Keep each question in its original wording, but make it understandable on its own: if it is vague, add the options or subject it refers to ("¿Cuál eliges?" becomes "¿Cuál eliges, t4g.large o m7g.large?"). Keep each text short: the question sentence itself, not the explanation around it.',
     'Skip questions already tracked as open (even in other words):',
     known.length === 0 ? '(none)' : known.map(one => `- ${one.texts.join(' | ')}`).join('\n'),
     'For each question say how it is answered, in "choices" (same order as "texts"): kind "single" (pick one of the options it lists), "multi" (pick several) or "text" (free answer), with the options for single and multi.',
@@ -188,8 +187,8 @@ export const parseRewrites = (reply: string, known: Known): Map<string, string> 
     const valid = new Set(known.flatMap(one => one.texts.map((_, index) => `${one.id}#${index + 1}`)))
 
     for (const item of Array.isArray(value.rewrites) ? (value.rewrites as Array<{ ref?: unknown; text?: unknown }>) : []) {
-      if (typeof item.ref === 'string' && valid.has(item.ref) && typeof item.text === 'string' && isStandalone(oneLine(item.text))) {
-        found.set(item.ref, oneLine(item.text))
+      if (typeof item.ref === 'string' && valid.has(item.ref) && typeof item.text === 'string' && isStandalone(questionLine(item.text))) {
+        found.set(item.ref, questionLine(item.text))
       }
     }
   } catch {

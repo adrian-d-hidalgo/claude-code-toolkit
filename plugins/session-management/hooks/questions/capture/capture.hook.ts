@@ -1,11 +1,10 @@
 import type { Choice, Question } from '../../../types'
-import { oneLine } from '../../shared/format/format.hook'
 import type { Port } from '../../shared/port/port.hook'
 import { buildAnswerPrompt, buildJudgePrompt, parseJudge, parseSettled, standaloneOnly } from '../judge/judge.hook'
 import type { JudgedGroup } from '../judge/judge.hook'
 import { capSession, carryChoices, mergeGroup, refreshQuestion } from '../merge/merge.hook'
 import { withoutTexts } from '../ops/ops.hook'
-import { uniqueTexts } from '../parts/parts.hook'
+import { questionLine, uniqueTexts } from '../parts/parts.hook'
 
 // Asks a small model which of `content`'s questions are real and which tracked question
 // each repeats; null (no model, bad reply, `judge: heuristic`) sends the caller to the
@@ -35,7 +34,7 @@ export const addGroups = async (port: Port, groups: JudgedGroup[], source: Quest
 
   for (const group of groups) {
     // One line each, once each: a newline would forge a line of the prompt context.
-    const texts = uniqueTexts(group.texts.map(text => oneLine(text)).filter(Boolean))
+    const texts = uniqueTexts(group.texts.map(text => questionLine(text)).filter(Boolean))
     const choices = carryChoices(texts, group.choices)
 
     if (texts.length > 0) {

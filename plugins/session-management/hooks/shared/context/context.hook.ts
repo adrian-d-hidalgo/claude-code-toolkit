@@ -27,7 +27,7 @@ export const promptContext = ({ changes, open, list, questionsTool, checklistToo
     // Parts are numbered from 1, the way the tool's `parts` and the pane count them.
     const lines = recent.map(one => `- [${one.id}] ${one.texts.map((text, index) => `${index + 1}) ${text}`).join(' | ')}`).join('\n')
     context.push(
-      `Open questions you asked that are not yet answered:\n${lines}\nIf the user's message answers any of them, or one became moot, close it with the ${questionsTool} tool (action close; parts for a partial answer). If the user asks what a question meant, reword it with action update. Every text must make sense on its own.`,
+      `Open questions you asked that are not yet answered:\n${lines}\nIf the user's message answers any of them, or one became moot, close it with the ${questionsTool} tool (action close; parts for a partial answer). If the user asks what a question meant, reword it with action update. Every text must make sense on its own and stay short: one sentence, the question itself; the pane lists each on one line.`,
     )
   }
 

@@ -1,7 +1,7 @@
 import { expect, test } from 'claude-code/testing'
 
 import type { Question } from '../../../types'
-import { countParts, partsOf, questionsIn, scopeCounts } from './parts.hook'
+import { MAX_QUESTION_CHARS, countParts, partsOf, questionLine, questionsIn, scopeCounts } from './parts.hook'
 
 const asked = (id: string, texts: string[]): Question => ({ id, texts, source: 'text', session: 's', project: '/p', at: 1, asks: 1, isOpen: true })
 
@@ -22,4 +22,13 @@ test('counts are in parts, and never name the entries', () => {
   expect(questionsIn([four, single])).toBe('5 questions')
   expect(scopeCounts([four], [single, asked('c', ['six'])])).toBe('4 open, 2 closed')
   expect(scopeCounts([single], [single])).toBe('1 open, 1 closed')
+})
+
+test('a question keeps its whole text past the checklist title cap and is only cut at its own', () => {
+  const long = `${'Should the rate limiter keep the in-memory counters as a fallback when Valkey is unreachable, '.repeat(3)}or fail closed?`
+
+  expect(long.length).toBeGreaterThan(200)
+  expect(questionLine(long)).toBe(long)
+  expect(questionLine('x'.repeat(MAX_QUESTION_CHARS + 1))).toBe(`${'x'.repeat(MAX_QUESTION_CHARS - 1)}…`)
+  expect(questionLine('a\n  b')).toBe('a b')
 })

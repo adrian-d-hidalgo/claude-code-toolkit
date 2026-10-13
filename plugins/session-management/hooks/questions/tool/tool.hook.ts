@@ -1,11 +1,10 @@
 import type { Question } from '../../../types'
-import { oneLine } from '../../shared/format/format.hook'
 import type { Port } from '../../shared/port/port.hook'
 import { addGroups } from '../capture/capture.hook'
 import { isStandalone } from '../judge/judge.hook'
 import { unionTexts, withTexts } from '../merge/merge.hook'
 import { closing, withoutTexts } from '../ops/ops.hook'
-import { questionsIn, uniqueTexts } from '../parts/parts.hook'
+import { questionLine, questionsIn, uniqueTexts } from '../parts/parts.hook'
 
 export const CLOSE_TOOL_SPEC = {
   name: 'close_question',
@@ -20,7 +19,7 @@ export const CLOSE_TOOL_SPEC = {
 export const QUESTIONS_TOOL_SPEC = {
   name: 'questions',
   description:
-    'Manage the open questions the user sees in the Open questions pane (this session only). Actions: list (all: true includes closed), add (texts), update (id, texts: reword the question so it makes sense on its own, e.g. after the user asked what it meant), close (id; parts: the 1-based positions answered, omit to close the whole group), reopen (id), merge (id, into: fold a duplicate into the question that says the same). Every text must be understandable alone, with its options or subject. Close a question when the user answered it in chat or the matter became moot.',
+    'Manage the open questions the user sees in the Open questions pane (this session only). Actions: list (all: true includes closed), add (texts), update (id, texts: reword the question so it makes sense on its own, e.g. after the user asked what it meant), close (id; parts: the 1-based positions answered, omit to close the whole group), reopen (id), merge (id, into: fold a duplicate into the question that says the same). Every text must be understandable alone, with its options or subject, and short: one sentence, the question itself (reasons and context go in the chat, not in the text). Close a question when the user answered it in chat or the matter became moot.',
   inputSchema: {
     type: 'object',
     properties: {
@@ -72,7 +71,7 @@ export const callQuestionsTool = async (port: Port, call: QuestionsCall): Promis
     return 'Invalid questions call: parts must be an array of 1-based positions.'
   }
 
-  const given = uniqueTexts((call.texts ?? []).map(text => oneLine(String(text))).filter(Boolean))
+  const given = uniqueTexts((call.texts ?? []).map(text => questionLine(String(text))).filter(Boolean))
   const tooShort = given.filter(text => !isStandalone(text))
   const kept = given.filter(isStandalone)
 

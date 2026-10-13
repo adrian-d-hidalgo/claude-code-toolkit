@@ -1,5 +1,14 @@
 import type { Question } from '../../../types'
 import { plural } from '../../shared/diagnosis/diagnosis.hook'
+import { oneLine } from '../../shared/format/format.hook'
+
+// A question is stored in full and the pane wraps the focused one, so the cap only guards
+// against pasted walls of text; `oneLine`'s default (200, sized for checklist titles) cut real
+// questions mid-sentence.
+export const MAX_QUESTION_CHARS = 500
+
+// One line, once: a newline in a question would forge a line of the prompt context.
+export const questionLine = (text: string): string => oneLine(text, MAX_QUESTION_CHARS)
 
 // One thing a question asked: its entry, its wording and where it sits in the entry.
 export type Part = { one: Question; text: string; slot: number; key: string }

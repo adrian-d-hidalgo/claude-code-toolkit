@@ -1,4 +1,4 @@
-import { brief } from '../../shared/format/format.hook'
+import { MAX_TITLE, brief } from '../../shared/format/format.hook'
 import type { ScanMessage } from '../../shared/transcript/transcript.hook'
 import type { Priority } from '../../../types'
 import type { FoundTask } from '../scan/scan.hook'
@@ -6,6 +6,10 @@ import type { FoundTask } from '../scan/scan.hook'
 const STATUSES = ['todo', 'doing', 'done']
 const EXCERPT_CHARS = 6000
 const LEVELS: string[] = ['high', 'normal', 'low']
+
+// The title rule, shared by both prompts: a hard cap the store enforces, and a detail that adds to
+// the title instead of repeating it.
+const TITLE_RULE = `Write each task as a short imperative title in the conversation's own language, never longer than ${MAX_TITLE} characters (a longer title is cut), and put anything else someone needs to do it (files, constraints, why) in "detail" (the task description). "detail" must not repeat or paraphrase the title: leave it out when there is nothing to add.`
 
 // Normal is the default, so the model is told to leave it out.
 const PRIORITY_RULE =
@@ -42,7 +46,8 @@ export const buildTaskPrompt = (messages: readonly ScanMessage[], known: readonl
     transcript,
     '>>>',
     '',
-    'List the concrete tasks that were agreed or planned, or that remain open: next steps, pending fixes, follow-ups. Skip hypothetical options nobody chose, questions, and anything already tracked (even in other words). Write each task as a short imperative title (under 70 characters) in the conversation\'s own language, and put anything longer that someone needs to do it (files, constraints, why) in "detail" (the task description). Set "status" to todo, doing or done from what the conversation shows.',
+    'List the concrete tasks that were agreed or planned, or that remain open: next steps, pending fixes, follow-ups. Skip hypothetical options nobody chose, questions, and anything already tracked (even in other words). Set "status" to todo, doing or done from what the conversation shows.',
+    TITLE_RULE,
     SHAPE,
     PRIORITY_RULE,
     'Format: {"tasks":[{"text":"...","detail":"optional","status":"todo|doing|done","priority":"high|low"}]}',
@@ -54,6 +59,13 @@ export const levelOf = (value: unknown): { priority?: Priority } => {
   const level = typeof value === 'string' ? value.trim().toLowerCase() : ''
 
   return LEVELS.includes(level) && level !== 'normal' ? { priority: level as Priority } : {}
+}
+
+// The overflow of a cut title and the description the model gave both stay as the description.
+const withDetail = (short: { text: string; detail?: string }, given: unknown): { text: string; detail?: string } => {
+  const detail = [short.detail, typeof given === 'string' ? given.trim() : ''].filter(Boolean).join('\n')
+
+  return detail === '' ? { text: short.text } : { text: short.text, detail }
 }
 
 export const parseTasks = (reply: string): FoundTask[] | null => {
@@ -72,7 +84,7 @@ export const parseTasks = (reply: string): FoundTask[] | null => {
 
     return (value.tasks as Array<{ text?: unknown; detail?: unknown; status?: unknown; priority?: unknown }>).flatMap(task =>
       typeof task.text === 'string' && task.text.trim() !== ''
-        ? [{ ...brief(task.text), ...(typeof task.detail === 'string' && task.detail.trim() !== '' ? { detail: task.detail.trim() } : {}), status: STATUSES.includes(String(task.status)) ? (task.status as FoundTask['status']) : 'todo', ...levelOf(task.priority) }]
+        ? [{ ...withDetail(brief(task.text), task.detail), status: STATUSES.includes(String(task.status)) ? (task.status as FoundTask['status']) : 'todo', ...levelOf(task.priority) }]
         : [],
     )
   } catch {
@@ -84,7 +96,8 @@ export const parseTasks = (reply: string): FoundTask[] | null => {
 // conversation, running subagents included.
 export const buildForkTasksPrompt = (known: readonly string[]): string =>
   [
-    'Do not use tools. List every task still pending or in progress in this session: work you started, subagents still running, steps the user asked for, follow-ups you promised, items waiting on the user. Write each as a short imperative title (under 70 characters) in the conversation\'s own language, with anything longer in "detail" (its description); status is "doing" for work in flight, otherwise "todo" ("done" only for finished items of an active plan).',
+    'Do not use tools. List every task still pending or in progress in this session: work you started, subagents still running, steps the user asked for, follow-ups you promised, items waiting on the user. Status is "doing" for work in flight, otherwise "todo" ("done" only for finished items of an active plan).',
+    TITLE_RULE,
     SHAPE,
     PRIORITY_RULE,
     'Skip tasks already tracked in the checklist (even in other words):',

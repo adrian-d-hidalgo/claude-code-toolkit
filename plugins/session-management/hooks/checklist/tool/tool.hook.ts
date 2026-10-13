@@ -9,15 +9,15 @@ import { STATUSES, isOpenStatus } from '../status/status.hook'
 export const CHECKLIST_TOOL_SPEC = {
   name: 'checklist',
   description:
-    'Read or change the shared checklist the user also sees and edits. Actions: list, add (text, optional detail, priority and blockedBy; a task the checklist already has is not added twice, and one that only adds to a task is folded into its description), block (id, blockedBy: ids of the tasks or open questions it must wait for), unblock (id, optional blockedBy to drop only those), status (id, status todo|doing|done|cancelled), edit (id, text, detail and/or priority), move (id, position within its priority level), remove (id). Priority is high|normal|low; the list is sorted by it, and move only reorders within a level. Keep titles short and put the rest in detail. Use it to keep the checklist current as you work.',
+    'Read or change the shared checklist the user also sees and edits. Actions: list, add (text, optional detail, priority and blockedBy; a task the checklist already has is not added twice, and one that only adds to a task is folded into its description), block (id, blockedBy: ids of the tasks or open questions it must wait for), unblock (id, optional blockedBy to drop only those), status (id, status todo|doing|done|cancelled), edit (id, text, detail and/or priority), move (id, position within its priority level), remove (id). Priority is high|normal|low; the list is sorted by it, and move only reorders within a level. Keep titles short (at most 200 characters; longer is cut) and put the rest in detail, which must not repeat the title. Use it to keep the checklist current as you work.',
   inputSchema: {
     type: 'object',
     properties: {
       action: { type: 'string', enum: ['list', 'add', 'block', 'unblock', 'status', 'edit', 'move', 'remove'] },
       id: { type: 'string' },
       position: { type: 'number', description: 'move: the new 1-based position; it only reorders within the task\'s priority level.' },
-      text: { type: 'string', description: 'Short title, one line.' },
-      detail: { type: 'string', description: 'Longer description shown in the task detail view.' },
+      text: { type: 'string', description: 'Short title, one line, at most 200 characters (longer is cut and the rest moves to detail).' },
+      detail: { type: 'string', description: 'Longer description shown in the task detail view: what the title does not say (files, constraints, why). Do not repeat the title.' },
       status: { type: 'string', enum: STATUSES },
       priority: { type: 'string', enum: PRIORITIES, description: 'add/edit: high|normal|low (default normal). The list is sorted by it; move only reorders within a level.' },
       blockedBy: { type: 'array', items: { type: 'string' }, description: 'Ids of the tasks or open questions this task waits for.' },
@@ -50,7 +50,7 @@ export const callChecklistTool = async (port: Port, call: ChecklistCall, options
       note = `The checklist is full (${CHECKLIST_CAP} tasks): remove some first.`
     } else {
       const before = new Set((await port.checklist.all()).map(one => one.id))
-      // The title is cut short; the rest of the text and the given description both stay as the description.
+      // A title past the cap is cut; its overflow and the given description both stay as the description.
       const short = brief(text)
       const description = [short.detail, call.detail?.trim()].filter(Boolean).join('\n').slice(0, MAX_DETAIL)
       const done = await reconcileTasks(port, [{ text: short.text, ...(description ? { detail: description } : {}), status: 'todo', ...(priority && priority !== 'normal' ? { priority } : {}) }], options)

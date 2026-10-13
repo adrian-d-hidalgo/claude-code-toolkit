@@ -20,13 +20,19 @@ test('single line text is collapsed and capped', () => {
   expect(oneLine('x'.repeat(10), 5)).toBe('xxxx…')
 })
 
-test('a long task is split into a short title and its detail', () => {
-  const long = 'Replace the in-memory rate limiter with the Valkey-backed one and update every caller that still imports the old module'
+test('a long task is split into a cut title and the rest as its detail, without repeating the title', () => {
+  const long = 'Replace the in-memory rate limiter with the Valkey-backed one and update every caller that imports the old module, then document the migration path in the runbook, add a feature flag for the rollout and remove the old module once every service has switched over'
+  const fits = 'Replace the in-memory rate limiter with the Valkey-backed one and update every caller that still imports the old module'
+  const split = brief(long)
 
   expect(brief('Short task')).toEqual({ text: 'Short task' })
-  expect(brief(long).detail).toBe(long)
-  expect(brief(long).text.length).toBeLessThanOrEqual(71)
-  expect(brief(long).text.endsWith('…')).toBe(true)
+  expect(brief(fits)).toEqual({ text: fits })
+  expect(split.text.length).toBeLessThanOrEqual(201)
+  expect(split.text.endsWith('…')).toBe(true)
+  expect(long.startsWith(split.text.slice(0, -1))).toBe(true)
+  expect(split.detail?.startsWith('…')).toBe(true)
+  expect(long.endsWith(split.detail?.slice(1) ?? '')).toBe(true)
+  expect(split.detail?.includes(split.text.slice(0, -1))).toBe(false)
 })
 
 test('baseName is the last folder of a path', () => {

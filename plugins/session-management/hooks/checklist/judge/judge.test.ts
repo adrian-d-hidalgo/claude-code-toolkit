@@ -17,22 +17,27 @@ test('the task prompt carries the tracked tasks and the recent conversation', ()
 })
 
 test('the model reply becomes tasks: long ones split into a title and description, unknown statuses default to todo', () => {
-  const long = 'Replace the in-memory rate limiter with the Valkey-backed one and update every caller that imports the old module'
+  const long = 'Replace the in-memory rate limiter with the Valkey-backed one and update every caller that imports the old module, then document the migration path in the runbook, add a feature flag for the rollout and remove the old module once every service has switched over'
   const tasks = parseTasks(
     JSON.stringify({
       tasks: [
         { text: 'Write the tests', status: 'doing' },
         { text: long, status: 'weird' },
         { text: 'Short title', detail: 'files: a.ts, b.ts', status: 'todo' },
+        { text: long, detail: 'only the api package' },
         { text: '   ' },
       ],
     }),
   )
 
-  expect(tasks).toHaveLength(3)
+  expect(tasks).toHaveLength(4)
   expect(tasks?.[0]).toMatchObject({ text: 'Write the tests', status: 'doing' })
-  expect(tasks?.[1]).toMatchObject({ status: 'todo', detail: long })
+  expect(tasks?.[1]?.status).toBe('todo')
+  expect(tasks?.[1]?.text.endsWith('…')).toBe(true)
+  expect(tasks?.[1]?.detail?.startsWith('…')).toBe(true)
   expect(tasks?.[2]).toMatchObject({ text: 'Short title', detail: 'files: a.ts, b.ts' })
+  expect(tasks?.[3]?.detail?.startsWith('…')).toBe(true)
+  expect(tasks?.[3]?.detail?.endsWith('\nonly the api package')).toBe(true)
   expect(parseTasks('not json')).toBeNull()
 })
 

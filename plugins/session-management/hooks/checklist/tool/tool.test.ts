@@ -95,16 +95,19 @@ test('add and edit set a priority and the list stays sorted by it', async () => 
   expect((await port.checklist.all()).find(one => one.id === 'a')).toEqual({ id: 'a', text: 'Task a', status: 'todo' })
 })
 
-test('a long title keeps its full text and the given description together', async () => {
+test('a long title keeps its overflow and the given description together, without repeating the title', async () => {
   const { port } = setup()
-  const long = 'Replace the in-memory rate limiter with the Valkey-backed one and update every caller that imports the old module'
+  const long = 'Replace the in-memory rate limiter with the Valkey-backed one and update every caller that imports the old module, then document the migration path in the runbook, add a feature flag for the rollout and remove the old module once every service has switched over'
 
   await callChecklistTool(port, { action: 'add', text: long, detail: 'only the api package' })
 
   const created = (await port.checklist.all()).find(one => one.id === 'id1')
 
   expect(created?.text.endsWith('…')).toBe(true)
-  expect(created?.detail).toBe(`${long}\nonly the api package`)
+  expect(created?.text.length).toBeLessThanOrEqual(201)
+  expect(created?.detail?.startsWith('…')).toBe(true)
+  expect(created?.detail?.endsWith('\nonly the api package')).toBe(true)
+  expect(created?.detail?.includes(created.text.slice(0, -1))).toBe(false)
 })
 
 test('blank text is refused on add and edit', async () => {

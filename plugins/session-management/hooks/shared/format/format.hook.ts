@@ -32,8 +32,12 @@ export const oneLine = (text: string, max = 200): string => {
 
 export const rule = (columns: number): string => '─'.repeat(Math.max(8, Math.min(columns - 4, 64)))
 
-// A long task becomes a short title plus the full text as its detail, so rows stay one line.
-export const brief = (text: string, max = 70): { text: string; detail?: string } => {
+// The longest title a task keeps: past it the title is cut and the rest moves to its detail.
+export const MAX_TITLE = 200
+
+// A long task becomes a cut title plus the rest of its text as detail, so rows stay one line
+// and the detail does not repeat the title.
+export const brief = (text: string, max = MAX_TITLE): { text: string; detail?: string } => {
   const flat = text.replace(/\s+/g, ' ').trim()
 
   if (flat.length <= max) {
@@ -42,8 +46,9 @@ export const brief = (text: string, max = 70): { text: string; detail?: string }
 
   const cut = flat.slice(0, max)
   const at = cut.lastIndexOf(' ')
+  const head = (at > max / 2 ? cut.slice(0, at) : cut).replace(/[,;:\s]+$/, '')
 
-  return { text: `${(at > max / 2 ? cut.slice(0, at) : cut).replace(/[,;:\s]+$/, '')}…`, detail: flat }
+  return { text: `${head}…`, detail: `…${flat.slice(head.length).replace(/^[,;:\s]+/, '')}` }
 }
 
 // The last folder of a path: the project's name.

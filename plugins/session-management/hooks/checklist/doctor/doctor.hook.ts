@@ -1,7 +1,7 @@
 import type { ChecklistItem } from '../../../types'
 import type { Check, Diagnosis } from '../../shared/diagnosis/diagnosis.hook'
 import { formatChecks, plural } from '../../shared/diagnosis/diagnosis.hook'
-import { brief } from '../../shared/format/format.hook'
+import { MAX_TITLE, brief } from '../../shared/format/format.hook'
 import type { Port } from '../../shared/port/port.hook'
 import { sameTask } from '../../shared/similarity/similarity.hook'
 import { withBlocker } from '../blockers/blockers.hook'
@@ -61,7 +61,7 @@ export const diagnoseChecklist = (
     // and a new task that resembles a done one is not a duplicate of it.
     const isActive = isHistoryIncluded || one.status === 'todo' || one.status === 'doing'
 
-    if (isActive && one.text.length > 70 && !one.detail) {
+    if (isActive && one.text.length > MAX_TITLE && !one.detail) {
       long += 1
       one = { ...one, ...brief(one.text) }
     }

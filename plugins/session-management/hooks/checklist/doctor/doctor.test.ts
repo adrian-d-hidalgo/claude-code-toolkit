@@ -20,7 +20,7 @@ test('a healthy checklist reports nothing and stays as is', () => {
 })
 
 test('checklist repairs: ids, statuses, long titles, duplicates, stuck tasks', () => {
-  const long = 'Replace the in-memory rate limiter with the Valkey-backed one and update every caller that imports the old module'
+  const long = 'Replace the in-memory rate limiter with the Valkey-backed one and update every caller that imports the old module, then document the migration path in the runbook, add a feature flag for the rollout and remove the old module once every service has switched over'
   const list = [
     task('a', 'Write the tests'),
     task('a', 'Deploy the staging stack'),
@@ -36,7 +36,8 @@ test('checklist repairs: ids, statuses, long titles, duplicates, stuck tasks', (
   expect(new Set(fixed.map(one => one.id)).size).toBe(fixed.length)
   expect(fixed.find(one => one.text === 'Write the tests')?.detail).toBe('only the api package')
   expect(fixed.find(one => one.id === 'c')?.status).toBe('todo')
-  expect(fixed.find(one => one.detail === long)?.text.endsWith('…')).toBe(true)
+  expect(fixed.find(one => one.id === 'd')?.text.endsWith('…')).toBe(true)
+  expect(fixed.find(one => one.id === 'd')?.detail?.startsWith('…')).toBe(true)
   expect(fixed.find(one => one.text === 'Fix the lint errors')?.status).toBe('todo')
   expect(fixed.some(one => one.text.trim() === '')).toBe(false)
 })
@@ -46,7 +47,7 @@ test('a task in progress is left alone while a turn is running', () => {
 })
 
 test('finished and cancelled tasks are history: never reworded, never folded, unless asked', () => {
-  const long = 'Replace the in-memory rate limiter with the Valkey-backed one and update every caller that imports the old module'
+  const long = 'Replace the in-memory rate limiter with the Valkey-backed one and update every caller that imports the old module, then document the migration path in the runbook, add a feature flag for the rollout and remove the old module once every service has switched over'
   const list = [task('a', long, 'done'), task('b', 'Write the tests', 'done'), task('c', 'Write the tests'), task('d', 'Fix the lint errors', 'cancelled')]
   const { lines, fixed } = diagnoseChecklist(list, false)
 
@@ -56,11 +57,11 @@ test('finished and cancelled tasks are history: never reworded, never folded, un
   const withHistory = diagnoseChecklist(list, false, true)
 
   expect(withHistory.lines.length).toBeGreaterThan(0)
-  expect(withHistory.fixed.find(one => one.id === 'a')?.detail).toBe(long)
+  expect(withHistory.fixed.find(one => one.id === 'a')?.detail?.startsWith('…')).toBe(true)
 })
 
 test('doctor reports, fix repairs and keeps a copy for undo', async () => {
-  const long = 'Replace the in-memory rate limiter with the Valkey-backed one and update every caller that imports the old module'
+  const long = 'Replace the in-memory rate limiter with the Valkey-backed one and update every caller that imports the old module, then document the migration path in the runbook, add a feature flag for the rollout and remove the old module once every service has switched over'
   const { port, data } = memoryPort({ store: { 'checklist:s1': [task('a', long), task('b', 'Fix the lint errors', 'doing')] } })
 
   expect(await runChecklistDoctor(port, false, false)).toContain('2 tasks: 1 doing, 1 todo')
@@ -70,7 +71,7 @@ test('doctor reports, fix repairs and keeps a copy for undo', async () => {
 
   expect(report).toContain('Fixed:')
   expect((await port.checklist.all())[1]?.status).toBe('todo')
-  expect((await port.checklist.all())[0]?.detail).toBe(long)
+  expect((await port.checklist.all())[0]?.detail?.startsWith('…')).toBe(true)
   expect((data['backup:checklist:s1'] as ChecklistItem[])[0]?.text).toBe(long)
 })
 

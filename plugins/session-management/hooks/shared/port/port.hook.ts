@@ -1,4 +1,4 @@
-import type { ChecklistItem, Question } from '../../../types'
+import type { ChecklistItem, Learning, Question } from '../../../types'
 import { byPriority } from '../../checklist/ops/ops.hook'
 import type { ScanMessage } from '../transcript/transcript.hook'
 
@@ -10,6 +10,8 @@ export type Port = {
   now: () => Promise<number>
   sessionId: () => Promise<string>
   root: () => Promise<string>
+  /** The working directory: what Claude's memory of the project is filed under. */
+  project: () => Promise<string>
   messages: () => Promise<ScanMessage[]>
   newId: () => Promise<string>
   /** A small, cheap model call; a failure throws. */
@@ -34,6 +36,23 @@ export type Port = {
     /** The store key of this session's checklist. */
     key: () => Promise<string>
   }
+  learnings: {
+    /** This session's learnings: what waits for the user and what they refused. */
+    all: () => Promise<Learning[]>
+    write: (change: (list: Learning[]) => Learning[]) => Promise<void>
+  }
+  /** Claude's own memory folder for this project: the files the engine loads, by name. */
+  memory: {
+    dir: () => Promise<string>
+    read: (name: string) => Promise<string | null>
+    write: (name: string, text: string) => Promise<void>
+    /** The `.md` files in the folder. */
+    list: () => Promise<string[]>
+    /** Deletes a file of the folder; false when it was not there. */
+    remove: (name: string) => Promise<boolean>
+    /** Whether an absolute path exists anywhere (relative ones are taken from the project). */
+    exists: (path: string) => Promise<boolean>
+  }
   turn: {
     /** The model turn running now, if any. */
     current: () => string | null
@@ -54,11 +73,16 @@ export type MemoryPortOptions = {
   /** The session model's reply to a prompt; null means it could not answer. */
   fork?: (prompt: string) => string | null
   turn?: string | null
+  /** The memory folder's files by name. */
+  files?: Record<string, string>
+  /** Paths that exist outside the memory folder. */
+  paths?: string[]
 }
 
 // A Port over memory, for tests: what it stored, said and aborted can be read back.
 export const memoryPort = (options: MemoryPortOptions = {}) => {
   const data: Record<string, unknown> = { ...options.store }
+  const files: Record<string, string> = { ...options.files }
   const said: string[] = []
   const aborted: string[] = []
   const session = options.session ?? 's1'
@@ -70,6 +94,7 @@ export const memoryPort = (options: MemoryPortOptions = {}) => {
     now: async () => options.now ?? 1000,
     sessionId: async () => session,
     root: async () => root,
+    project: async () => root,
     messages: async () => options.messages ?? [],
     newId: async () => `id${++counter}`,
     complete: async ({ prompt }) => {
@@ -103,6 +128,27 @@ export const memoryPort = (options: MemoryPortOptions = {}) => {
       },
       key: async () => `checklist:${session}`,
     },
+    learnings: {
+      all: async () => read<Learning[]>(`learnings:${session}`, []),
+      write: async change => {
+        data[`learnings:${session}`] = change(read<Learning[]>(`learnings:${session}`, []))
+      },
+    },
+    memory: {
+      dir: async () => '/m',
+      read: async name => files[name] ?? null,
+      write: async (name, text) => {
+        files[name] = text
+      },
+      list: async () => Object.keys(files).filter(name => name.endsWith('.md')),
+      remove: async name => {
+        const had = name in files
+        delete files[name]
+
+        return had
+      },
+      exists: async path => path.startsWith('/m/') ? path.slice(3) in files : (options.paths ?? []).includes(path.startsWith('/') ? path : `${root}/${path}`),
+    },
     turn: {
       current: () => options.turn ?? null,
       abort: async turnId => {
@@ -114,5 +160,5 @@ export const memoryPort = (options: MemoryPortOptions = {}) => {
     },
   }
 
-  return { port, data, said, aborted }
+  return { port, data, files, said, aborted }
 }

@@ -37,11 +37,54 @@ export type ChecklistItem = {
   priority?: Priority
 }
 
+export type LearningKind = 'user' | 'feedback' | 'project' | 'reference'
+
+/**
+ * proposed: waiting for the user; rejected: a refusal, so the same proposal is answered with its reason.
+ * accepted is never stored: it is what Claude's memory files say, read as they are (see `memoryLearnings`).
+ */
+export type LearningStatus = 'proposed' | 'accepted' | 'rejected'
+
+export type Learning = {
+  id: string
+  kind: LearningKind
+  /** The rule or fact, one line: what to do or what is true. */
+  text: string
+  /** Why it holds: the correction, confirmation or event it came from. */
+  why: string
+  /** How to apply it, when the text alone does not say. */
+  how?: string
+  status: LearningStatus
+  /** rejected: why, so the same proposal is not made again. */
+  reason?: string
+  /** The project (its root) whose memory it belongs to. */
+  project: string
+  /** The session that proposed it. */
+  session: string
+  /** When it was proposed. */
+  at: number
+  /** How many times it was proposed, counting repeats in other words. */
+  seen: number
+  /** Only on what is read from memory: the file it lives in, inside the project's memory folder. */
+  file?: string
+  /** What in memory (`file:<name>`) or in the queue this proposal replaces once accepted: one it updates. */
+  replaces?: string[]
+  /** What it contradicts, by the same ids: accepting it retires them. */
+  conflicts?: string[]
+}
+
 declare module 'claude-code' {
   interface PluginState {
     'session-management': {
       questions: Question[]
       checklist: ChecklistItem[]
+      learnings: Learning[]
+      /** The learning the pane has selected, if any. */
+      learningSelected: string | null
+      /** The learning whose details the pane reveals, if any. */
+      learningViewing: string | null
+      /** The learning whose comment box the pane has open, if any. */
+      learningCommenting: string | null
       /** The checklist task being edited in the pane, if any. */
       editing: string | null
       /** Index of the first task the checklist pane's window shows. */

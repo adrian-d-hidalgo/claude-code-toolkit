@@ -17,10 +17,11 @@ export type ListWindow = {
 // Arrows and Tab walk a pane's buttons only while the tree fits it, so a long list is cut to a
 // window of `room` rows. Finished and cancelled tasks make room first, and the window follows the
 // selection (`first` is where the person left it).
-export const windowOf = (list: ReadonlyArray<{ status: ChecklistStatus }>, selectedAt: number, first: number, room: number): ListWindow => {
+// `isKept` says which rows never make room (the checklist's open tasks by default).
+export const windowOf = <T extends { status: string }>(list: ReadonlyArray<T>, selectedAt: number, first: number, room: number, isKept: (one: T) => boolean = one => isOpenStatus(one.status as ChecklistStatus)): ListWindow => {
   const rows = list
     .map((_, index) => index)
-    .filter(index => list.length <= room || index === selectedAt || isOpenStatus((list[index] as { status: ChecklistStatus }).status))
+    .filter(index => list.length <= room || index === selectedAt || isKept(list[index] as T))
   const at = rows.indexOf(selectedAt)
   const target = at !== -1 && (at < first || at >= first + room) ? at - Math.floor(room / 2) : first
   const start = Math.max(0, Math.min(target, Math.max(0, rows.length - room)))

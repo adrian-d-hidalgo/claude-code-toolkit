@@ -5,7 +5,7 @@ export type Check = { label: string; lines: string[] }
 // repairs applied.
 export type Diagnosis<T> = { lines: string[]; fixed: T[]; vague?: string[]; checks: Check[] }
 
-export const plural = (count: number, word: string): string => `${count} ${word}${count === 1 ? '' : 's'}`
+export const plural = (count: number, word: string, many = `${word}s`): string => `${count} ${count === 1 ? word : many}`
 
 // The report body: a header, a summary line, then one line per check, `✓` when it passed and a `✗`
 // line per problem otherwise. `extra` problems (found outside the diagnosis) come first.

@@ -1,12 +1,13 @@
 # session-management
 
-Runtime mods that keep a Claude Code session organized. Both mods are driven by one hooks module, `hooks/register/register.hook.tsx` (a plugin names one module and an event takes one unmatched hook). It is the only place that touches the engine's `$`, which cannot cross an import: it builds a small `Port` (clock, store, session, models, prompts) and hands that to the services, so everything else is plain code with tests, run against `memoryPort`.
+Runtime mods that keep a Claude Code session organized. The three mods are driven by one hooks module, `hooks/register/register.hook.tsx` (a plugin names one module and an event takes one unmatched hook). It is the only place that touches the engine's `$`, which cannot cross an import: it builds a small `Port` (clock, store, session, models, prompts) and hands that to the services, so everything else is plain code with tests, run against `memoryPort`.
 
 ```
 hooks/
   register/    the wiring: events, atoms, the Port, the two pane renderers
   questions/   extract, judge, capture, backfill, merge, orphans, lifecycle, doctor, changes, command, tool, help, ops, scan, pane
   checklist/   args, ops, status, window, scan, judge, backfill, lifecycle, tasks, doctor, changes, command, tool, help, pane
+  learnings/   kinds, rules, ops, effect, memory, judge, reconcile, review, tool, guard, capture, changes, lifecycle, doctor, args, command, help, pane
   shared/      format, similarity, help, context, diagnosis, transcript, port
 ```
 
@@ -18,6 +19,7 @@ Each module is a folder with `<name>.hook.ts` and its `<name>.test.ts`.
 |---|---|
 | `open-questions` | Lists every question Claude asked that is still unanswered; answer from a pane or from the chat. |
 | `checklist` | A task checklist you and Claude both see and edit, one per conversation. |
+| `learnings` | What Claude proposes to remember about a project; you accept or reject, and only accepted learnings enter its memory. |
 
 ### open-questions
 
@@ -77,11 +79,97 @@ Each module is a folder with `<name>.hook.ts` and its `<name>.test.ts`.
 
   `run` refuses a blocked task and says what it waits for. A blocked task is marked in the pane and in the task's own screen, and the prompt context and the tool answers show it as `blocked by ...`, so Claude sees the order of the work.
 - **Smarter scan and add.** What Claude adds with the tool and what a scan finds is not appended blindly. A task an open task already says in nearly the same words (the same content words, one extra word, or for long titles one differing word) is skipped by a cheap word match; done and cancelled tasks never count, so work that was finished and is needed again is added. Different tasks that merely share most words (`Migrate users table` / `Migrate orders table`) are kept, and the fuzzy cases are left to the model. Otherwise a small model (not used with `judge: heuristic`, nor when it cannot answer; then new tasks are simply added) compares the new tasks with the tracked ones and the open questions and decides for each: **duplicate** (of an open task; skipped, in any wording or language), **complements** (it only adds information to an open task, so the new part is folded into that task's description once and no task is added) or **new** (added, with the dependencies it needs: tracked tasks, open questions or other tasks found in the same pass). The answer reads like `2 added, 1 merged into existing tasks, 3 already tracked, 1 dependencies set`. A single new task with nothing to compare costs no model call.
-- One checklist per conversation: a new chat starts empty and two chats never share tasks. It is keyed by the conversation's session id, which holds through `/login`, a restart and `/compact`. A checklist nobody wrote to for 30 days is deleted, backup included. The status line shows `checklist: done/total`.
+- One checklist per conversation: a new chat starts empty and two chats never share tasks. It is keyed by the conversation's session id, which holds through `/login`, a restart and `/compact`. When the id changes under the conversation (a resume, a reattach), the list left under the old id is found by the task ids the transcript's checklist calls used and taken over whole, done and cancelled tasks and backup included; this runs when a session starts, when its id changes and on `/checklist doctor` (report) and `fix` (take over). A checklist nobody wrote to for 30 days is deleted, backup included. The status line shows `checklist: done/total`.
 
-The `judge` option (`model` default, or `heuristic`) is in the plugin's config menu. UI text is English; questions keep the language they were asked in.
+### learnings
 
-Both mods read and write `$.store` on every change (the store has no conditional write). The writes of one session are queued, and a write is applied to the list as it is when it happens, but two processes writing the same key at the same instant can still lose one of the two changes.
+Claude Code's auto-memory lets the model write a file into `<config dir>/projects/<project>/memory/` whenever it decides something is worth remembering: no review, no deduplication, no trace of what you refused. This mod is a door in front of that folder: it decides what may enter or change, and nothing else. The memory itself stays Claude's: the mod never writes it and never lists it. When you accept something, Claude is asked to save it, following its own memory instructions (one file per memory, `MEMORY.md` only as the index).
+
+**Practices it enforces**
+
+1. **One door.** Every learning enters through the same path, whoever proposes it: the `learnings` tool, a memory write the guard caught, a turn read on its own, or a scan. The same rules apply at each.
+2. **Rules at the door.** A proposal that breaks the rules, says too much, or is not a learning never reaches the queue: Claude gets back what is wrong, or where it belongs instead.
+3. **Nothing enters memory without you.** Claude writes its memory only for what you accepted, or for a `/learnings fix` you ran; any other write is refused.
+4. **Every item says what your answer does,** in the same words in the pane, the tool's answers and this README.
+5. **Your answers are remembered.** A rejection keeps the proposal as a refusal with your reason, so the same proposal is answered with it in that session.
+6. **One rule, one learning.** What memory or the queue already says is not proposed again; an update is folded into what it updates; a contradiction replaces what it contradicts.
+7. **Compact and durable.** One line plus its why and how, under 600 characters together, with absolute dates and nothing that only made sense in the conversation it came from.
+8. **Only your preferences.** A learning is a preference of yours about how the assistant works: how to do something, what never to do, where to find or get something, what you prefer. A convention of the code or the process goes to CLAUDE.md, a product or architecture decision to the project's docs, and general engineering knowledge nowhere, even when you agreed on it in the conversation.
+
+**The rules** (`/learnings rules`), one text shared by the tool, the model prompts and the doctor:
+
+```
+One fact per learning: a sentence of at most 200 characters ... "And also" means two learnings.
+Every learning says why it holds ... Without a why it is not accepted.
+A learning is durable ... Nothing that only matters to this conversation.
+A learning is a preference of the user about how the assistant works: how to do something, what never to do, where to find or get something, what they prefer ...
+Not memory, even when it was agreed with the user: a convention of the code or the process goes in CLAUDE.md; a product or architecture decision goes in the project's docs; general engineering knowledge ... goes nowhere.
+A learning is not derivable from the repository: not its code structure, its git history, its CLAUDE.md or its README.
+Dates are absolute (2026-10-13), never relative (yesterday, last week).
+No secrets, credentials or tokens ...
+A file, function, flag or URL it names must exist when it is written.
+The why and the how add to the text; they never repeat it.
+```
+
+A learning has a kind (`user`, `feedback`, `project`, `reference`, the kinds Claude's own memory instructions use), a one-line text, a why and an optional how. The mod's ledger holds only what is in transit: **proposed** (waiting for you) and **rejected** (a refusal, with your reason). Once accepted, a learning is Claude's memory and leaves the ledger.
+
+**What happens to a new proposal**
+
+| The proposal is | What the mod does | In the queue as | If you accept | If you reject |
+|---|---|---|---|---|
+| Breaking a rule, or over 600 characters of why and how | Turned away at the door with what to fix | nothing | | |
+| A convention of the code or the process (naming, folders, tests, gates, env files, how agents run) | Turned away: Claude is told to suggest it as a CLAUDE.md change | nothing | | |
+| A product or architecture decision | Turned away: it belongs in the project's docs | nothing | | |
+| General engineering knowledge, or how a library or API behaves | Turned away: nothing to remember | nothing | | |
+| What memory already says | Not proposed: Claude is told it is there | nothing | | |
+| What waits in the queue already | One more sighting (`seen`) | the same item | | |
+| What you rejected before | Refused, answered with your reason | nothing | | |
+| An update of a pending proposal | Folded into it in place | the same item | | |
+| An update of a memory (a detail, a case, a scope) | Merged with it by the model into one learning | `updates memory` | Claude updates that memory file | the memory stays; this is a refusal |
+| The opposite of a memory | Proposed as replacing it | `contradicts memory` | Claude retires that file and saves this one | the memory stays; this is a refusal |
+| Something new | Proposed as it is | `new` | Claude saves it as a new memory | a refusal |
+
+Without a model (`judge: heuristic`) only the word match and the door run: plain repeats and rule breaks are caught, updates and contradictions are not.
+
+**How proposals arrive.** Claude proposes through the `learnings` tool (`propose` with kind, text, why, how; `list`; `withdraw` for a proposal of its own session it no longer stands by; `revise` to reword a proposal after your comment; `rules`). It cannot accept: the tool has no such action. Every prompt tells it that memory goes through review, lists the proposals waiting and the last refusals with their reasons, and, as for the checklist and the questions, what you changed since it last looked (accepted, rejected with your reason, reopened, reworded, taken out of the queue). **Every turn is read too**, as the questions are: once Claude answers, a small model reads the turn for a preference you stated (taken only from what you said, never from what Claude decided or explained; at most two), and what it finds goes through the door into the queue (most turns teach nothing; a turn a plugin prompt started is not read). The door's judge always runs, an empty project too. A `Write`, `Edit` or `MultiEdit` into the memory folder is caught by the **memory guard**: under `memory: guard` (the default) a write you did not approve is refused and its content goes through the door like any proposal, and the tool result tells Claude what happened; `MEMORY.md` changes only with an approval. Accepting a learning or running `/learnings fix` opens an approval: Claude's memory writes go through until the turn that answers it completes (30 minutes at most). Under `memory: observe` every write goes through, for the doctor to review. Under `memory: off` nothing is watched and turns are not read. A write made through `Bash` is not seen.
+
+**The pane** (`/learnings`) has the shape of the questions pane: a direct list of what waits for your answer, nothing else. One line per item (`N text tag`), numbered as the commands number them; the tag says what it is (`new`, `updates`, `contradicts`). The selected item is a card with its chips (kind, the full tag such as `updates memory`, how long ago, sightings) and its four actions, side by side: **Accept** (`a`) and **Reject** (`r`); **Comment** (`c`), a box for what should change: it goes to Claude, which rewords the proposal with the tool's `revise` action (through the same rules), and the item keeps waiting for your answer; and **Details** (`d`, or Enter on the row), which reveals what each answer does (**If you ...:**), the why, the how, the rules it breaks, and **Edit in the prompt** (`e`, fills `/learnings edit <n> text ...`). From 84 columns the selected item sits beside the list. **✓ Accept all n** at the top accepts everything waiting and asks Claude to save it in one message; what still breaks the rules stays, named in a toast. Nothing waiting: **✓ All caught up**.
+
+**Scan.** `/learnings scan [quick|fast]` is the backfill, as `/questions scan` and `/checklist scan` are: it reads the conversation again for what could have been a learning and is not in memory, in the queue or refused yet, and puts it in the queue for you to accept or reject (deep by default, with the session's own model; `quick` with a small model over a few exchanges at a time; `fast` finds nothing, learnings have no local rules). What it finds again is not counted as a new sighting. `/learnings rebuild` empties the queue and scans again.
+
+**The doctor.** As for the checklist and the questions, `/learnings doctor` only diagnoses and `/learnings fix` repairs all of it. The doctor reads the memory folder as it is and reports in two parts, each a summary with a few examples, never a line per file:
+
+```
+Learnings doctor · this project
+234 memory files · 3 waiting for your review in /learnings
+
+Bookkeeping:
+✗ 4 lines of MEMORY.md pointing at no file (fix drops them)
+✗ 6 memory files saying word for word what another says (fix removes the copy)
+
+Memory:
+✗ 58 learnings that are not a learning: conventions, decisions or general knowledge (fix moves them to CLAUDE.md or the docs, retires them, or takes them out of the queue)
+✗ 3 contradictions between learnings (fix settles each)
+✗ 12 groups of learnings that say the same thing (fix merges each into one)
+✗ 9 learnings breaking the rules (fix rewrites or splits them)
+  - Al construir más agentes, los mecanismos ya deben estar resueltos: tied to the conversation it came from
+  - ...
+  - and 6 more
+✗ 41 learnings longer than they need to be (fix compacts them)
+✗ 70 memory files missing from MEMORY.md (fix adds a line under the right heading)
+```
+
+What it checks: what is not a learning (in memory, and waiting in the queue), judged with the door's own verdicts and checked first, so its wording is not tidied for nothing; the rules; paths that no longer exist (absolute ones, and relative ones whose first folder is in the project root); learnings over 600 characters of why and how; learnings whose text says they are superseded; with the model, groups that say the same thing, contradictions, and wording that is unclear or padded; and the bookkeeping: index lines with no file, files that copy another word for word, files the index does not list.
+
+`/learnings fix` turns every finding into one concrete repair (a rewrite, merge or split written by a small model from the whole file, compacted and kept in its language with every concrete detail, with one more try when it still breaks the rules; a move to CLAUDE.md or to the docs; a retirement; an index line under the right heading of `MEMORY.md`; a dead index line dropped; a copy removed) and asks Claude to apply all of them in one message, with the guard open for it. A proposal in the queue that is not a learning leaves the queue. The memory folder and the ledger are copied first: `/learnings undo` puts the folder back word for word (files fix added go, files it removed or changed come back) and restores the queue.
+
+- Keyboard: `/learnings list`, `accept <n>`, `accept all`, `reject <n> [reason]`, `comment <n> <text>`, `reopen <n>` (a refusal back to the queue), `edit <n> text|why|how <text>` (no text clears the how), `kind <n> <kind>`, `rm <n>`, `rules`, `scan [quick|fast]`, `doctor`, `fix`, `clear [all]`, `rebuild`, `undo`. Numbers are the pane's: what waits first, then the refusals.
+- `/learnings clear` empties the review queue (the proposals may come back); `clear all` also forgets the refusals, so a refused learning proposed again is no longer answered with your reason. Memory is never touched; `/learnings undo` brings the ledger back.
+- Learnings belong to the session, as its checklist and its questions do: what it proposed and what you refused in it, stored under `learnings:<session id>`. A resumed conversation takes back the ledger its old id left (found by the ids its transcript names). What earlier versions kept, in one shared list or per project, moves once to the session that proposed it; what was accepted is in memory already and goes. A session's ledger holds at most 500 entries. The status line shows `learnings: n` while n items wait for review, beside `questions: n` and `checklist: d/n`, and nothing when none waits.
+
+The `judge` option (`model` default, or `heuristic`) and the `memory` option (`guard` default, `observe`, `off`) are in the plugin's config menu. UI text is English; questions keep the language they were asked in.
+
+The mods read and write `$.store` on every change (the store has no conditional write). The writes of one session are queued, and a write is applied to the list as it is when it happens, but two processes writing the same key at the same instant can still lose one of the two changes.
 
 ## Scenarios
 
@@ -89,14 +177,18 @@ Both mods read and write `$.store` on every change (the store has no conditional
 |---|---|
 | New conversation, new project | Both lists start empty. Questions appear as Claude asks them; add tasks by hand, with `/checklist scan`, or let Claude add them. |
 | New conversation in a known project | Both lists start empty: the checklist and the questions belong to the conversation. |
-| Resumed conversation | Its checklist is still there (same conversation key) and its questions are taken over from the old session id; a quick background scan backfills the ones you never answered. The checklist is not backfilled from the transcript on its own (a task you removed would keep coming back): run `/checklist scan` when you want it. |
+| Resumed conversation | Its checklist, its open questions and its learnings are taken over from the old session id (found through the transcript); a quick background scan backfills the ones you never answered. The checklist is not backfilled from the transcript on its own (a task you removed would keep coming back): run `/checklist scan` when you want it. Learnings are not read again either: each turn was read as it happened, so `/learnings scan` is there for conversations from before this version. |
 | You answer in chat (option or free text) | A small model closes the questions the message settled, even indirectly; a partial answer removes only the answered parts. |
 | You close, dismiss, reorder, edit, add or remove from a pane or a command | The next prompt tells Claude what changed since it last looked and not to undo it. |
 | Claude changes the checklist or the questions itself | Through the tools; the result is what Claude sees, so nothing is echoed back as a change. |
 | Claude's question is vague or repeated | It is kept only if it makes sense alone; a repeat folds into the open one and keeps the fuller wording; Claude can reword (`update`) or `merge` duplicates. |
 | You cancel a task in progress | The running turn is aborted and Claude is told to stop and carry on with the rest. |
 | Another chat works on the same project | Nothing is shared: each chat has its own checklist and its own questions. |
-| No model available, or `judge: heuristic` | Local rules detect questions (with the preceding sentences as context); nothing is closed automatically. |
+| No model available, or `judge: heuristic` | Local rules detect questions (with the preceding sentences as context); nothing is closed automatically. Learnings are reconciled by words alone; the doctor finds no contradictions. |
+| Claude tries to write a memory file | Refused and sent through the door as a proposal (`memory: guard`), unless it carries what you accepted or a fix; the tool result says what happened. You answer it in `/learnings`. |
+| You reject a learning Claude keeps proposing | The refusal and its reason are kept: the next proposal is answered with them, and every prompt lists the last refusals. |
+| Two memories contradict | `doctor` reports it; `fix` asks Claude to settle it (one memory that says what holds, or retiring the one that no longer does); `undo` puts the folder back. |
+| Your memory is long, repetitive or full of conventions | `doctor` reports it; `fix` asks Claude to merge what says the same thing, compact what is long, and move conventions to CLAUDE.md and decisions to the docs. |
 
 ## Install
 

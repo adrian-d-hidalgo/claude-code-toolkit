@@ -73,13 +73,15 @@
     {
       "name": "session-management",
       "source": "./plugins/session-management",
-      "description": "Runtime mods that keep a Claude Code session organized: a list of questions Claude asked that are still unanswered, and a shared task checklist you can edit too.",
+      "description": "Runtime mods that keep a Claude Code session organized: unanswered questions, a shared task checklist, and the learnings Claude proposes for its memory.",
       "category": "productivity",
       "tags": [
         "mods",
         "session",
         "questions",
         "checklist",
+        "learnings",
+        "memory",
         "hooks",
         "runtime"
       ]

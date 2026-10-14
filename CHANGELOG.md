@@ -2,6 +2,19 @@
 
 All notable changes to this toolkit. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) per plugin.
 
+## [2026-10-14] — session-management
+
+### Added
+
+- `session-management` 0.2.0 — `learnings` mod: a door in front of Claude's auto-memory. It decides what may enter or change, never writes the memory itself and never lists it: accepting asks Claude to save the learning following its own memory instructions. One set of rules for every learning, which is only a preference of the user about how the assistant works; a convention goes to CLAUDE.md, a product or architecture decision to the docs, and general knowledge nowhere. Claude proposes through a `learnings` tool and never accepts; every turn is read by a small model for a preference the user stated; a `Write`/`Edit`/`MultiEdit` into the memory folder the user did not approve is refused and sent through the door (`memory: guard`, the default; `observe` lets every write through, `off` watches nothing). At the door, what memory or the queue already says is not proposed again, a past refusal is answered with its reason, an update is merged with what it updates and a contradiction replaces it. `/learnings` pane shaped like the questions pane (a direct list of only what waits, with Accept, Reject, Comment and Details) and `learnings: n` in the status line. `scan [quick|fast]` reads the conversation again for what is worth remembering and is not yet; `doctor` diagnoses the memory folder (not learnings, broken rules, stale paths, long or unclear wording, duplicates, contradictions, superseded learnings, dead index lines, copies, files missing from `MEMORY.md`); `fix` asks Claude, in one message, to apply a repair for every finding; `clear [all]`, `rebuild` and `undo` (the memory folder put back word for word after a fix) work as in the other mods. The ledger holds only proposals and refusals, per session under `learnings:<session id>` like the checklist, and a resumed conversation takes it back.
+
+### Fixed
+
+- `session-management` — a resumed conversation whose session id changed lost its checklist: the pane read a new, empty list while the old one stayed under the previous id. The list is now found by the task ids the transcript's checklist calls used and taken over whole (done and cancelled tasks, backup included) at session start, when the id changes, and on `/checklist fix`; `/checklist doctor` reports it.
+- `session-management` — a pane opened by its command (`/questions`, `/checklist`, `/learnings`) is drawn from the store, so what another session's process wrote no longer leaves it behind the status line.
+- `session-management` — checklist titles are cut at 200 characters instead of 70, the overflow goes to the description without repeating the title, and the prompts and the tool tell the model the cap and the no-repeat rule.
+- `session-management` — open questions are cut at 500 characters instead of 200, so real questions with their options no longer lose their end; one cap is shared by the capture, the backfill, the judge, the tool and the prompt context.
+
 ## [2026-10-08] — toolkit-core, engineering-team, session-management
 
 ### Changed (BREAKING)

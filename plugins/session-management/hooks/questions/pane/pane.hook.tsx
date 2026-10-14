@@ -276,7 +276,7 @@ const QuestionRow = ({ el, act, state, part, index, isSelected, isCard }: { el: 
 
 // How many rows a text takes when wrapped at `width` columns. Slightly generous on purpose (a word
 // that does not fit moves down whole): an underestimate would make the tree taller than the pane.
-const linesIn = (text: string, width: number): number =>
+export const linesIn = (text: string, width: number): number =>
   text.split('\n').reduce((total, line) => {
     let rows = 1
     let used = 0

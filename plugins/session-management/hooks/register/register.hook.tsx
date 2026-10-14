@@ -1,13 +1,13 @@
 import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
-import type { ChecklistItem, Question } from '../../types'
+import type { ChecklistItem, Learning, Question } from '../../types'
 import { diffChecklist } from '../checklist/changes/changes.hook'
 import { activeBlockers, withoutBlocker } from '../checklist/blockers/blockers.hook'
 import type { ActiveBlocker } from '../checklist/blockers/blockers.hook'
 import { CHECKLIST_COMMAND, runChecklistCommand } from '../checklist/command/command.hook'
 import { byPriority, hasRoom, withDetail, withPriority, withStatus, withText, without } from '../checklist/ops/ops.hook'
-import { CHECKLIST_INDEX, migrateToId, sweepChecklists } from '../checklist/lifecycle/lifecycle.hook'
+import { CHECKLIST_INDEX, adoptChecklist, migrateToId, sweepChecklists } from '../checklist/lifecycle/lifecycle.hook'
 import { ADD_FIELD, WIDE, renderChecklistPane, selectedOf } from '../checklist/pane/pane.hook'
 import { CHECKLIST_TOOL_SPEC, callChecklistTool } from '../checklist/tool/tool.hook'
 import type { ChecklistCall } from '../checklist/tool/tool.hook'
@@ -25,6 +25,18 @@ import { dialogChoices } from '../questions/scan/scan.hook'
 import { CLOSE_TOOL_SPEC, QUESTIONS_TOOL_SPEC, callCloseQuestion, callQuestionsTool } from '../questions/tool/tool.hook'
 import type { QuestionsCall } from '../questions/tool/tool.hook'
 import { isOpenStatus } from '../checklist/status/status.hook'
+import { captureLearnings } from '../learnings/capture/capture.hook'
+import { diffLearnings } from '../learnings/changes/changes.hook'
+import { LEARNINGS_COMMAND, runLearningsCommand } from '../learnings/command/command.hook'
+import { guardMemoryWrite, guardModeOf, writeOf } from '../learnings/guard/guard.hook'
+import { adoptLearnings, dropSettled, learningsKey, splitBySession } from '../learnings/lifecycle/lifecycle.hook'
+import { needsReview } from '../learnings/kinds/kinds.hook'
+import { INDEX_FILE, memoryDirOf, memoryLearnings } from '../learnings/memory/memory.hook'
+import { byStatus } from '../learnings/ops/ops.hook'
+import { renderLearningsPane } from '../learnings/pane/pane.hook'
+import { acceptAll, acceptLearning, acceptedIds, approvalAt, closeApproval, commentOn, rejectLearning } from '../learnings/review/review.hook'
+import { LEARNINGS_TOOL_SPEC, callLearningsTool } from '../learnings/tool/tool.hook'
+import type { LearningsCall } from '../learnings/tool/tool.hook'
 import { promptContext } from '../shared/context/context.hook'
 import { needsPreview } from '../shared/draft/draft.hook'
 import { oneLine } from '../shared/format/format.hook'
@@ -39,8 +51,14 @@ const CHECKLIST_PANE = 'checklist'
 const CLOSE_TOOL = 'mcp__session-management__close_question'
 const QUESTIONS_TOOL = 'mcp__session-management__questions'
 const CHECKLIST_TOOL = 'mcp__session-management__checklist'
+const LEARNINGS_PANE = 'learnings'
+const LEARNINGS_TOOL = 'mcp__session-management__learnings'
 const questions = atom({ plugin: 'session-management', key: 'questions' } as const, [])
 const checklist = atom({ plugin: 'session-management', key: 'checklist' } as const, [])
+const learnings = atom({ plugin: 'session-management', key: 'learnings' } as const, [])
+const learningSelected = atom({ plugin: 'session-management', key: 'learningSelected' } as const, null)
+const learningViewing = atom({ plugin: 'session-management', key: 'learningViewing' } as const, null)
+const learningCommenting = atom({ plugin: 'session-management', key: 'learningCommenting' } as const, null)
 const editing = atom({ plugin: 'session-management', key: 'editing' } as const, null)
 const windowAt = atom({ plugin: 'session-management', key: 'windowAt' } as const, 0)
 const viewing = atom({ plugin: 'session-management', key: 'viewing' } as const, null)
@@ -56,6 +74,10 @@ const typing = atom({ plugin: 'session-management', key: 'typing' } as const, nu
 let counter = 0
 let runningTurn: string | null = null
 let lastUserText = ''
+// What the user typed for the turn running: empty when a plugin prompt started it.
+let learningUserText = ''
+// When the main turn running started, so an approval closes with the turn that answered it.
+let turnStartedAt: number | null = null
 // The session id the last prompt ran under: it can change under a conversation (resume, reattach).
 let lastSessionId = ''
 // Whether this process has moved what an earlier version kept under the launch time to the session id.
@@ -64,6 +86,7 @@ let isMigrated = false
 // reports what changed since (the user's edits, another session's). Null until baselined.
 let seenChecklist: ChecklistItem[] | null = null
 let seenQuestions: Question[] | null = null
+let seenLearnings: Learning[] | null = null
 
 async function newId($: any) {
   counter += 1
@@ -95,6 +118,25 @@ async function loadChecklist($: any): Promise<ChecklistItem[]> {
   return byPriority(((await $.store.get(await checklistKey($))) as ChecklistItem[] | undefined) ?? [])
 }
 
+// Claude's memory belongs to the project: its root, where the session started (or where /cd took it).
+// Not the working directory: a shell `cd` into a subfolder moves that, and the memory folder with it.
+async function projectKey($: any): Promise<string> {
+  try {
+    return String(await $.session.root())
+  } catch {
+    return String(await $.session.cwd())
+  }
+}
+
+async function loadLearnings($: any): Promise<Learning[]> {
+  return ((await $.store.get(learningsKey(await conversationKey($)))) as Learning[] | undefined) ?? []
+}
+
+// Claude's own memory folder for the project: the files the engine loads at the start of a session.
+async function memoryDir($: any): Promise<string> {
+  return memoryDirOf(String((await $.env.get('HOME')) ?? ''), await $.env.get('CLAUDE_CONFIG_DIR'), await projectKey($))
+}
+
 // One status line exists per plugin, so it joins what each mod has to show.
 async function showStatus($: any) {
   // Every thing asked counts, as the pane lists them: a message with four questions is four.
@@ -102,9 +144,12 @@ async function showStatus($: any) {
   const list = await loadChecklist($)
   const done = list.filter(one => one.status === 'done').length
   const active = list.filter(one => one.status !== 'cancelled').length
+  // What waits for the user, as the pane lists it: like the open questions, nothing shows when nothing waits.
+  const pending = (await loadLearnings($)).filter(needsReview).length
   const parts = [
     open > 0 ? `questions: ${open}` : '',
     active > 0 ? `checklist: ${done}/${active}` : '',
+    pending > 0 ? `learnings: ${pending}` : '',
   ].filter(Boolean)
   $.ui.status(parts.length > 0 ? parts.join(' · ') : undefined)
 }
@@ -151,11 +196,25 @@ async function writeChecklist($: any, change: (list: ChecklistItem[]) => Checkli
   await showStatus($)
 }
 
+async function writeLearnings($: any, change: (list: Learning[]) => Learning[]) {
+  const run = async () => {
+    const next = change(await loadLearnings($))
+    await $.store.set(learningsKey(await conversationKey($)), next)
+    await update($, learnings, () => next)
+    await showStatus($)
+  }
+  const done = lastWrite.then(run, run)
+  lastWrite = done.catch(() => undefined)
+
+  return done
+}
+
 // A pane drawn unfocused (Esc, Esc) hides its open field but cannot drop the edit's state (no writes
 // while drawing). The next focus event in that pane drops it, so a field that comes back with the
 // pane's focus is not an old edit with its old text.
 let isQuestionsStale = false
 let isChecklistStale = false
+let isLearningsStale = false
 
 // The few things the services need, built from `$` (which cannot cross an import).
 function makePort($: any): Port {
@@ -163,6 +222,7 @@ function makePort($: any): Port {
     now: () => $.clock.now(),
     sessionId: () => conversationKey($),
     root: () => $.session.root(),
+    project: () => projectKey($),
     messages: () => $.session.messages(),
     newId: () => newId($),
     complete: ({ prompt, maxTokens }) => $.model.complete({ model: 'haiku', prompt, maxTokens, effort: 'low' }),
@@ -191,6 +251,41 @@ function makePort($: any): Port {
       write: change => writeChecklist($, change),
       key: () => checklistKey($),
     },
+    learnings: {
+      all: () => loadLearnings($),
+      write: change => writeLearnings($, change),
+    },
+    memory: {
+      dir: () => memoryDir($),
+      read: async name => {
+        try {
+          return String(await $.fs.read(`${await memoryDir($)}/${name}`))
+        } catch {
+          return null
+        }
+      },
+      write: async (name, text) => $.fs.write(`${await memoryDir($)}/${name}`, text),
+      list: async () => {
+        try {
+          return ((await $.fs.list(await memoryDir($))) as Array<{ name: string; kind: string }>).filter(entry => entry.kind === 'file' && entry.name.endsWith('.md')).map(entry => entry.name)
+        } catch {
+          return []
+        }
+      },
+      // Only a markdown file of the folder itself, never the index: the one deletion the mod makes.
+      remove: async name => {
+        const dir = await memoryDir($)
+
+        if (name.includes('/') || name.includes('..') || !name.endsWith('.md') || name === INDEX_FILE || !(await $.fs.exists(`${dir}/${name}`))) {
+          return false
+        }
+
+        const ran = await $.process.run(['rm', '--', `${dir}/${name}`])
+
+        return ran.exitCode === 0
+      },
+      exists: path => $.fs.exists(path),
+    },
     turn: {
       current: () => runningTurn,
       abort: turnId => $.turn.abort({ turnId }),
@@ -203,6 +298,7 @@ function makePort($: any): Port {
 async function markSeen($: any) {
   seenChecklist = await loadChecklist($)
   seenQuestions = await ownQuestions($, false)
+  seenLearnings = await loadLearnings($)
 }
 
 // Edits made since the assistant last looked, for the next prompt's context.
@@ -210,6 +306,7 @@ async function changesSince($: any): Promise<string[]> {
   const lines = [
     ...(seenChecklist === null ? [] : diffChecklist(seenChecklist, await loadChecklist($))),
     ...(seenQuestions === null ? [] : diffQuestions(seenQuestions, await ownQuestions($, false))),
+    ...(seenLearnings === null ? [] : diffLearnings(seenLearnings, await loadLearnings($), await acceptedIds(makePort($)))),
   ]
   await markSeen($)
 
@@ -359,6 +456,44 @@ async function startNotes($: any, id: string | null, text: string) {
 
   if (id !== null) {
     await focusField($, CHECKLIST_PANE, `notes-${id}`)
+  }
+}
+
+// A learning is reworded in the prompt box, as `/learnings edit <n> text …`, like a long task description.
+async function editLearningInPrompt($: any, id: string) {
+  const list = byStatus(await loadLearnings($))
+  const position = list.findIndex(one => one.id === id) + 1
+
+  if (position === 0) {
+    return
+  }
+
+  if ((await $.prompt.read()).text.trim() !== '') {
+    $.ui.toast('Your prompt has text: clear it first')
+
+    return
+  }
+
+  const filled = await $.prompt.fill({ text: `/learnings edit ${position} text ${list[position - 1]?.text ?? ''}` })
+
+  $.ui.toast(filled.isFilled ? 'Press Esc to reach the prompt, edit the text (or write why / how instead of text) and press Enter' : 'The prompt box is not available now')
+}
+
+// Answers a learning and leaves the selection (and the ring) on the one that took its place, as the
+// questions pane does with a part it closes.
+async function answerLearning($: any, id: string, answer: (port: Port) => Promise<string>) {
+  const at = byStatus(await loadLearnings($)).filter(needsReview).findIndex(one => one.id === id)
+  $.ui.toast(await answer(makePort($)))
+
+  const rest = byStatus(await loadLearnings($)).filter(needsReview)
+  const near = at === -1 ? undefined : rest[Math.min(at, rest.length - 1)]
+
+  await update($, learningViewing, () => null)
+  await update($, learningCommenting, () => null)
+  await update($, learningSelected, () => near?.id ?? null)
+
+  if (near) {
+    await focusField($, LEARNINGS_PANE, `row-${near.id}`)
   }
 }
 
@@ -652,6 +787,79 @@ async function drawChecklist($: any, e: any) {
   )
 }
 
+// Draws the learnings pane, the same way.
+async function drawLearnings($: any, e: any) {
+  await read($, learnings)
+
+  const isBlurred = e.props?.isFocused === false
+
+  if (isBlurred) {
+    isLearningsStale = true
+  }
+
+  return renderLearningsPane(
+    $.ui.resolve(e),
+    {
+      // What is in memory comes along only to name what a proposal updates; the pane lists what waits.
+      list: [...byStatus(await loadLearnings($)), ...(await memoryLearnings(makePort($)))],
+      chosenId: await read($, learningSelected),
+      openId: isBlurred ? null : await read($, learningViewing),
+      commentingId: isBlurred ? null : await read($, learningCommenting),
+      draft: await read($, draft),
+      isFocused: !isBlurred,
+      now: await $.clock.now(),
+      // The pane's own body width when the surface says it, else the transcript's.
+      columns: e.props?.bodyColumns ?? Math.min(e.viewport?.columns ?? 60, 48),
+      bodyRows: e.props?.scroll?.bodyRows ?? (e.viewport?.rows ?? 24) - 6,
+    },
+    {
+      choose: id => update($, learningSelected, () => id),
+      setOpen: async id => {
+        isLearningsStale = false
+
+        if (id !== null) {
+          await update($, learningSelected, () => id)
+        }
+
+        await update($, learningViewing, () => id)
+      },
+      accept: id => answerLearning($, id, port => acceptLearning(port, id)),
+      reject: id => answerLearning($, id, port => rejectLearning(port, id)),
+      setCommenting: async id => {
+        isLearningsStale = false
+        await update($, draft, () => '')
+        await update($, learningCommenting, () => id)
+
+        if (id !== null) {
+          await focusField($, LEARNINGS_PANE, `comment-box-${id}`)
+        }
+      },
+      type: text => update($, draft, () => text),
+      comment: async (id, text) => {
+        $.ui.toast(await commentOn(makePort($), id, text, LEARNINGS_TOOL))
+
+        if (text.trim() !== '') {
+          await update($, learningCommenting, () => null)
+          await update($, draft, () => '')
+          await focusField($, LEARNINGS_PANE, `row-${id}`)
+        }
+      },
+      edit: id => editLearningInPrompt($, id),
+      acceptAll: async () => {
+        const done = await acceptAll(makePort($))
+        $.ui.toast(`${done.done} accepted${done.refused.length > 0 ? `; ${done.refused.length} still waiting: they break the rules` : ''}`)
+        await update($, learningViewing, () => null)
+      },
+    },
+  )
+}
+
+// Takes back the checklist and the learnings a resumed conversation left under its old id.
+async function adoptOwnChecklist($: any) {
+  const done = await adoptChecklist(makePort($))
+  await adoptLearnings(makePort($), done.from)
+}
+
 // Bookkeeping must never break a session, a turn or the user's answer: a failure leaves that
 // step undone and the rest goes on.
 // Once per process, from session.start or the first prompt (a plugin reload does not fire session.start).
@@ -659,6 +867,8 @@ async function migrate($: any) {
   if (!isMigrated) {
     isMigrated = true
     await migrateToId(makePort($), String((await $.session.usage()).startedAt))
+    await splitBySession(makePort($))
+    await dropSettled(makePort($))
   }
 }
 
@@ -674,13 +884,21 @@ export const register: Register = (on, options) => {
   on('session.start', async ($, e, next) => {
     await $.command.register(QUESTIONS_COMMAND)
     await $.command.register(CHECKLIST_COMMAND)
+    await $.command.register(LEARNINGS_COMMAND)
     await $.tool.register(CLOSE_TOOL_SPEC)
     await $.tool.register(QUESTIONS_TOOL_SPEC)
     await $.tool.register(CHECKLIST_TOOL_SPEC)
+    await $.tool.register(LEARNINGS_TOOL_SPEC)
     await attempt(() => writeQuestions($, list => list))
     await attempt(() => writeChecklist($, list => list))
+    // What earlier versions kept moves to this project's key, without what is in memory: that is Claude's.
+    await attempt(() => splitBySession(makePort($)))
+    await attempt(() => dropSettled(makePort($)))
+    await attempt(() => writeLearnings($, list => list))
     // What an earlier version kept under the launch time moves to the session id, before the sweep.
     await attempt(() => migrate($))
+    // A resumed conversation under a new id takes its own list back before the sweep.
+    await attempt(() => adoptOwnChecklist($))
     await attempt(() => sweepChecklists(makePort($)))
     // The conversation's own questions first, so the sweep does not take them for another session's.
     await attempt(() => adoptFromTranscript(makePort($)))
@@ -704,6 +922,7 @@ export const register: Register = (on, options) => {
     await attempt(() => parkOwn(makePort($)))
     seenChecklist = null
     seenQuestions = null
+    seenLearnings = null
 
     return next(e)
   })
@@ -712,6 +931,11 @@ export const register: Register = (on, options) => {
     const done = await runQuestionsCommand(makePort($), e.args, options)
 
     if (done.opens) {
+      // Another session's process writes the same store (a migration, an adoption) without touching this
+      // process's state, so a pane drawn before would keep what it showed: opening it draws what is stored now.
+      const fresh = await loadQuestions($)
+      await update($, questions, () => fresh)
+      await showStatus($)
       await $.ui.open({ id: QUESTIONS_PANE, title: 'Open questions', focus: true })
     }
 
@@ -722,11 +946,64 @@ export const register: Register = (on, options) => {
     const done = await runChecklistCommand(makePort($), e.args, options)
 
     if (done.opens) {
+      const fresh = await loadChecklist($)
+      await update($, checklist, () => fresh)
+      await showStatus($)
       await $.ui.open({ id: CHECKLIST_PANE, title: 'Checklist', focus: true })
     }
 
     return { text: done.text }
   })
+
+  on('command.run', { command: 'learnings' }, async ($, e) => {
+    const done = await runLearningsCommand(makePort($), e.args, options)
+
+    if (done.opens) {
+      const fresh = await loadLearnings($)
+      await update($, learnings, () => fresh)
+      await showStatus($)
+      await $.ui.open({ id: LEARNINGS_PANE, title: 'Learnings', focus: true })
+    }
+
+    return { text: done.text }
+  })
+
+  on('tool.call', { tool: LEARNINGS_TOOL }, async ($, e) => {
+    const result = await callLearningsTool(makePort($), e as LearningsCall, options).catch(() => 'The learnings tool failed; nothing was changed. Try again.')
+    await attempt(() => markSeen($))
+
+    return { result } as never
+  })
+
+  // A write into Claude's memory folder is the model deciding alone what to remember: under `guard`
+  // it is refused and becomes a proposal; under `observe` it goes through and is tracked as one.
+  for (const tool of ['Write', 'Edit', 'MultiEdit']) {
+    on('tool.call', { tool: tool as 'Write' }, async ($, e, next) => {
+      const mode = guardModeOf(options.memory)
+      const write = mode === 'off' ? null : writeOf(tool, e as unknown as Record<string, unknown>)
+      let guarded: { deny?: string; note?: string } | null = null
+
+      if (write) {
+        try {
+          guarded = await guardMemoryWrite(makePort($), write, mode, options)
+        } catch {
+          // The guard must never block ordinary file writes.
+        }
+      }
+
+      if (guarded?.deny) {
+        return { deny: guarded.deny } as never
+      }
+
+      const ran = await next(e)
+
+      if (guarded?.note) {
+        $.ui.toast(guarded.note)
+      }
+
+      return ran
+    })
+  }
 
   on('tool.call', { tool: CLOSE_TOOL }, async ($, e) => {
     const ids = (e as { ids?: unknown }).ids
@@ -777,8 +1054,14 @@ export const register: Register = (on, options) => {
     return ran
   })
 
-  on('turn.start', ($, e, next) => {
+  on('turn.start', async ($, e, next) => {
     runningTurn = e.turnId
+
+    if (!(e as { agentId?: string }).agentId) {
+      await attempt(async () => {
+        turnStartedAt = await $.clock.now()
+      })
+    }
 
     return next(e)
   })
@@ -795,6 +1078,21 @@ export const register: Register = (on, options) => {
         .catch(() => undefined)
         .then(() => captureQuestions(port, e.answer, extractQuestions(e.answer), 'text', options))
         .catch(() => undefined)
+
+      // What the turn taught goes to the review queue, the same way, unless memory is not watched. A turn
+      // a plugin prompt started (a save, a fix, a comment) teaches nothing: the user did not speak.
+      if (guardModeOf(options.memory) !== 'off' && learningUserText !== '') {
+        void captureLearnings(port, { user: learningUserText, assistant: e.answer }, options).catch(() => undefined)
+      }
+
+      // The turn that answered an approval (a save, a fix) closes it: the guard watches again.
+      await attempt(async () => {
+        const at = await approvalAt(port)
+
+        if (at !== null && turnStartedAt !== null && at <= turnStartedAt) {
+          await closeApproval(port)
+        }
+      })
     }
 
     return next(e)
@@ -802,10 +1100,13 @@ export const register: Register = (on, options) => {
 
   on('prompt.submit', async ($, e, next) => {
     if (e.origin.kind === 'plugin') {
+      learningUserText = ''
+
       return next(e)
     }
 
     lastUserText = e.text
+    learningUserText = e.text
 
     await attempt(() => migrate($))
 
@@ -813,6 +1114,7 @@ export const register: Register = (on, options) => {
       if ((await $.session.id()) !== lastSessionId) {
         lastSessionId = await $.session.id()
         await adoptFromTranscript(makePort($))
+        await adoptOwnChecklist($)
       }
     })
 
@@ -826,8 +1128,11 @@ export const register: Register = (on, options) => {
         changes: await changesSince($),
         open: await ownQuestions($, true),
         list: await loadChecklist($),
+        learnings: await loadLearnings($),
+        isMemoryGuarded: guardModeOf(options.memory) === 'guard',
         questionsTool: QUESTIONS_TOOL,
         checklistTool: CHECKLIST_TOOL,
+        learningsTool: LEARNINGS_TOOL,
       })
     } catch {
       context = []
@@ -839,6 +1144,43 @@ export const register: Register = (on, options) => {
   on('ui.render', { component: 'Pane', requestId: QUESTIONS_PANE }, ($, e) => drawQuestions($, e))
 
   on('ui.render', { component: 'Pane', requestId: CHECKLIST_PANE }, ($, e) => drawChecklist($, e))
+
+  on('ui.render', { component: 'Pane', requestId: LEARNINGS_PANE }, ($, e) => drawLearnings($, e))
+
+  // Same as the questions pane: the selection follows the ring, and the details close when it leaves them.
+  on('ui.focus', { requestId: LEARNINGS_PANE }, async ($, e, next) => {
+    const element = e.element ?? ''
+
+    try {
+      if (isLearningsStale) {
+        isLearningsStale = false
+        await update($, learningViewing, () => null)
+        await update($, learningCommenting, () => null)
+      }
+
+      if (element.startsWith('row-')) {
+        await update($, learningSelected, () => element.slice(4))
+      }
+
+      // The details stay open on their own row, actions and Edit (all keyed ending with the learning's id).
+      const open = await read($, learningViewing)
+
+      if (open !== null && !element.endsWith(`-${open}`)) {
+        await update($, learningViewing, () => null)
+      }
+
+      // The comment box stays open on its field, its ✕ and the actions of its learning.
+      const commenting = await read($, learningCommenting)
+
+      if (commenting !== null && !element.endsWith(`-${commenting}`)) {
+        await update($, learningCommenting, () => null)
+      }
+    } catch {
+      // The ring must move even when the pane's state cannot follow it.
+    }
+
+    return next(e)
+  })
 
   // The selection follows the focus ring, so the arrows are all it takes to pick a row; and a
   // field being typed in closes when the ring leaves it (Esc, a click elsewhere).

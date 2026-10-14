@@ -19,6 +19,8 @@ const tasks = [
 
 test('the checklist pane draws its list, opens a task and walks through the tasks', async ($, on) => {
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   mock.store(on, { 'checklist:sx': tasks })
   const ui = await $.ui.mount({ plugin: 'session-management', surface: 'terminal', component: 'Pane', requestId: 'checklist', props })
@@ -39,6 +41,8 @@ test('the checklist pane draws its list, opens a task and walks through the task
 
 test('the questions pane draws a choice question with its actions and reveals the options on Answer', async ($, on) => {
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   mock.clock(on, { now: 1000 })
   mock.store(on, {
@@ -71,6 +75,8 @@ const wide = { ...props, bodyColumns: 110 }
 
 test('the checklist pane changes its design with its width: narrow opens a task on demand, wide shows it beside the list', async ($, on) => {
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   mock.store(on, { 'checklist:sx': tasks })
 
@@ -91,6 +97,8 @@ test('the checklist pane changes its design with its width: narrow opens a task 
 test('the questions pane shows the focused question beside the list when it is wide', async ($, on) => {
   on('ui.focus', async () => ({}))
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   mock.clock(on, { now: 1000 })
   mock.store(on, {
@@ -116,6 +124,8 @@ test('the questions pane shows the focused question beside the list when it is w
 
 test('moving the focus onto a task row selects it', async ($, on) => {
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
   mock.store(on, { 'checklist:sx': tasks })
@@ -130,6 +140,8 @@ test('moving the focus onto a task row selects it', async ($, on) => {
 
 test('the answer field opens on its key and closes when the focus leaves it', async ($, on) => {
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
   mock.clock(on, { now: 1000 })
@@ -158,6 +170,8 @@ const openQuestion = (isOpen: boolean) => ({ id: 'q1', session: 'sx', texts: ['W
 
 test('a blocked task shows what it waits for on its screen and the blocked glyph in the list', async ($, on) => {
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
   mock.clock(on, { now: 1000 })
@@ -181,6 +195,8 @@ test('a blocked task shows what it waits for on its screen and the blocked glyph
 
 test('a closed question stops blocking and its section disappears', async ($, on) => {
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
   mock.clock(on, { now: 1000 })
@@ -202,6 +218,8 @@ const mountChecklist = ($: any, extra: object = {}) =>
 
 test('the task screen puts the actions under the status, pencils beside Task and Description, and a priority row', async ($, on) => {
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
   mock.store(on, { 'checklist:sx': tasks })
@@ -226,6 +244,8 @@ test('the task screen puts the actions under the status, pencils beside Task and
 test('pressing a priority button moves the task in the list and marks the new level', async ($, on) => {
   mock.clock(on, { now: 1000 })
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
   mock.store(on, { 'checklist:sx': tasks })
@@ -341,6 +361,8 @@ test('a prompt that already has text is never replaced: a toast asks to clear it
 
 test('an unfocused pane closes the edit that was open, so Esc then Esc cancels it', async ($, on) => {
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
   mock.store(on, { 'checklist:sx': tasks })
@@ -361,6 +383,8 @@ test('an unfocused pane closes the edit that was open, so Esc then Esc cancels i
 
 test('an unfocused questions pane draws without the answer field that was open', async ($, on) => {
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
   mock.clock(on, { now: 1000 })
@@ -397,6 +421,8 @@ const person = { kind: 'person' as const }
 
 test('the narrow checklist draws the selected task\'s actions after the list only, and the wide one draws none', async ($, on) => {
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
   mock.store(on, { 'checklist:sx': tasks })
@@ -434,6 +460,8 @@ test('the narrow checklist draws the selected task\'s actions after the list onl
 
 test('pressing the quick cancel cancels the task', async ($, on) => {
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
   mock.clock(on, { now: 1000 })
@@ -450,6 +478,8 @@ test('pressing the quick cancel cancels the task', async ($, on) => {
 
 test('the narrow questions pane has a/e/d on the quick line and shows no options or box before Answer', async ($, on) => {
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
   mock.clock(on, { now: 1000 })
@@ -485,6 +515,8 @@ test('the narrow questions pane has a/e/d on the quick line and shows no options
 
 test('Answer reveals the options of a single choice, a multiple choice and the box of a free-text question', async ($, on) => {
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
   mock.clock(on, { now: 1000 })
@@ -527,6 +559,8 @@ test('Answer reveals the options of a single choice, a multiple choice and the b
 
 test('Other switches the revealed options to the text box', async ($, on) => {
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
   mock.clock(on, { now: 1000 })
@@ -545,6 +579,8 @@ test('a revealed option sends the answer and a quick dismiss closes the question
   on('prompt.submit', async () => ({ text: 'sent' }))
   on('ui.status', async () => ({ value: undefined }))
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
   mock.clock(on, { now: 1000 })
@@ -570,6 +606,8 @@ test('the wide questions pane reveals the options on its own Answer key and neve
   on('prompt.submit', async () => ({ text: 'sent' }))
   on('ui.status', async () => ({ value: undefined }))
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
   mock.clock(on, { now: 1000 })
@@ -590,6 +628,8 @@ test('the wide questions pane reveals the options on its own Answer key and neve
 
 test('the answer area stays open on a revealed option and closes on another part\'s row', async ($, on) => {
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
   mock.clock(on, { now: 1000 })
@@ -822,6 +862,8 @@ const liveStore = (on: any, data: Record<string, unknown>) => {
 
 const session = (on: any) => {
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.focus', async () => ({}))
   on('ui.status', async () => ({ value: undefined }))
@@ -1702,6 +1744,8 @@ const navigation = (on: any) => {
   const toasts: string[] = []
 
   on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
   on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
   on('ui.status', async () => ({ value: undefined }))
   mock.clock(on, { now: 1000 })
@@ -1896,4 +1940,123 @@ test('the task screen with Waiting for and Blocks stays inside the pane rows', a
     await ui.press({ key: 'back' })
     await ui.unmount()
   }
+})
+
+const learnings = [
+  { id: 'l1', kind: 'feedback', text: 'Run the validators before every commit', why: 'a broken manifest reached main on 2026-10-13', status: 'proposed', project: '/p', session: 'sx', at: 1, seen: 2 },
+  { id: 'l2', kind: 'user', text: 'The user writes in Spanish', why: 'every message so far', status: 'accepted', project: '/p', session: 'sx', at: 1, seen: 1, file: 'user_spanish.md' },
+  { id: 'l3', kind: 'project', text: 'Deploys happen on Fridays', why: 'the runbook says so', status: 'rejected', reason: 'moved to Tuesdays', project: '/p', session: 'sx', at: 1, seen: 1 },
+  { id: 'l4', kind: 'project', text: 'Another project\'s learning', why: 'x', status: 'proposed', project: '/other', session: 'sy', at: 1, seen: 1 },
+]
+
+test('the learnings pane lists only what waits, like the questions pane, with its answers in the selected card', async ($, on) => {
+  on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
+  on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
+  mock.clock(on, { now: 1000 })
+  mock.store(on, { 'learnings:sx': learnings.filter(one => one.project === '/p'), 'learnings:sy': learnings.filter(one => one.project === '/other') })
+  const ui = await $.ui.mount({ plugin: 'session-management', surface: 'terminal', component: 'Pane', requestId: 'learnings', props })
+
+  expect(await ui.find({ type: 'Text', text: /Learnings to review/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /Run the validators before every commit/ })).toBeDefined()
+  // In memory, refused, or another session's: not in the pane.
+  expect(await ui.find({ type: 'Text', text: /The user writes in Spanish/ })).toBeUndefined()
+  expect(await ui.find({ type: 'Text', text: /Deploys happen on Fridays/ })).toBeUndefined()
+  expect(await ui.find({ type: 'Text', text: /Another project/ })).toBeUndefined()
+  expect(await ui.find({ type: 'Text', text: /seen 2×/ })).toBeDefined()
+  expect(await ui.find({ key: 'qa-accept-l1' })).toBeDefined()
+  expect(await ui.find({ key: 'qa-reject-l1' })).toBeDefined()
+  expect(await ui.find({ key: 'accept-all' })).toBeUndefined()
+
+  await ui.press({ key: 'row-l1' })
+  expect(await ui.find({ type: 'Text', text: /Why: a broken manifest reached main/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /If you accept: Asks Claude to save it to its memory as a new learning/ })).toBeDefined()
+  expect(await ui.find({ key: 'edit-l1' })).toBeDefined()
+  await ui.unmount()
+})
+
+test('Comment opens a box in the selected card and sends what to change to Claude', async ($, on) => {
+  const sent: string[] = []
+  on('prompt.submit', async (...args: any[]) => {
+    sent.push(String(args.find(one => one && typeof one === 'object' && 'text' in one)?.text))
+
+    return { text: 'sent' }
+  })
+  on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
+  on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
+  mock.clock(on, { now: 1000 })
+  mock.store(on, { 'learnings:sx': learnings.filter(one => one.project === '/p') })
+  const ui = await $.ui.mount({ plugin: 'session-management', surface: 'terminal', component: 'Pane', requestId: 'learnings', props })
+
+  expect(await ui.find({ key: 'comment-box-l1' })).toBeUndefined()
+  await ui.press({ key: 'qa-comment-l1' })
+  expect(await ui.find({ key: 'comment-box-l1' })).toBeDefined()
+  await ui.input({ key: 'comment-box-l1', text: 'Only for the plugins folder' })
+  expect(sent.some(text => text.includes('Comment: Only for the plugins folder'))).toBe(true)
+  expect(await ui.find({ key: 'comment-box-l1' })).toBeUndefined()
+  expect(await ui.find({ key: 'qa-accept-l1' })).toBeDefined()
+  await ui.unmount()
+})
+
+test('the learnings pane says all caught up when nothing waits', async ($, on) => {
+  on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
+  on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
+  mock.clock(on, { now: 1000 })
+  mock.store(on, { 'learnings:sx': learnings.filter(one => one.status !== 'proposed') })
+  const ui = await $.ui.mount({ plugin: 'session-management', surface: 'terminal', component: 'Pane', requestId: 'learnings', props })
+
+  expect(await ui.find({ type: 'Text', text: /All caught up/ })).toBeDefined()
+  await ui.unmount()
+})
+
+test('a proposal that updates or contradicts what is in memory names it, and says what each answer does', async ($, on) => {
+  on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
+  on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
+  mock.clock(on, { now: 1000 })
+  on('env.get', async () => ({ value: undefined }))
+  on('fs.read', async () => ({ value: '---\nmetadata:\n  type: feedback\n---\n\nRun the validators before every commit\n\n**Why:** a broken manifest reached main on 2026-10-01\n' }))
+  on('fs.list', async () => ({ value: [{ name: 'feedback_validators.md', kind: 'file' as const, size: 1, mtimeMs: 0, isLink: false }] }))
+  mock.store(on, {
+    'learnings:sx': [
+      { id: 'u', kind: 'feedback', text: 'Run the validators before every commit, in every package', why: 'it slipped in a package on 2026-10-13', status: 'proposed', project: '/p', session: 'sx', at: 1, seen: 1, replaces: ['file:feedback_validators.md'] },
+      { id: 'n', kind: 'feedback', text: 'Answer yes or no first, then the detail', why: 'the user asked on 2026-10-13', status: 'proposed', project: '/p', session: 'sx', at: 1, seen: 1 },
+    ],
+  })
+  const ui = await $.ui.mount({ plugin: 'session-management', surface: 'terminal', component: 'Pane', requestId: 'learnings', props: wide })
+
+  expect(await ui.find({ key: 'accept-all' })).toBeDefined()
+  expect(await ui.find({ key: 'accept-u' })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /updates/ })).toBeDefined()
+
+  await ui.press({ key: 'details-u' })
+  expect(await ui.find({ type: 'Text', text: /If you accept: Asks Claude to update/ })).toBeDefined()
+
+  // Enter on a row opens its details, as Answer does on a question.
+  await ui.press({ key: 'row-n' })
+  expect(await ui.find({ type: 'Text', text: /If you accept: Asks Claude to save it to its memory as a new learning/ })).toBeDefined()
+  await ui.unmount()
+})
+
+test('the narrow learnings pane keeps the list in view beside a long selected learning', async ($, on) => {
+  on('session.id', async () => ({ value: 'sx' }))
+  on('session.cwd', async () => ({ value: '/p' }))
+  on('session.root', async () => ({ value: '/p' }))
+  on('session.usage', async () => ({ value: { startedAt: 5000 } as never }))
+  mock.clock(on, { now: 1000 })
+  const many = Array.from({ length: 12 }, (_, index) => ({ id: `m${index}`, kind: 'feedback', text: `${index === 0 ? 'A very long proposed rule '.repeat(6) : `Rule number ${index}`}`, why: 'w', status: 'proposed', project: '/p', session: 'sx', at: 1, seen: 1 }))
+  mock.store(on, { 'learnings:sx': many })
+  const ui = await $.ui.mount({ plugin: 'session-management', surface: 'terminal', component: 'Pane', requestId: 'learnings', props: { ...props, scroll: { offset: 0, bodyRows: 16 } } })
+
+  expect(await ui.find({ key: 'row-m0' })).toBeDefined()
+  expect(await ui.find({ key: 'qa-details-m0' })).toBeDefined()
+  expect(await ui.find({ key: 'row-m1' })).toBeDefined()
+  expect(await rowsOf(ui, 38)).toBeLessThanOrEqual(16)
+  await ui.unmount()
 })

@@ -1,7 +1,7 @@
 {
   "name": "session-management",
-  "version": "0.1.0",
-  "description": "Runtime mods that keep a Claude Code session organized: unanswered questions and a shared task checklist.",
+  "version": "0.2.0",
+  "description": "Runtime mods that keep a Claude Code session organized: unanswered questions, a shared task checklist, and the learnings Claude proposes for its memory.",
   "author": {
     "name": "Adrián Darío Hidalgo Flores"
   },
@@ -14,7 +14,9 @@
     "session",
     "questions",
     "checklist",
-    "hooks"
+    "hooks",
+    "learnings",
+    "memory"
   ],
   "types": "./types/index.d.ts",
   "userConfig": {
@@ -26,6 +28,17 @@
       "options": [
         "model",
         "heuristic"
+      ]
+    },
+    "memory": {
+      "type": "string",
+      "title": "Memory writes",
+      "description": "guard: Claude writes its memory only for what you accepted or a /learnings fix; any other write is refused and becomes a learning to review. observe: every write goes through, for /learnings doctor to review. off: memory is not watched and turns are not read for learnings.",
+      "default": "guard",
+      "options": [
+        "guard",
+        "observe",
+        "off"
       ]
     }
   }

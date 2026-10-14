@@ -4,7 +4,7 @@ import type { Question } from '../../../types'
 import { promptContext } from './context.hook'
 
 const question = (id: string): Question => ({ id, session: 's1', texts: [`Question ${id} that makes sense alone?`], source: 'text', project: '/p', at: 1, isOpen: true, asks: 1 })
-const base = { changes: [], open: [], list: [], questionsTool: 'QT', checklistTool: 'CT' }
+const base = { changes: [], open: [], list: [], learnings: [], isMemoryGuarded: false, questionsTool: 'QT', checklistTool: 'CT', learningsTool: 'LT' }
 
 test('nothing to say attaches nothing', () => {
   expect(promptContext(base)).toEqual([])

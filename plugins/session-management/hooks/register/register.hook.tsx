@@ -7,7 +7,7 @@ import { activeBlockers, withoutBlocker } from '../checklist/blockers/blockers.h
 import type { ActiveBlocker } from '../checklist/blockers/blockers.hook'
 import { CHECKLIST_COMMAND, runChecklistCommand } from '../checklist/command/command.hook'
 import { byPriority, hasRoom, withDetail, withPriority, withStatus, withText, without } from '../checklist/ops/ops.hook'
-import { CHECKLIST_INDEX, adoptChecklist, migrateToId, sweepChecklists } from '../checklist/lifecycle/lifecycle.hook'
+import { CHECKLIST_INDEX, migrateToId, sweepChecklists } from '../checklist/lifecycle/lifecycle.hook'
 import { ADD_FIELD, WIDE, renderChecklistPane, selectedOf } from '../checklist/pane/pane.hook'
 import { CHECKLIST_TOOL_SPEC, callChecklistTool } from '../checklist/tool/tool.hook'
 import type { ChecklistCall } from '../checklist/tool/tool.hook'
@@ -17,7 +17,7 @@ import { captureQuestions, resolveAnswered } from '../questions/capture/capture.
 import { diffQuestions } from '../questions/changes/changes.hook'
 import { QUESTIONS_COMMAND, runQuestionsCommand } from '../questions/command/command.hook'
 import { extractQuestions } from '../questions/extract/extract.hook'
-import { adoptFromTranscript, parkOwn, restoreAndSweep } from '../questions/lifecycle/lifecycle.hook'
+import { parkOwn, restoreAndSweep } from '../questions/lifecycle/lifecycle.hook'
 import { answeredDialog, withoutText } from '../questions/ops/ops.hook'
 import type { Mark } from '../questions/pane/pane.hook'
 import { findPart, markOf, partsOf, renderQuestionsPane, tickKey } from '../questions/pane/pane.hook'
@@ -29,7 +29,7 @@ import { captureLearnings } from '../learnings/capture/capture.hook'
 import { diffLearnings } from '../learnings/changes/changes.hook'
 import { LEARNINGS_COMMAND, runLearningsCommand } from '../learnings/command/command.hook'
 import { guardMemoryWrite, guardModeOf, writeOf } from '../learnings/guard/guard.hook'
-import { adoptLearnings, dropSettled, learningsKey, splitBySession } from '../learnings/lifecycle/lifecycle.hook'
+import { dropSettled, learningsKey, splitBySession } from '../learnings/lifecycle/lifecycle.hook'
 import { needsReview } from '../learnings/kinds/kinds.hook'
 import { INDEX_FILE, memoryDirOf, memoryLearnings } from '../learnings/memory/memory.hook'
 import { byStatus } from '../learnings/ops/ops.hook'
@@ -78,8 +78,6 @@ let lastUserText = ''
 let learningUserText = ''
 // When the main turn running started, so an approval closes with the turn that answered it.
 let turnStartedAt: number | null = null
-// The session id the last prompt ran under: it can change under a conversation (resume, reattach).
-let lastSessionId = ''
 // Whether this process has moved what an earlier version kept under the launch time to the session id.
 let isMigrated = false
 // What the assistant last saw of the checklist and of this session's questions; the next prompt
@@ -854,12 +852,6 @@ async function drawLearnings($: any, e: any) {
   )
 }
 
-// Takes back the checklist and the learnings a resumed conversation left under its old id.
-async function adoptOwnChecklist($: any) {
-  const done = await adoptChecklist(makePort($))
-  await adoptLearnings(makePort($), done.from)
-}
-
 // Bookkeeping must never break a session, a turn or the user's answer: a failure leaves that
 // step undone and the rest goes on.
 // Once per process, from session.start or the first prompt (a plugin reload does not fire session.start).
@@ -891,22 +883,15 @@ export const register: Register = (on, options) => {
     await $.tool.register(LEARNINGS_TOOL_SPEC)
     await attempt(() => writeQuestions($, list => list))
     await attempt(() => writeChecklist($, list => list))
-    // What earlier versions kept moves to this project's key, without what is in memory: that is Claude's.
+    // What earlier versions kept moves to the session that proposed it, without what is in memory.
     await attempt(() => splitBySession(makePort($)))
     await attempt(() => dropSettled(makePort($)))
     await attempt(() => writeLearnings($, list => list))
     // What an earlier version kept under the launch time moves to the session id, before the sweep.
     await attempt(() => migrate($))
-    // A resumed conversation under a new id takes its own list back before the sweep.
-    await attempt(() => adoptOwnChecklist($))
     await attempt(() => sweepChecklists(makePort($)))
-    // The conversation's own questions first, so the sweep does not take them for another session's.
-    await attempt(() => adoptFromTranscript(makePort($)))
     await attempt(() => restoreAndSweep(makePort($)))
-    await attempt(async () => {
-      lastSessionId = await $.session.id()
-      await markSeen($)
-    })
+    await attempt(() => markSeen($))
 
     // A resumed session gets the questions it never answered back.
     await attempt(async () => {
@@ -1109,14 +1094,6 @@ export const register: Register = (on, options) => {
     learningUserText = e.text
 
     await attempt(() => migrate($))
-
-    await attempt(async () => {
-      if ((await $.session.id()) !== lastSessionId) {
-        lastSessionId = await $.session.id()
-        await adoptFromTranscript(makePort($))
-        await adoptOwnChecklist($)
-      }
-    })
 
     void resolveAnswered(makePort($), e.text, '', options).catch(() => undefined)
 

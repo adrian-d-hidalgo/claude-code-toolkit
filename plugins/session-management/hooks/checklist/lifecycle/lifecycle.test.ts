@@ -1,7 +1,7 @@
 import { expect, test } from 'claude-code/testing'
 
 import { memoryPort } from '../../shared/port/port.hook'
-import { CHECKLIST_INDEX, adoptChecklist, cleanChecklist, migrateToId, sweepChecklists, undoChecklist } from './lifecycle.hook'
+import { CHECKLIST_INDEX, cleanChecklist, migrateToId, sweepChecklists, undoChecklist } from './lifecycle.hook'
 
 test('clear all keeps a copy; undo restores it and keeps what was added since', async () => {
   const { port } = memoryPort({ store: { 'checklist:s1': [{ id: 'a', text: 'Write the tests', status: 'todo' }] } })
@@ -96,32 +96,4 @@ test('a conversation keeps its own list when another session has the same text',
 
   expect(await b.port.checklist.all()).toEqual([])
   expect((await a.port.checklist.all()).map(one => one.id)).toEqual(['x'])
-})
-
-test('a resumed conversation under a new id takes its checklist back whole, found by the task ids its transcript used', async () => {
-  const old = [
-    { id: 'mvaaa1', text: 'Write the tests', status: 'todo' },
-    { id: 'mvaaa2', text: 'Ship it', status: 'done' },
-  ]
-  const other = [{ id: 'mvzzz1', text: 'Someone else\'s task', status: 'todo' }]
-  const messages = [{ role: 'assistant' as const, text: 'On it.', toolUses: [{ tool: 'mcp__session-management__checklist', input: { action: 'status', id: 'mvaaa1', status: 'doing' }, result: 'Updated [mvaaa1].' }] }]
-  const { port, data } = memoryPort({
-    session: 'new',
-    messages,
-    store: { 'checklist:old': old, 'backup:checklist:old': [old[0]], 'checklist:x': other, 'checklist:new': [{ id: 'mvbbb1', text: 'Recreated by hand', status: 'todo' }], [CHECKLIST_INDEX]: { 'checklist:old': 1, 'checklist:x': 1 } },
-  })
-
-  expect(await adoptChecklist(port)).toEqual({ from: 'old', adopted: 2 })
-  expect((await port.checklist.all()).map(one => one.id).sort()).toEqual(['mvaaa1', 'mvaaa2', 'mvbbb1'])
-  expect(data['checklist:old']).toBeUndefined()
-  expect(data['backup:checklist:new']).toEqual([old[0]])
-  expect(data['checklist:x']).toEqual(other)
-  expect(data[CHECKLIST_INDEX]).toEqual({ 'checklist:x': 1 })
-  expect(await adoptChecklist(port)).toEqual({ from: null, adopted: 0 })
-})
-
-test('a conversation that never used the checklist tool takes nothing over', async () => {
-  const { port } = memoryPort({ session: 'new', messages: [{ role: 'assistant', text: 'Hi', toolUses: [] }], store: { 'checklist:old': [{ id: 'mvaaa1', text: 'Write the tests', status: 'todo' }] } })
-
-  expect(await adoptChecklist(port)).toEqual({ from: null, adopted: 0 })
 })

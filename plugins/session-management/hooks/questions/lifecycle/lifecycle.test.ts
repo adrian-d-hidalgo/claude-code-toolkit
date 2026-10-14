@@ -2,8 +2,7 @@ import { expect, test } from 'claude-code/testing'
 
 import type { Question } from '../../../types'
 import { memoryPort } from '../../shared/port/port.hook'
-import type { ScanMessage } from '../../shared/transcript/transcript.hook'
-import { adoptFromTranscript, cleanQuestions, loadClosed, parkOwn, restoreAndSweep, undoQuestions } from './lifecycle.hook'
+import { cleanQuestions, loadClosed, parkOwn, restoreAndSweep, undoQuestions } from './lifecycle.hook'
 
 const question = (id: string, session: string, isOpen = true, at = 1000): Question => ({
   id,
@@ -49,46 +48,6 @@ test('starting a session sweeps what another session left quiet for a week', asy
 
   expect((await port.questions.all()).map(one => one.id)).toEqual(['mine'])
   expect(Object.keys(data['parked:questions'] as object)).toEqual(['s9'])
-})
-
-const full = '¿Cuál clase de RDS eliges, t4g.large o m7g.large?'
-const transcript: ScanMessage[] = [
-  { role: 'assistant', text: `Sigue pendiente la clase de RDS. ${full}`, toolUses: [] },
-  { role: 'assistant', text: '', toolUses: [{ tool: 'AskUserQuestion', input: { questions: [{ question: 'Which environment should the plan use?' }] } }] },
-]
-const asked = (id: string, session: string, text: string, isOpen = true): Question => ({ ...question(id, session, isOpen), texts: [text] })
-
-test('questions saved under another session id come back when this conversation asked them', async () => {
-  const { port } = memoryPort({
-    messages: transcript,
-    store: {
-      questions: [asked('a', 's9', full), asked('b', 's9', 'Which environment should the plan use?'), asked('c', 's9', 'Something this conversation never asked?'), asked('d', 's9', full, false)],
-    },
-  })
-
-  expect(await adoptFromTranscript(port, true)).toBe(2)
-  expect((await port.questions.own(false)).length).toBe(0)
-  expect(await adoptFromTranscript(port)).toBe(2)
-  expect((await port.questions.own(true)).map(one => one.id)).toEqual(['a', 'b'])
-  expect((await port.questions.all()).find(one => one.id === 'c')?.session).toBe('s9')
-  expect(await adoptFromTranscript(port)).toBe(0)
-})
-
-test('parked questions of an old id are adopted too, and a reworded question still matches', async () => {
-  const { port, data } = memoryPort({
-    messages: transcript,
-    store: { 'parked:questions': { s9: [asked('p', 's9', '¿Qué clase de RDS eliges, t4g.large o m7g.large?')] } },
-  })
-
-  expect(await adoptFromTranscript(port)).toBe(1)
-  expect((await port.questions.own(true)).map(one => one.id)).toEqual(['p'])
-  expect(data['parked:questions']).toEqual({})
-})
-
-test('an empty conversation adopts nothing', async () => {
-  const { port } = memoryPort({ store: { questions: [asked('a', 's9', full)] } })
-
-  expect(await adoptFromTranscript(port)).toBe(0)
 })
 
 test('clear all twice keeps the first copy, and undo reports what really came back and uses the copy up', async () => {

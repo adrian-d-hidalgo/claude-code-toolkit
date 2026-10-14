@@ -4,7 +4,7 @@ import type { Check, Diagnosis } from '../../shared/diagnosis/diagnosis.hook'
 import { formatChecks, plural } from '../../shared/diagnosis/diagnosis.hook'
 import { sameGroup } from '../../shared/similarity/similarity.hook'
 import { buildRewritePrompt, isStandalone, parseRewrites } from '../judge/judge.hook'
-import { adoptFromTranscript, keepBackup } from '../lifecycle/lifecycle.hook'
+import { keepBackup } from '../lifecycle/lifecycle.hook'
 import { carryChoices } from '../merge/merge.hook'
 import { countParts, scopeCounts, uniqueTexts } from '../parts/parts.hook'
 
@@ -73,20 +73,18 @@ export const diagnoseQuestions = (list: readonly Question[], now: number, isHist
 // the conversation they came from; one it cannot rewrite stays as it was.
 export const runQuestionsDoctor = async (port: Port, isFixing: boolean, isHistory: boolean, options: { judge?: string }): Promise<string> => {
   const session = await port.sessionId()
-  const stray = await adoptFromTranscript(port, !isFixing)
   const own = await port.questions.own(false)
   const { lines, fixed, vague = [], checks } = diagnoseQuestions(own, await port.now(), isHistory)
-  const strayLines = stray > 0 ? [`${plural(stray, 'question')} of another session id ${isFixing ? 'taken over' : 'belong to this conversation (`fix` takes them over)'}`] : []
   const report = formatChecks(
     `Questions doctor · this session${isHistory ? ' · with closed questions (--history)' : ''}`,
     `${plural(countParts(own), 'question')}: ${scopeCounts(
       own.filter(one => one.isOpen),
       own.filter(one => !one.isOpen),
     )}`,
-    [...checks, { label: 'none left over from another session id', lines: strayLines }],
+    checks,
   )
 
-  if (lines.length + strayLines.length === 0) {
+  if (lines.length === 0) {
     return report.join('\n')
   }
 
@@ -151,7 +149,7 @@ export const runQuestionsDoctor = async (port: Port, isFixing: boolean, isHistor
 
   return [
     'Fixed:',
-    ...[...strayLines, ...lines].map(line => `- ${line}`),
+    ...lines.map(line => `- ${line}`),
     ...(vague.length > 0 ? [`- ${reworded} wording(s) rewritten; the rest stay as they were`] : []),
     'Removed questions come back with `/questions undo`.',
   ].join('\n')

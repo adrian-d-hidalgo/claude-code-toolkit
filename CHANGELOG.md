@@ -2,6 +2,12 @@
 
 All notable changes to this toolkit. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) per plugin.
 
+## [0.4.0] — session-management — 2026-10-14
+
+### Changed
+
+- A session reads only its own checklist, questions and learnings. The take-over of another session id's list is gone: a new conversation that named old task ids (copied from a handoff) took over that session's whole checklist, done tasks included.
+
 ## [0.3.0] — session-management — 2026-10-14
 
 ### Added

@@ -1,6 +1,6 @@
 {
   "name": "session-management",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Runtime mods that keep a Claude Code session organized: unanswered questions, a shared task checklist, and the learnings Claude proposes for its memory.",
   "author": {
     "name": "Adrián Darío Hidalgo Flores"

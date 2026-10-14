@@ -5,7 +5,7 @@ import { MAX_TITLE, brief } from '../../shared/format/format.hook'
 import type { Port } from '../../shared/port/port.hook'
 import { sameTask } from '../../shared/similarity/similarity.hook'
 import { withBlocker } from '../blockers/blockers.hook'
-import { adoptChecklist, keepBackup } from '../lifecycle/lifecycle.hook'
+import { keepBackup } from '../lifecycle/lifecycle.hook'
 import { PRIORITIES, byPriority } from '../ops/ops.hook'
 import { STATUSES } from '../status/status.hook'
 
@@ -166,15 +166,12 @@ const countTasks = (list: readonly ChecklistItem[]): string => {
 // `doctor` reports what is wrong in this session's checklist, `fix` applies the safe repairs (a copy
 // is kept for `undo`).
 export const runChecklistDoctor = async (port: Port, isFixing: boolean, isHistory: boolean): Promise<string> => {
-  // A list this conversation left under another session id (a resume) is taken over first.
-  const stray = await adoptChecklist(port, !isFixing)
-  const strayLines = stray.adopted > 0 ? [`${plural(stray.adopted, 'task')} of this conversation under another session id ${isFixing ? 'taken over' : '(`fix` takes them over)'}`] : []
   const list = await port.checklist.all()
   const { lines, fixed, checks } = diagnoseChecklist(list, port.turn.current() !== null, isHistory, new Set((await port.questions.all()).map(one => one.id)))
-  const report = [...formatChecks(`Checklist doctor · this session${isHistory ? ' · with finished and cancelled tasks (--history)' : ''}`, countTasks(list), checks), ...strayLines]
+  const report = [...formatChecks(`Checklist doctor · this session${isHistory ? ' · with finished and cancelled tasks (--history)' : ''}`, countTasks(list), checks)]
 
   if (lines.length === 0) {
-    return [...report, ...(strayLines.length > 0 && !isFixing ? ['Run `/checklist fix` to take them over.'] : [])].join('\n')
+    return report.join('\n')
   }
 
   if (!isFixing) {

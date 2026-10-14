@@ -1,21 +1,46 @@
-import type { ChecklistItem } from '../../../types'
+import type { ChecklistItem, Question } from '../../../types'
 import { oneLine } from '../../shared/format/format.hook'
 import type { Port } from '../../shared/port/port.hook'
 import { parseChecklistArgs } from '../args/args.hook'
 import { backfillChecklist } from '../backfill/backfill.hook'
 import { partsOf } from '../../questions/parts/parts.hook'
-import { withBlocker, withoutBlocker } from '../blockers/blockers.hook'
+import { activeBlockers, withBlocker, withoutBlocker } from '../blockers/blockers.hook'
 import { runChecklistDoctor } from '../doctor/doctor.hook'
 import { CHECKLIST_HELP } from '../help/help.hook'
 import { cleanChecklist, undoChecklist } from '../lifecycle/lifecycle.hook'
 import { CHECKLIST_CAP, hasRoom, moveInLevel, withDetail, withPriority, withStatus, withText, without } from '../ops/ops.hook'
-import { isOpenStatus } from '../status/status.hook'
+import { GLYPH, isOpenStatus } from '../status/status.hook'
 import { cancelTask, runTask } from '../tasks/tasks.hook'
 
 export const CHECKLIST_COMMAND = { name: 'checklist', description: 'Shared task checklist: view, add, edit and mark tasks' }
 
 // What a `/checklist` run answers; `opens` asks the plugin to show the pane.
 export type ChecklistCommandResult = { text: string; opens?: true }
+
+// The checklist as plain text, for surfaces that cannot show the pane: whole titles and descriptions,
+// numbered as the pane numbers them, so the other commands take the same numbers.
+export const listChecklist = (list: readonly ChecklistItem[], questions: readonly Question[], isAll: boolean): string => {
+  const parts = partsOf(questions)
+  const done = list.filter(one => one.status === 'done').length
+  const shown = list.map((one, index) => ({ one, index })).filter(({ one }) => isAll || isOpenStatus(one.status))
+
+  if (shown.length === 0) {
+    return list.length === 0 ? 'The checklist is empty.' : `No open tasks (${done} of ${list.length} done). \`/checklist list all\` shows them.`
+  }
+
+  const rows = shown.map(({ one, index }) => {
+    const waits = activeBlockers(one, list, questions).map(blocker =>
+      blocker.kind === 'task' ? `task ${list.findIndex(other => other.id === blocker.id) + 1}` : `q${parts.findIndex(part => part.one.id === blocker.id) + 1}`,
+    )
+    const isBlocked = one.status === 'todo' && waits.length > 0
+    const tags = [isBlocked ? 'blocked' : one.status, one.priority && one.priority !== 'normal' ? one.priority : ''].filter(Boolean).join(', ')
+    const detail = (one.detail ?? '').trim().split('\n').map(line => `   ${line}`.trimEnd())
+
+    return [`${index + 1}. ${isBlocked ? '◌' : GLYPH[one.status]} ${one.text} (${tags})`, ...(one.detail?.trim() ? detail : []), ...(waits.length > 0 ? [`   waits for: ${waits.join(', ')}`] : [])].join('\n')
+  })
+
+  return [`Checklist: ${done} of ${list.length} done`, '', ...rows].join('\n')
+}
 
 export const runChecklistCommand = async (port: Port, args: string, options: { judge?: string }): Promise<ChecklistCommandResult> => {
   const command = parseChecklistArgs(args)
@@ -38,6 +63,8 @@ export const runChecklistCommand = async (port: Port, args: string, options: { j
     }
     case 'scan':
       return { text: await backfillChecklist(port, command.mode, options) }
+    case 'list':
+      return { text: listChecklist(await port.checklist.all(), await port.questions.own(true), command.isAll) }
     case 'add': {
       if (!hasRoom(await port.checklist.all())) {
         return { text: `The checklist is full (${CHECKLIST_CAP} tasks): clear done ones or remove some first.` }

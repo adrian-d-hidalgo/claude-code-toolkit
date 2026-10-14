@@ -1,3 +1,4 @@
+import type { Question } from '../../../types'
 import type { Port } from '../../shared/port/port.hook'
 import { isHelp } from '../../shared/help/help.hook'
 import type { ScanMode } from '../../checklist/args/args.hook'
@@ -14,6 +15,25 @@ export const QUESTIONS_COMMAND = { name: 'questions', description: 'Questions Cl
 // What a `/questions` run answers; `opens` asks the plugin to show the pane.
 export type QuestionsCommandResult = { text: string; opens?: true }
 
+// The open questions as plain text, for surfaces that cannot show the pane: whole wordings and their
+// options, numbered as the pane numbers them (one per thing asked).
+export const listQuestions = (open: readonly Question[]): string => {
+  const parts = partsOf(open)
+
+  if (parts.length === 0) {
+    return 'No open questions in this session.'
+  }
+
+  const rows = parts.map(({ one, text }, index) => {
+    const choice = one.choices?.[text]
+    const options = choice ? [`   ${choice.kind === 'multi' ? 'choose any' : 'choose one'}:`, ...choice.options.map(option => `   - ${option}`)] : []
+
+    return [`${index + 1}. ${text}${one.asks > 1 ? ` (asked ${one.asks}×)` : ''}`, ...options].join('\n')
+  })
+
+  return [`Open questions: ${parts.length}`, '', ...rows, '', 'Answer in your message, or close one with `/questions done <n>`.'].join('\n')
+}
+
 export const runQuestionsCommand = async (port: Port, args: string, options: { judge?: string }): Promise<QuestionsCommandResult> => {
   const [verb = '', ...rest] = args.trim().split(/\s+/)
   const session = await port.sessionId()
@@ -24,6 +44,10 @@ export const runQuestionsCommand = async (port: Port, args: string, options: { j
 
   if (!QUESTIONS_VERBS.includes(verb)) {
     return { text: `Unknown subcommand "${verb}".\n${QUESTIONS_HELP}` }
+  }
+
+  if (verb === 'list') {
+    return { text: listQuestions(await port.questions.own(true)) }
   }
 
   if (verb === 'clear') {

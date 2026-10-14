@@ -2,6 +2,12 @@
 
 All notable changes to this toolkit. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) per plugin.
 
+## [0.3.0] — session-management — 2026-10-14
+
+### Added
+
+- `/checklist list [all]` and `/questions list` print the list as plain text, for surfaces that cannot show a pane: whole titles, descriptions, statuses, priorities and blockers for tasks; whole wordings and their options for questions; numbered as the panes number them. `/learnings list` now prints each proposal in full with its kind, why and how instead of a 100-character excerpt.
+
 ## [2026-10-14] — session-management
 
 ### Added

@@ -20,6 +20,7 @@ export type ChecklistCommand =
   | { kind: 'block'; position: number; by: BlockerRef }
   | { kind: 'unblock'; position: number; by: BlockerRef | null }
   | { kind: 'scan'; mode: ScanMode }
+  | { kind: 'list'; isAll: boolean }
   | { kind: 'clear'; isAll: boolean }
   | { kind: 'undo' }
   | { kind: 'help' }
@@ -60,6 +61,10 @@ export const parseChecklistArgs = (args: string): ChecklistCommand => {
 
   if (verb === 'clear') {
     return { kind: 'clear', isAll: first.toLowerCase() === 'all' }
+  }
+
+  if (verb === 'list') {
+    return first === '' || first.toLowerCase() === 'all' ? { kind: 'list', isAll: first.toLowerCase() === 'all' } : { kind: 'invalid', reason: 'list takes nothing, or all' }
   }
 
   if (verb === 'doctor' || verb === 'fix') {

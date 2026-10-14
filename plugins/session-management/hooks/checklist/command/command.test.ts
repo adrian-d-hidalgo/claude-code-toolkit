@@ -191,3 +191,23 @@ test('priority sets the level of a task by position and sorts the list; mv stays
 
   expect(bad.text).toContain('priority needs high, normal or low')
 })
+
+test('list prints whole titles and descriptions with the pane\'s numbers; all adds the finished ones', async () => {
+  const long = `Rewrite the importer so it ${'keeps every row '.repeat(12).trim()}`
+  const { port } = memoryPort({
+    store: {
+      'checklist:s1': [
+        { id: 'a', text: long, status: 'doing', priority: 'high', detail: 'only the api\nand the cli' },
+        { id: 'b', text: 'Task b', status: 'todo', blockedBy: [{ kind: 'task', id: 'a' }, { kind: 'question', id: 'q' }] },
+        { id: 'c', text: 'Task c', status: 'done' },
+      ],
+      questions: [{ id: 'q', session: 's1', texts: ['Which format should the export use?'], source: 'text', project: '/p', at: 1, isOpen: true, asks: 1 }],
+    },
+  })
+
+  expect((await runChecklistCommand(port, 'list', {})).text).toBe(
+    ['Checklist: 1 of 3 done', '', `1. ◐ ${long} (doing, high)`, '   only the api', '   and the cli', '2. ◌ Task b (blocked)', '   waits for: task 1, q1'].join('\n'),
+  )
+  expect((await runChecklistCommand(port, 'list all', {})).text).toContain('3. ✓ Task c (done)')
+  expect((await runChecklistCommand(port, 'list some', {})).text).toContain('list takes nothing, or all')
+})

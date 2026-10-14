@@ -30,7 +30,18 @@ test('the commands act on the learning by its number in the pane\'s order; accep
 test('list shows only what waits; clear empties the queue without touching memory, and undo brings it back', async () => {
   const { port, files } = memoryPort({ store: { 'learnings:s1': [one('a'), one('r', { status: 'rejected' }), one('f')] }, files: { 'feedback_k.md': 'kept' } })
 
-  expect((await runLearningsCommand(port, 'list', {})).text).toBe('1. ? Use aaa tooling for aaa builds\n2. ? Use fff tooling for fff builds')
+  expect((await runLearningsCommand(port, 'list', {})).text).toBe(
+    [
+      'Waiting for review: 2',
+      '',
+      '1. ? Use aaa tooling for aaa builds (feedback)',
+      '   why: asked on 2026-10-13 (a)',
+      '2. ? Use fff tooling for fff builds (feedback)',
+      '   why: asked on 2026-10-13 (f)',
+      '',
+      'Answer with `/learnings accept <n>`, `reject <n> [reason]` or `accept all`.',
+    ].join('\n'),
+  )
   expect((await runLearningsCommand(port, 'clear', {})).text).toBe('Review queue emptied (2); memory is untouched. `/learnings undo` brings them back.')
   expect((await port.learnings.all()).map(item => item.id)).toEqual(['r'])
   expect(files['feedback_k.md']).toBe('kept')

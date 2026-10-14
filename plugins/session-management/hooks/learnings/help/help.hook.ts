@@ -1,7 +1,7 @@
 export const LEARNINGS_HELP = [
   "/learnings: what Claude proposes to remember; nothing enters its memory without your yes",
   '  /learnings                       open the pane: what waits for your answer',
-  '  /learnings list                  what waits, numbered as in the pane',
+  '  /learnings list                  what waits, in full, numbered as in the pane',
   '  /learnings accept <n>            Claude saves learning n to its memory (it must follow the rules)',
   '  /learnings accept all            accept everything waiting; Claude saves it in one go',
   '  /learnings reject <n> [reason]   refuse it (the reason is answered when it comes back)',

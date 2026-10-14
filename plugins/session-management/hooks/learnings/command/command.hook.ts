@@ -8,7 +8,7 @@ import { GLYPH, needsReview } from '../kinds/kinds.hook'
 import { byStatus, withField, withKind } from '../ops/ops.hook'
 import { proposedText } from '../reconcile/reconcile.hook'
 import { acceptAll, acceptLearning, commentOn, rejectLearning, removeLearning, reopenLearning, reviseLearning } from '../review/review.hook'
-import { LEARNING_RULES, excerpt } from '../rules/rules.hook'
+import { LEARNING_RULES } from '../rules/rules.hook'
 
 export const LEARNINGS_COMMAND = { name: 'learnings', description: 'What enters Claude\'s memory: review, accept or reject what it proposes' }
 
@@ -73,7 +73,13 @@ export const runLearningsCommand = async (port: Port, args: string, options: { j
     case 'list': {
       const waiting = byStatus(await port.learnings.all()).filter(needsReview)
 
-      return { text: waiting.length === 0 ? 'Nothing waits for review.' : waiting.map((one, index) => `${index + 1}. ${GLYPH.proposed} ${excerpt(one.text.split('\n')[0] ?? '', 100)}`).join('\n') }
+      if (waiting.length === 0) {
+        return { text: 'Nothing waits for review.' }
+      }
+
+      const rows = waiting.map((one, index) => [`${index + 1}. ${GLYPH.proposed} ${one.text} (${one.kind})`, `   why: ${one.why}`, ...(one.how ? [`   how: ${one.how}`] : [])].join('\n'))
+
+      return { text: [`Waiting for review: ${waiting.length}`, '', ...rows, '', 'Answer with `/learnings accept <n>`, `reject <n> [reason]` or `accept all`.'].join('\n') }
     }
     default: {
       // Numbered as the pane numbers them: what waits first, then the refusals.

@@ -1,6 +1,7 @@
 export const CHECKLIST_HELP = [
   '/checklist: task list for this project, shared with Claude',
   '  /checklist                      open the pane',
+  '  /checklist list [all]           print the open tasks in full, numbered as in the pane; "all" adds done and cancelled',
   '  /checklist add <text>           add a task',
   '  /checklist edit <n> title <text>        rename task n',
   '  /checklist edit <n> description <text>  set the description of task n (no text clears it); detail <n> <text> is an alias',

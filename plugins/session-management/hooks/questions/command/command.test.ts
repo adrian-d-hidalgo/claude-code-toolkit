@@ -92,3 +92,30 @@ test('clear all and undo report the questions, never the entries holding them', 
   expect((await runQuestionsCommand(port, 'clear all', {})).text).toContain('Removed 5 questions.')
   expect((await runQuestionsCommand(port, 'undo', {})).text).toContain('Restored 5 questions from')
 })
+
+test('list prints every open part in full with its options, numbered as the pane numbers them', async () => {
+  const { port } = memoryPort({
+    store: {
+      questions: [
+        { ...question('a'), texts: ['Which database should the service use?', 'Should the cache stay?'], choices: { 'Which database should the service use?': { kind: 'single', options: ['Postgres', 'SQLite'] } }, asks: 2 },
+        question('b', 's1', false),
+        question('c', 's2'),
+      ],
+    },
+  })
+
+  expect((await runQuestionsCommand(port, 'list', {})).text).toBe(
+    [
+      'Open questions: 2',
+      '',
+      '1. Which database should the service use? (asked 2×)',
+      '   choose one:',
+      '   - Postgres',
+      '   - SQLite',
+      '2. Should the cache stay? (asked 2×)',
+      '',
+      'Answer in your message, or close one with `/questions done <n>`.',
+    ].join('\n'),
+  )
+  expect((await runQuestionsCommand(memoryPort({ store: {} }).port, 'list', {})).text).toBe('No open questions in this session.')
+})
